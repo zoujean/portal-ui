@@ -193,7 +193,9 @@ const SurvivalPlotWrapper = ({
   );
 };
 
-function renderSurvivalPlot(props: TProps): void {
+const renderSurvivalPlot = _.debounce(function renderSurvivalPlot(
+  props: TProps,
+): void {
   const {
     height = 0,
     rawData = {},
@@ -242,7 +244,7 @@ function renderSurvivalPlot(props: TProps): void {
     };
     performanceTracker.end('survival:render', performanceContext);
   }
-}
+}, 100);
 
 const enhance = compose(
   withTooltip,
@@ -254,7 +256,11 @@ const enhance = compose(
   lifecycle({
     shouldComponentUpdate(nextProps: TProps): void {
       const props = ['xDomain', 'size', 'rawData', 'survivalPlotloading'];
-      return !_.isEqual(_.pick(this.props, props), _.pick(nextProps, props));
+      const shouldComponentUpdate = !_.isEqual(
+        _.pick(this.props, props),
+        _.pick(nextProps, props),
+      );
+      return shouldComponentUpdate;
     },
 
     componentDidUpdate(): void {
