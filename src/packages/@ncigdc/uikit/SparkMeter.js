@@ -25,7 +25,7 @@ export default ({ value, width = 30, max = 30 }) =>
         position: 'absolute',
         right: 0,
         display: 'inline-block',
-        width: Math.max(value * max, 2),
+        width: value > 0 ? Math.max(value * max, 2) : 0,
         height: 8,
         backgroundColor: `rgb(39, 156, 75)`,
         margin: '0 5px',
