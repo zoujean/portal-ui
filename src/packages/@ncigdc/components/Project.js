@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import _ from 'lodash';
 import { scaleOrdinal, schemeCategory20 } from 'd3';
 import { compose } from 'recompose';
 import withRouter from '@ncigdc/utils/withRouter';
@@ -10,6 +11,7 @@ import { makeFilter, mergeQuery } from '@ncigdc/utils/filters';
 import { Row, Column } from '@ncigdc/uikit/Flex';
 import { Tooltip } from '@ncigdc/uikit/Tooltip';
 import CollapsibleList from '@ncigdc/uikit/CollapsibleList';
+import SparkMeter from '@ncigdc/uikit/SparkMeter';
 
 import EntityPageVerticalTable from '@ncigdc/components/EntityPageVerticalTable';
 import CountCard from '@ncigdc/components/CountCard';
@@ -294,6 +296,12 @@ const Project = (
                     }}
                   >
                     {(item.case_count || 0).toLocaleString()}
+                    <SparkMeter
+                      value={
+                        item.case_count /
+                        _.sumBy(experimentalStrategies, item => item.case_count)
+                      }
+                    />
                   </Link>
                 ),
                 file_count: (
@@ -307,6 +315,12 @@ const Project = (
                     }}
                   >
                     {(item.file_count || 0).toLocaleString()}
+                    <SparkMeter
+                      value={
+                        item.file_count /
+                        _.sumBy(experimentalStrategies, item => item.file_count)
+                      }
+                    />
                   </Link>
                 ),
                 file_count_value: item.file_count,
@@ -390,8 +404,22 @@ const Project = (
                       }}
                     >
                       {item.case_count.toLocaleString()}
+                      <SparkMeter
+                        value={
+                          item.case_count /
+                          _.sumBy(dataCategories, item => item.case_count)
+                        }
+                      />
                     </Link>
-                  : '0',
+                  : <span>
+                      0
+                      <SparkMeter
+                        value={
+                          item.case_count /
+                          _.sumBy(dataCategories, item => item.case_count)
+                        }
+                      />
+                    </span>,
                 file_count: item.file_count
                   ? <Link
                       merge="replace"
@@ -403,8 +431,22 @@ const Project = (
                       }}
                     >
                       {item.file_count.toLocaleString()}
+                      <SparkMeter
+                        value={
+                          item.file_count /
+                          _.sumBy(dataCategories, item => item.file_count)
+                        }
+                      />
                     </Link>
-                  : '0',
+                  : <span>
+                      0
+                      <SparkMeter
+                        value={
+                          item.file_count /
+                          _.sumBy(dataCategories, item => item.file_count)
+                        }
+                      />
+                    </span>,
                 file_count_value: item.file_count,
                 tooltip: (
                   <span>
