@@ -47,14 +47,16 @@ const StyledDropdownLink = styled(Link, {
   color: ({ theme }) => theme.greyScale2,
   ':link': {
     textDecoration: 'none',
-    color: ({ theme, isActive }) => (isActive ? 'white' : theme.primary),
+    color: ({ theme, isDropdownActive }) =>
+      isDropdownActive ? 'white' : theme.primary,
   },
   ':visited': {
     textDecoration: 'none',
-    color: ({ theme, isActive }) => (isActive ? 'white' : theme.primary),
+    color: ({ theme, isDropdownActive }) =>
+      isDropdownActive ? 'white' : theme.primary,
   },
-  backgroundColor: ({ isActive }) =>
-    isActive ? 'rgb(31, 72, 108)' : 'inherit',
+  backgroundColor: ({ isDropdownActive }) =>
+    isDropdownActive ? 'rgb(31, 72, 108)' : 'inherit',
   width: '100%',
   textDecoration: 'none',
 });
@@ -227,7 +229,9 @@ const SuggestionFacet = compose(
                               query={query(x[fieldNoDoctype])}
                               id={x[fieldNoDoctype]}
                               data-link-id={x.id}
-                              isActive={selectableList.focusedItem === x}
+                              isDropdownActive={
+                                selectableList.focusedItem === x
+                              }
                             >
                               {dropdownItem(x)}
                             </StyledDropdownLink>
