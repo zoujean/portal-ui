@@ -11,6 +11,7 @@ export default ({ value, width = 30, max = 30 }) =>
     <span
       style={{
         position: 'absolute',
+        right: 0,
         display: 'inline-block',
         width,
         height: 8,
@@ -22,6 +23,7 @@ export default ({ value, width = 30, max = 30 }) =>
     <span
       style={{
         position: 'absolute',
+        right: 0,
         display: 'inline-block',
         width: Math.max(value * max, 2),
         height: 8,
