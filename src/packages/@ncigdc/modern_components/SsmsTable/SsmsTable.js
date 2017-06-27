@@ -460,8 +460,7 @@ const Component = compose(
               </Tooltip>
             ),
             filteredCases: (
-              <span style={{ marginLeft: -40 }}>
-                <span style={{ marginRight: -40 }}>
+              <span>
                   <ExploreLink
                     merge
                     query={{
@@ -493,13 +492,11 @@ const Component = compose(
                   >
                     {(filteredCases.hits.total || 0).toLocaleString()}
                   </ExploreLink>
-                </span>
                 <SparkMeter value={score / filteredCases.hits.total} />
                 <span
                   style={{
                     fontSize: '0.8em',
                     width: 40,
-                    marginLeft: 40,
                     display: 'inline-block',
                   }}
                 >
