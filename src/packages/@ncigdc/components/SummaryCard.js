@@ -28,61 +28,28 @@ const Footer = styled(Row, {
 });
 
 const SummaryCard = compose(
-  withState('showTable', 'setShowTable', true),
   withSize({ monitorHeight: true }),
   withPropsOnChange(['size'], ({ size }) => ({
     pieDiameter: Math.max(Math.min(size.width, size.height - 100), 120),
   })),
-)(
-  ({
-    data,
-    title,
-    pieChartTitle,
-    tableTitle,
-    style = {},
-    footer,
-    path,
-    showTable,
-    setShowTable,
-    headings,
-    pieDiameter,
-  }) =>
-    <Card style={style}>
-      <Column>
-        <Header>
-          <span style={{ flexGrow: 1, fontSize: '1.7rem' }}>
-            {(showTable ? tableTitle : pieChartTitle) || title}
-          </span>
-          {!!data.length &&
-            <span onClick={() => setShowTable(!showTable)}>
-              <i
-                style={{ color: '#000' }}
-                className={`fa ${showTable ? 'fa-pie-chart' : 'fa-table'}`}
-              />
-            </span>}
-        </Header>
-        {!data.length && <NoResultsMessage style={{ textAlign: 'center' }} />}
+)(({ data, title, tableTitle, style = {}, footer, path, headings }) =>
+  <Card style={style}>
+    <Column>
+      <Header>
+        <span style={{ flexGrow: 1, fontSize: '1.7rem' }}>
+          {tableTitle || title}
+        </span>
+      </Header>
+      {!data.length && <NoResultsMessage style={{ textAlign: 'center' }} />}
 
-        {showTable &&
-          !!data.length &&
-          <EntityPageHorizontalTable
-            headings={headings}
-            data={data}
-            style={{ overflow: 'hidden', borderLeft: 0, borderTop: 0 }}
-          />}
-        {!showTable &&
-        !!data.length && [
-          <PieChart
-            key="chart"
-            data={data}
-            path={path}
-            height={pieDiameter}
-            width={pieDiameter}
-          />,
-          footer && <Footer key={footer}>{footer}</Footer>,
-        ]}
-      </Column>
-    </Card>,
+      {!!data.length &&
+        <EntityPageHorizontalTable
+          headings={headings}
+          data={data}
+          style={{ overflow: 'hidden', borderLeft: 0, borderTop: 0 }}
+        />}
+    </Column>
+  </Card>,
 );
 
 SummaryCard.propTypes = {
