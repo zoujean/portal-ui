@@ -23,7 +23,7 @@ export default ({ value, width = 30, max = 30 }) =>
     <span
       style={{
         position: 'absolute',
-        right: 0,
+        left: 0,
         display: 'inline-block',
         width: value > 0 ? Math.max(value * max, 2) : 0,
         height: 8,
