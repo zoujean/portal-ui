@@ -52,6 +52,12 @@ const styles = {
     height: 10,
     marginRight: 5,
   },
+  deemphasizedHeading: {
+    fontWeight: 'bold',
+    letterSpacing: -0.5,
+    fontSize: '0.8em',
+    opacity: 0.8,
+  },
 };
 
 const enhance = compose(withRouter);
@@ -404,22 +410,16 @@ const Project = (
                       }}
                     >
                       {item.case_count.toLocaleString()}
-                      <SparkMeter
-                        value={
-                          item.case_count /
-                          _.sumBy(dataCategories, item => item.case_count)
-                        }
-                      />
                     </Link>
-                  : <span>
-                      0
-                      <SparkMeter
-                        value={
-                          item.case_count /
-                          _.sumBy(dataCategories, item => item.case_count)
-                        }
-                      />
-                    </span>,
+                  : 0,
+                case_meter: (
+                  <SparkMeter
+                    value={
+                      item.case_count /
+                      _.sumBy(dataCategories, item => item.case_count)
+                    }
+                  />
+                ),
                 file_count: item.file_count
                   ? <Link
                       merge="replace"
@@ -431,22 +431,34 @@ const Project = (
                       }}
                     >
                       {item.file_count.toLocaleString()}
-                      <SparkMeter
-                        value={
-                          item.file_count /
-                          _.sumBy(dataCategories, item => item.file_count)
-                        }
-                      />
                     </Link>
-                  : <span>
-                      0
-                      <SparkMeter
-                        value={
+                  : 0,
+                file_meter: (
+                  <Tooltip
+                    Component={
+                      <span>
+                        {_.round(
                           item.file_count /
-                          _.sumBy(dataCategories, item => item.file_count)
-                        }
-                      />
-                    </span>,
+                            _.sumBy(dataCategories, item => item.file_count),
+                          3,
+                        ) * 100}%
+                        of{' '}
+                        {_.sumBy(
+                          dataCategories,
+                          item => item.file_count,
+                        ).toLocaleString()}{' '}
+                        Files
+                      </span>
+                    }
+                  >
+                    <SparkMeter
+                      value={
+                        item.file_count /
+                        _.sumBy(dataCategories, item => item.file_count)
+                      }
+                    />
+                  </Tooltip>
+                ),
                 file_count_value: item.file_count,
                 tooltip: (
                   <span>
@@ -483,9 +495,35 @@ const Project = (
                 style: { textAlign: 'right' },
               },
               {
+                key: 'case_meter',
+                title: (
+                  <span style={styles.deemphasizedHeading}>
+                    % of{' '}
+                    {_.sumBy(
+                      dataCategories,
+                      item => item.case_count,
+                    ).toLocaleString()}
+                  </span>
+                ),
+                style: { textAlign: 'left' },
+              },
+              {
                 key: 'file_count',
                 title: 'Files',
                 style: { textAlign: 'right' },
+              },
+              {
+                key: 'file_meter',
+                title: (
+                  <span style={styles.deemphasizedHeading}>
+                    % of{' '}
+                    {_.sumBy(
+                      dataCategories,
+                      item => item.file_count,
+                    ).toLocaleString()}
+                  </span>
+                ),
+                style: { textAlign: 'left' },
               },
             ]}
           />
