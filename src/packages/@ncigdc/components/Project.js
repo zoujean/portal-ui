@@ -302,13 +302,15 @@ const Project = (
                     }}
                   >
                     {(item.case_count || 0).toLocaleString()}
-                    <SparkMeter
-                      value={
-                        item.case_count /
-                        _.sumBy(experimentalStrategies, item => item.case_count)
-                      }
-                    />
                   </Link>
+                ),
+                case_meter: (
+                  <SparkMeter
+                    value={
+                      item.case_count /
+                      _.sumBy(experimentalStrategies, item => item.case_count)
+                    }
+                  />
                 ),
                 file_count: (
                   <Link
@@ -321,13 +323,15 @@ const Project = (
                     }}
                   >
                     {(item.file_count || 0).toLocaleString()}
-                    <SparkMeter
-                      value={
-                        item.file_count /
-                        _.sumBy(experimentalStrategies, item => item.file_count)
-                      }
-                    />
                   </Link>
+                ),
+                file_meter: (
+                  <SparkMeter
+                    value={
+                      item.file_count /
+                      _.sumBy(dataCategories, item => item.file_count)
+                    }
+                  />
                 ),
                 file_count_value: item.file_count,
                 tooltip: (
@@ -369,9 +373,37 @@ const Project = (
                 style: { textAlign: 'right' },
               },
               {
+                key: 'case_meter',
+                title: (
+                  <span style={styles.deemphasizedHeading}>
+                    <small>( </small> n=
+                    {_.sumBy(
+                      experimentalStrategies,
+                      item => item.case_count,
+                    ).toLocaleString()}
+                    <small> )</small>
+                  </span>
+                ),
+                style: { textAlign: 'left' },
+              },
+              {
                 key: 'file_count',
                 title: 'Files',
                 style: { textAlign: 'right' },
+              },
+              {
+                key: 'file_meter',
+                title: (
+                  <span style={styles.deemphasizedHeading}>
+                    <small>( </small> n=
+                    {_.sumBy(
+                      experimentalStrategies,
+                      item => item.file_count,
+                    ).toLocaleString()}
+                    <small> )</small>
+                  </span>
+                ),
+                style: { textAlign: 'left' },
               },
             ]}
           />
@@ -434,30 +466,12 @@ const Project = (
                     </Link>
                   : 0,
                 file_meter: (
-                  <Tooltip
-                    Component={
-                      <span>
-                        {_.round(
-                          item.file_count /
-                            _.sumBy(dataCategories, item => item.file_count),
-                          3,
-                        ) * 100}%
-                        of{' '}
-                        {_.sumBy(
-                          dataCategories,
-                          item => item.file_count,
-                        ).toLocaleString()}{' '}
-                        Files
-                      </span>
+                  <SparkMeter
+                    value={
+                      item.file_count /
+                      _.sumBy(dataCategories, item => item.file_count)
                     }
-                  >
-                    <SparkMeter
-                      value={
-                        item.file_count /
-                        _.sumBy(dataCategories, item => item.file_count)
-                      }
-                    />
-                  </Tooltip>
+                  />
                 ),
                 file_count_value: item.file_count,
                 tooltip: (
@@ -498,11 +512,12 @@ const Project = (
                 key: 'case_meter',
                 title: (
                   <span style={styles.deemphasizedHeading}>
-                    % of{' '}
+                    <small>( </small>n=
                     {_.sumBy(
                       dataCategories,
                       item => item.case_count,
                     ).toLocaleString()}
+                    <small> )</small>
                   </span>
                 ),
                 style: { textAlign: 'left' },
@@ -516,11 +531,12 @@ const Project = (
                 key: 'file_meter',
                 title: (
                   <span style={styles.deemphasizedHeading}>
-                    % of{' '}
+                    <small>( </small> n=
                     {_.sumBy(
                       dataCategories,
                       item => item.file_count,
                     ).toLocaleString()}
+                    <small> )</small>
                   </span>
                 ),
                 style: { textAlign: 'left' },
