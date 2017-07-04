@@ -1,5 +1,5 @@
 import React from 'react';
-export default ({ value, width = 30, max = 30 }) =>
+export default ({ value, width = 30, max = 30, ...props }) =>
   <div
     style={{
       display: 'inline-block',
@@ -7,6 +7,7 @@ export default ({ value, width = 30, max = 30 }) =>
       height: 8,
       width: width + 10,
     }}
+    {...props}
   >
     <span
       style={{
