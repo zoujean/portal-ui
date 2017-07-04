@@ -11,7 +11,6 @@ import { makeFilter, mergeQuery } from '@ncigdc/utils/filters';
 import { Row, Column } from '@ncigdc/uikit/Flex';
 import { Tooltip } from '@ncigdc/uikit/Tooltip';
 import CollapsibleList from '@ncigdc/uikit/CollapsibleList';
-import SparkMeter from '@ncigdc/uikit/SparkMeter';
 
 import EntityPageVerticalTable from '@ncigdc/components/EntityPageVerticalTable';
 import CountCard from '@ncigdc/components/CountCard';
@@ -19,6 +18,8 @@ import DownloadButton from '@ncigdc/components/DownloadButton';
 import SummaryCard from '@ncigdc/components/SummaryCard';
 import ProjectVisualizations from '@ncigdc/components/ProjectVisualizations';
 import Link from '@ncigdc/components/Links/Link';
+import SparkMeterWithTooltip from '@ncigdc/components/SparkMeterWithTooltip';
+import SampleSize from '@ncigdc/components/SampleSize';
 
 import { removeEmptyKeys } from '@ncigdc/utils/uri';
 
@@ -51,12 +52,6 @@ const styles = {
     width: 10,
     height: 10,
     marginRight: 5,
-  },
-  deemphasizedHeading: {
-    fontWeight: 'bold',
-    letterSpacing: -0.5,
-    fontSize: '0.8em',
-    opacity: 0.8,
   },
 };
 
@@ -304,12 +299,13 @@ const Project = (
                     {(item.case_count || 0).toLocaleString()}
                   </Link>
                 ),
-                case_meter: (
-                  <SparkMeter
-                    value={
-                      item.case_count /
-                      _.sumBy(experimentalStrategies, item => item.case_count)
-                    }
+                case_count_meter: (
+                  <SparkMeterWithTooltip
+                    part={item.case_count}
+                    whole={_.sumBy(
+                      experimentalStrategies,
+                      item => item.case_count,
+                    )}
                   />
                 ),
                 file_count: (
@@ -325,12 +321,13 @@ const Project = (
                     {(item.file_count || 0).toLocaleString()}
                   </Link>
                 ),
-                file_meter: (
-                  <SparkMeter
-                    value={
-                      item.file_count /
-                      _.sumBy(dataCategories, item => item.file_count)
-                    }
+                file_count_meter: (
+                  <SparkMeterWithTooltip
+                    part={item.file_count}
+                    whole={_.sumBy(
+                      experimentalStrategies,
+                      item => item.file_count,
+                    )}
                   />
                 ),
                 file_count_value: item.file_count,
@@ -373,17 +370,16 @@ const Project = (
                 style: { textAlign: 'right' },
               },
               {
-                key: 'case_meter',
+                key: 'case_count_meter',
                 title: (
-                  <span style={styles.deemphasizedHeading}>
-                    <small>( </small> n=
-                    {_.sumBy(
-                      experimentalStrategies,
-                      item => item.case_count,
-                    ).toLocaleString()}
-                    <small> )</small>
-                  </span>
+                  <SampleSize
+                    n={_.sumBy(experimentalStrategies, item => item.case_count)}
+                  />
                 ),
+                thStyle: {
+                  width: 1,
+                  textAlign: 'center',
+                },
                 style: { textAlign: 'left' },
               },
               {
@@ -392,17 +388,16 @@ const Project = (
                 style: { textAlign: 'right' },
               },
               {
-                key: 'file_meter',
+                key: 'file_count_meter',
                 title: (
-                  <span style={styles.deemphasizedHeading}>
-                    <small>( </small> n=
-                    {_.sumBy(
-                      experimentalStrategies,
-                      item => item.file_count,
-                    ).toLocaleString()}
-                    <small> )</small>
-                  </span>
+                  <SampleSize
+                    n={_.sumBy(experimentalStrategies, item => item.file_count)}
+                  />
                 ),
+                thStyle: {
+                  width: 1,
+                  textAlign: 'center',
+                },
                 style: { textAlign: 'left' },
               },
             ]}
@@ -444,12 +439,10 @@ const Project = (
                       {item.case_count.toLocaleString()}
                     </Link>
                   : 0,
-                case_meter: (
-                  <SparkMeter
-                    value={
-                      item.case_count /
-                      _.sumBy(dataCategories, item => item.case_count)
-                    }
+                case_count_meter: (
+                  <SparkMeterWithTooltip
+                    part={item.case_count}
+                    whole={_.sumBy(dataCategories, item => item.case_count)}
                   />
                 ),
                 file_count: item.file_count
@@ -465,12 +458,10 @@ const Project = (
                       {item.file_count.toLocaleString()}
                     </Link>
                   : 0,
-                file_meter: (
-                  <SparkMeter
-                    value={
-                      item.file_count /
-                      _.sumBy(dataCategories, item => item.file_count)
-                    }
+                file_count_meter: (
+                  <SparkMeterWithTooltip
+                    part={item.file_count}
+                    whole={_.sumBy(dataCategories, item => item.file_count)}
                   />
                 ),
                 file_count_value: item.file_count,
@@ -509,17 +500,16 @@ const Project = (
                 style: { textAlign: 'right' },
               },
               {
-                key: 'case_meter',
+                key: 'case_count_meter',
                 title: (
-                  <span style={styles.deemphasizedHeading}>
-                    <small>( </small>n=
-                    {_.sumBy(
-                      dataCategories,
-                      item => item.case_count,
-                    ).toLocaleString()}
-                    <small> )</small>
-                  </span>
+                  <SampleSize
+                    n={_.sumBy(dataCategories, item => item.case_count)}
+                  />
                 ),
+                thStyle: {
+                  textAlign: 'center',
+                  width: 1,
+                },
                 style: { textAlign: 'left' },
               },
               {
@@ -528,17 +518,16 @@ const Project = (
                 style: { textAlign: 'right' },
               },
               {
-                key: 'file_meter',
+                key: 'file_count_meter',
                 title: (
-                  <span style={styles.deemphasizedHeading}>
-                    <small>( </small> n=
-                    {_.sumBy(
-                      dataCategories,
-                      item => item.file_count,
-                    ).toLocaleString()}
-                    <small> )</small>
-                  </span>
+                  <SampleSize
+                    n={_.sumBy(dataCategories, item => item.file_count)}
+                  />
                 ),
+                thStyle: {
+                  textAlign: 'center',
+                  width: 1,
+                },
                 style: { textAlign: 'left' },
               },
             ]}
