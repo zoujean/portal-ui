@@ -18,7 +18,6 @@ export default ({
   symbol = 'n',
 }) =>
   <span {...css({ ...styles.deemphasizedHeading, ...style })}>
-    <small>( </small> {symbol}=
+    {symbol}=
     {n ? formatter(n) : `--`}
-    <small> )</small>
   </span>;

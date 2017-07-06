@@ -120,21 +120,39 @@ const CartPage: TCartPage = ({ viewer, files, user, theme } = {}) => {
               data={viewer.summary.aggregations.project__project_id.buckets.map(
                 item => ({
                   project: item.key,
-                  case_count: item.case_count,
-                  case_count_meter: (
-                    <SparkMeterWithTooltip
-                      part={item.case_count}
-                      whole={caseCount}
-                    />
+                  case_count: (
+                    <div style={{ position: 'relative' }}>
+                      {item.case_count}
+                      <SparkMeterWithTooltip
+                        part={item.case_count}
+                        whole={caseCount}
+                      />
+                    </div>
                   ),
-                  file_count: item.doc_count.toLocaleString(),
+                  file_count: (
+                    <div style={{ position: 'relative' }}>
+                      {item.doc_count.toLocaleString()}
+                      <SparkMeterWithTooltip
+                        part={item.doc_count}
+                        whole={files.length}
+                      />
+                    </div>
+                  ),
                   file_count_meter: (
                     <SparkMeterWithTooltip
                       part={item.doc_count}
                       whole={files.length}
                     />
                   ),
-                  file_size: formatFileSize(item.file_size),
+                  file_size: (
+                    <div style={{ position: 'relative' }}>
+                      {formatFileSize(item.file_size)}
+                      <SparkMeterWithTooltip
+                        part={item.file_size}
+                        whole={fileSize}
+                      />
+                    </div>
+                  ),
                   file_size_meter: (
                     <SparkMeterWithTooltip
                       part={item.file_size}
@@ -151,51 +169,28 @@ const CartPage: TCartPage = ({ viewer, files, user, theme } = {}) => {
                 { key: 'project', title: 'Project', color: true },
                 {
                   key: 'case_count',
-                  title: 'Cases',
+                  title: <span>Cases<br /><SampleSize n={caseCount} /></span>,
                   style: { textAlign: 'right' },
-                },
-                {
-                  key: 'case_count_meter',
-                  title: <SampleSize n={caseCount} />,
-                  thStyle: {
-                    width: 1,
-                    textAlign: 'center',
-                  },
-                  style: { textAlign: 'left' },
                 },
                 {
                   key: 'file_count',
-                  title: 'Files',
+                  title: <span>Files<br /><SampleSize n={caseCount} /></span>,
                   style: { textAlign: 'right' },
                 },
-                {
-                  key: 'file_count_meter',
-                  title: <SampleSize n={files.length} />,
-                  thStyle: {
-                    width: 1,
-                    textAlign: 'center',
-                  },
-                  style: { textAlign: 'left' },
-                },
+
                 {
                   key: 'file_size',
-                  title: 'File Size',
-                  style: { textAlign: 'right' },
-                },
-                {
-                  key: 'file_size_meter',
                   title: (
-                    <SampleSize
-                      n={fileSize}
-                      formatter={formatFileSize}
-                      symbol="∑"
-                    />
+                    <span>
+                      File Size<br />
+                      <SampleSize
+                        n={fileSize}
+                        formatter={formatFileSize}
+                        symbol="∑"
+                      />
+                    </span>
                   ),
-                  thStyle: {
-                    width: 1,
-                    textAlign: 'center',
-                  },
-                  style: { textAlign: 'left' },
+                  style: { textAlign: 'right' },
                 },
               ]}
             />
