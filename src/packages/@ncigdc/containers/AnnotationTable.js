@@ -2,115 +2,169 @@
 
 import React from 'react';
 import Relay from 'react-relay/classic';
-
-import Table from '@ncigdc/uikit/Table';
-
+import { compose } from 'recompose';
+import { connect } from 'react-redux';
 import Pagination from '@ncigdc/components/Pagination';
 import Showing from '@ncigdc/components/Pagination/Showing';
+import AddToCartButtonAll from '@ncigdc/components/AddToCartButtonAll';
 import { Row } from '@ncigdc/uikit/Flex';
 import TableActions from '@ncigdc/components/TableActions';
+import tableModels from '@ncigdc/tableModels';
+import Table, { Th, Tr, Td } from '@ncigdc/uikit/Table';
+import styled from '@ncigdc/theme/styled';
+import Button from '@ncigdc/uikit/Button';
+import AddToCartButtonSingle from '@ncigdc/components/AddToCartButtonSingle';
+import { toggleFilesInCart } from '@ncigdc/dux/cart';
+import { Tooltip } from '@ncigdc/uikit/Tooltip';
 
-import AnnotationTr from './AnnotationTr';
+const RemoveButton = styled(Button, {
+  backgroundColor: '#FFF',
+  borderColor: '#CCC',
+  color: '#333',
+  margin: '0 auto',
+  padding: '0px 5px',
+  ':hover': {
+    background:
+      'linear-gradient(to bottom, #ffffff 50%, #e6e6e6 100%) repeat scroll 0 0 #E6E6E6',
+    borderColor: '#ADADAD',
+  },
+});
 
-import type { TTableProps } from './types';
+export const SearchTable = compose(
+  connect(state => ({ tableColumns: state.tableColumns.annotations })),
+)(
+  ({
+    downloadable,
+    relay,
+    hits,
+    entityType = 'files',
+    tableColumns,
+    canAddToCart = true,
+    tableHeader,
+    dispatch,
+  }) => {
+    const tableInfo = tableModels[entityType]
+      .slice()
+      .sort((a, b) => tableColumns.indexOf(a.id) - tableColumns.indexOf(b.id))
+      .filter(x => tableColumns.includes(x.id));
 
-export const AnnotationTableComponent = (props: TTableProps) =>
-  <div>
-    <Row
-      style={{
-        backgroundColor: 'white',
-        padding: '1rem',
-        justifyContent: 'space-between',
-      }}
-    >
-      <Showing
-        docType="annotations"
-        params={props.relay.route.params}
-        total={props.hits.total}
-      />
-      <TableActions
-        prefix="annotations"
-        total={props.hits.total}
-        sortKey="annotations_sort"
-        endpoint="annotations"
-        downloadFields={[
-          'annotation_id',
-          'case_id',
-          'project.project_id',
-          'entity_type',
-          'entity_id',
-          'category',
-          'classification',
-          'created_datetime',
-        ]}
-        sortOptions={[
-          {
-            id: 'annotation_id',
-            name: 'ID',
-          },
-          {
-            id: 'case_id',
-            name: 'Case UUID',
-          },
-          {
-            id: 'project.project_id',
-            name: 'Project',
-          },
-          {
-            id: 'entity_type',
-            name: 'Entity Type',
-          },
-          {
-            id: 'entity_id',
-            name: 'Entity ID',
-          },
-          {
-            id: 'category',
-            name: 'Category',
-          },
-          {
-            id: 'classification',
-            name: 'Classification',
-          },
-        ]}
-        tsvSelector="#annotations-table"
-        tsvFilename="annotations-table.tsv"
-      />
-    </Row>
-    <div style={{ overflowX: 'auto' }}>
-      <Table
-        id="annotations-table"
-        headings={[
-          'UUID',
-          'Case UUID',
-          'Project',
-          'Entity Type',
-          'Entity UUID',
-          'Category',
-          'Classification',
-          'Date Created',
-        ]}
-        body={
-          <tbody>
-            {props.hits.edges.map((e, i) =>
-              <AnnotationTr {...e} key={e.node.id} index={i} />,
-            )}
-          </tbody>
-        }
-      />
-    </div>
-    <Pagination params={props.relay.route.params} total={props.hits.total} />
-  </div>;
+    const prefix = 'files';
 
-export const AnnotationTableQuery = {
+    return (
+      <div>
+        {tableHeader &&
+          <h3
+            className="panel-title"
+            style={{ padding: '1rem', marginTop: '-6rem' }}
+          >
+            {tableHeader}
+          </h3>}
+        <Row
+          style={{
+            backgroundColor: 'white',
+            padding: '1rem',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Showing
+            docType="annotations"
+            prefix={prefix}
+            params={relay.route.params}
+            total={hits.total}
+          />
+          <TableActions
+            prefix={prefix}
+            total={hits.total}
+            sortKey="annotations_sort"
+            endpoint="annotations"
+            downloadable={downloadable}
+            entityType={entityType}
+            downloadFields={tableInfo
+              .filter(x => x.downloadable)
+              .map(x => x.field || x.id)}
+            sortOptions={tableInfo.filter(x => x.sortable)}
+            tsvSelector="#repository-annotations-table"
+            tsvFilename="repository-annotations-table.tsv"
+          />
+        </Row>
+        <div style={{ overflowX: 'auto' }}>
+          <Table
+            id="repository-annotations-table"
+            headings={[
+              <Th key="add_to_cart">
+                {canAddToCart &&
+                  <AddToCartButtonAll
+                    edges={hits.edges.map(e => e.node)}
+                    total={hits.total}
+                  />}
+              </Th>,
+              ...tableInfo.map(x =>
+                <x.th key={x.id} hits={hits} canAddToCart={canAddToCart} />,
+              ),
+            ]}
+            body={
+              <tbody>
+                {hits.edges.map((e, i) =>
+                  <Tr key={e.node.id} index={i}>
+                    {[
+                      <Td key="add_to_cart">
+                        {canAddToCart &&
+                          <AddToCartButtonSingle file={e.node} />}
+                        {!canAddToCart &&
+                          <RemoveButton
+                            onClick={() => dispatch(toggleFilesInCart(e.node))}
+                            aria-label="Remove"
+                          >
+                            <Tooltip Component={'Remove'}>
+                              <i className="fa fa-trash-o" />
+                            </Tooltip>
+                          </RemoveButton>}
+                      </Td>,
+                      ...tableInfo
+                        .filter(x => x.td)
+                        .map(x =>
+                          <x.td
+                            key={x.id}
+                            node={e.node}
+                            relay={relay}
+                            index={i}
+                            total={hits.total}
+                          />,
+                        ),
+                    ]}
+                  </Tr>,
+                )}
+              </tbody>
+            }
+          />
+        </div>
+        <Pagination
+          prefix={prefix}
+          params={relay.route.params}
+          total={hits.total}
+        />
+      </div>
+    );
+  },
+);
+
+export const AnnotationsTableQuery = {
   fragments: {
     hits: () => Relay.QL`
       fragment on AnnotationConnection {
         total
         edges {
           node {
-            id
-            ${AnnotationTr.getFragment('node')}
+            annotation_id
+            case_id
+            project {
+              project_id
+            }
+            entity_type
+            entity_id
+            category
+            classification
+            created_datetime
           }
         }
       }
@@ -119,8 +173,8 @@ export const AnnotationTableQuery = {
 };
 
 const AnnotationTable = Relay.createContainer(
-  AnnotationTableComponent,
-  AnnotationTableQuery,
+  SearchTable,
+  AnnotationsTableQuery,
 );
 
 export default AnnotationTable;
