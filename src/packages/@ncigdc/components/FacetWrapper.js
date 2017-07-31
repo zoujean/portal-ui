@@ -18,8 +18,6 @@ import ExactMatchFacet from '@ncigdc/components/Aggregations/ExactMatchFacet';
 import styled from '@ncigdc/theme/styled';
 import FacetHeader from '@ncigdc/components/Aggregations/FacetHeader';
 
-import escapeForRelay from '@ncigdc/utils/escapeForRelay';
-
 const COMMON_PREPOSITIONS = [
   'a',
   'an',
