@@ -13,6 +13,7 @@ import AnnotationRoute from '@ncigdc/routes/AnnotationRoute';
 import GeneRoute from '@ncigdc/routes/GeneRoute';
 import SSMRoute from '@ncigdc/routes/SSMRoute';
 import SmartSearchRoute from '@ncigdc/routes/SmartSearchRoute';
+import UserProfileRoute from '@ncigdc/routes/UserProfileRoute';
 
 import Head from '@ncigdc/components/Head';
 import Header from '@ncigdc/components/Header';
@@ -125,6 +126,7 @@ const PortalContainer = ({
         {AnnotationRoute}
         {GeneRoute}
         {SSMRoute}
+        {UserProfileRoute}
         <Route
           path="/components/:component"
           component={({ match, ...props }) => {

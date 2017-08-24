@@ -13,12 +13,29 @@ import DownloadIcon from '@ncigdc/theme/icons/Download';
 import { fetchToken } from '@ncigdc/dux/auth';
 import { notify } from '@ncigdc/dux/notification';
 import { AUTH } from '@ncigdc/utils/constants';
+import UserIcon from '@ncigdc/theme/icons/User';
+import SignOutIcon from '@ncigdc/theme/icons/SignOut';
+import UserProfileLink from '@ncigdc/components/Links/UserProfileLink';
 
 const NavLink = styled.a({
   padding: '15px 13px',
   display: 'inline-block',
   ':hover': {
     backgroundColor: '#dedddd',
+  },
+});
+
+const iconStyle = {
+  marginRight: '0.5rem',
+  fontSize: '1.65rem',
+};
+
+const UserProfileLinkStyled = styled(UserProfileLink, {
+  ':link': {
+    color: 'black',
+  },
+  ':visited': {
+    color: 'black',
   },
 });
 
@@ -50,6 +67,12 @@ const UserDropdown = connect(state => ({
         </NavLink>
       }
     >
+      <DropdownItem>
+        <UserIcon
+          style={{ ...iconStyle, fontSize: '1.8rem', marginRight: '0.6rem' }}
+        />{' '}
+        <UserProfileLinkStyled />
+      </DropdownItem>
       <DropdownItem
         onClick={() => {
           if (userProjectsCount(user)) {
@@ -78,15 +101,11 @@ const UserDropdown = connect(state => ({
           }
         }}
       >
-        <DownloadIcon style={{ marginRight: '0.5rem', fontSize: '1.65rem' }} />
+        <DownloadIcon style={iconStyle} />
         Download Token
       </DropdownItem>
       <DropdownItem onClick={logout}>
-        <i
-          className="fa fa-sign-out"
-          style={{ marginRight: '0.5rem' }}
-          aria-hidden="true"
-        />
+        <SignOutIcon aria-hidden="true" style={iconStyle} />
         Logout
       </DropdownItem>
     </Dropdown>
