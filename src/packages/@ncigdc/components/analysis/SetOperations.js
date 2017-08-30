@@ -421,7 +421,17 @@ export default compose(
       </div>
       <Column>
         <Row>
-          <Venn data={setIds} getFillColor={d => null} />
+          <Venn
+            data={setIds}
+            ops={ops}
+            onClick={d => {
+              selected[selected.has(d.op) ? 'delete' : 'add'](d.op);
+              setSelected(selected);
+            }}
+            getFillColor={d => {
+              return selected.has(d.op) ? 'red' : null;
+            }}
+          />
           <Column spacing="2rem">
             <EntityPageHorizontalTable
               data={setData.map(([setId, label], i) => {

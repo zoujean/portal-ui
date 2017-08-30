@@ -14,6 +14,7 @@ export default compose(
 )(
   ({
     data,
+    ops,
     width = 500,
     height = 500,
     margin = 5,
@@ -28,6 +29,7 @@ export default compose(
     radius = 100,
     factor = 0.6,
     getFillColor = _ => {},
+    onClick = _ => {},
   }) => {
     const cy = 0.3 * height;
     const cx = 0.5 * width;
@@ -65,44 +67,47 @@ export default compose(
 
     // outside circles 1 : 1
 
-    data.forEach((d, i) =>
-      svg
-        .append('svg:rect')
-        .attr('clip-path', `url(#circle_${i})`)
-        .attr('class', 'inner')
-        .attr('width', width)
-        .attr('height', height)
-        .style('fill', d => getFillColor(d) || colors[0]),
-    );
+    ops
+      .slice(4)
+      .forEach((d, i) =>
+        svg
+          .append('svg:rect')
+          .attr('clip-path', `url(#circle_${i})`)
+          .attr('class', 'inner')
+          .attr('width', width)
+          .attr('height', height)
+          .style('fill', () => getFillColor(d) || colors[0])
+          .on('click', () => onClick(d)),
+      );
 
-    data.forEach((d, i) =>
-      svg
-        .append('svg:g')
-        .attr('clip-path', `url(#circle_${i})`)
-        .append('svg:rect')
-        .attr('class', 'inner')
-        .attr('clip-path', `url(#circle_${(i + 1) % data.length})`)
-        .attr('width', width)
-        .attr('height', height)
-        .style('fill', d => getFillColor(d) || colors[1]),
-    );
-
-    let inner = svg
-      .append('svg:g')
-      .attr('clip-path', `url(#circle_${data.length - 1})`);
-
-    _.range(data.length - 1, 0).forEach(
-      x =>
-        (inner = inner.append('svg:g').attr('clip-path', `url(#circle_${x})`)),
-    );
-
-    inner
-      .append('svg:rect')
-      .attr('class', 'inner')
-      .attr('clip-path', `url(#circle_${0})`)
-      .attr('width', width)
-      .attr('height', height)
-      .style('fill', d => getFillColor(d) || colors[2]);
+    // data.forEach((d, i) =>
+    //   svg
+    //     .append('svg:g')
+    //     .attr('clip-path', `url(#circle_${i})`)
+    //     .append('svg:rect')
+    //     .attr('class', 'inner')
+    //     .attr('clip-path', `url(#circle_${(i + 1) % data.length})`)
+    //     .attr('width', width)
+    //     .attr('height', height)
+    //     .style('fill', d => getFillColor(d) || colors[1]),
+    // );
+    //
+    // let inner = svg
+    //   .append('svg:g')
+    //   .attr('clip-path', `url(#circle_${data.length - 1})`);
+    //
+    // _.range(data.length - 1, 0).forEach(
+    //   x =>
+    //     (inner = inner.append('svg:g').attr('clip-path', `url(#circle_${x})`)),
+    // );
+    //
+    // inner
+    //   .append('svg:rect')
+    //   .attr('class', 'inner')
+    //   .attr('clip-path', `url(#circle_${0})`)
+    //   .attr('width', width)
+    //   .attr('height', height)
+    //   .style('fill', d => getFillColor(d) || colors[2]);
 
     // 2 intersections
     // svg
