@@ -6,7 +6,11 @@ import _ from 'lodash';
 import { compose, setDisplayName } from 'recompose';
 import { withTooltip } from '@ncigdc/uikit/Tooltip';
 
-const colors = ['rgb(141, 199, 217)', 'rgb(98, 175, 199)', 'rgb(52, 132, 157)'];
+const colors = [
+  'rgb(220, 238, 244)',
+  'rgb(195, 232, 244)',
+  'rgb(165, 218, 235)',
+];
 
 export default compose(
   setDisplayName('Venn'),
@@ -76,38 +80,42 @@ export default compose(
           .attr('class', 'inner')
           .attr('width', width)
           .attr('height', height)
-          .style('fill', () => getFillColor(d) || colors[0])
+          .style('fill', () => getFillColor(d, 0) || colors[0])
           .on('click', () => onClick(d)),
       );
 
-    // data.forEach((d, i) =>
-    //   svg
-    //     .append('svg:g')
-    //     .attr('clip-path', `url(#circle_${i})`)
-    //     .append('svg:rect')
-    //     .attr('class', 'inner')
-    //     .attr('clip-path', `url(#circle_${(i + 1) % data.length})`)
-    //     .attr('width', width)
-    //     .attr('height', height)
-    //     .style('fill', d => getFillColor(d) || colors[1]),
-    // );
-    //
-    // let inner = svg
-    //   .append('svg:g')
-    //   .attr('clip-path', `url(#circle_${data.length - 1})`);
-    //
-    // _.range(data.length - 1, 0).forEach(
-    //   x =>
-    //     (inner = inner.append('svg:g').attr('clip-path', `url(#circle_${x})`)),
-    // );
-    //
-    // inner
-    //   .append('svg:rect')
-    //   .attr('class', 'inner')
-    //   .attr('clip-path', `url(#circle_${0})`)
-    //   .attr('width', width)
-    //   .attr('height', height)
-    //   .style('fill', d => getFillColor(d) || colors[2]);
+    ops
+      .slice(1, 4)
+      .forEach((d, i) =>
+        svg
+          .append('svg:g')
+          .attr('clip-path', `url(#circle_${i})`)
+          .append('svg:rect')
+          .attr('class', 'inner')
+          .attr('clip-path', `url(#circle_${(i + 1) % data.length})`)
+          .attr('width', width)
+          .attr('height', height)
+          .style('fill', () => getFillColor(d, 1) || colors[1])
+          .on('click', () => onClick(d)),
+      );
+
+    let inner = svg
+      .append('svg:g')
+      .attr('clip-path', `url(#circle_${data.length - 1})`);
+
+    _.range(data.length - 1, 0).forEach(
+      x =>
+        (inner = inner.append('svg:g').attr('clip-path', `url(#circle_${x})`)),
+    );
+
+    inner
+      .append('svg:rect')
+      .attr('class', 'inner')
+      .attr('clip-path', `url(#circle_${0})`)
+      .attr('width', width)
+      .attr('height', height)
+      .on('click', () => onClick(ops[0]))
+      .style('fill', () => getFillColor(ops[0], 2) || colors[2]);
 
     // 2 intersections
     // svg

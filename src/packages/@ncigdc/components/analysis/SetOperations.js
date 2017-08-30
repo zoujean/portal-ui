@@ -15,6 +15,8 @@ const countComponents = {
   gene: GeneCount,
 };
 
+const colors = ['rgb(165, 217, 141)', 'rgb(163, 199, 97)', 'rgb(111, 157, 52)'];
+
 export default compose(
   connect(s => ({ sets: s.sets })),
   withState('selected', 'setSelected', new Set()),
@@ -428,8 +430,8 @@ export default compose(
               selected[selected.has(d.op) ? 'delete' : 'add'](d.op);
               setSelected(selected);
             }}
-            getFillColor={d => {
-              return selected.has(d.op) ? 'red' : null;
+            getFillColor={(d, i) => {
+              return selected.has(d.op) ? colors[i] : null;
             }}
           />
           <Column spacing="2rem">
