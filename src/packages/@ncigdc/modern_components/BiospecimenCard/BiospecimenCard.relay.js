@@ -71,6 +71,30 @@ export default (Component: ReactClass<*>) =>
                                 freezing_method
                                 preservation_method
                                 days_to_collection
+                                slides {
+                                  hits(first: 99) {
+                                    total
+                                    edges {
+                                      node {
+                                        submitter_id
+                                        slide_id
+                                        percent_tumor_nuclei
+                                        percent_monocyte_infiltration
+                                        percent_normal_cells
+                                        percent_stromal_cells
+                                        percent_eosinophil_infiltration
+                                        percent_lymphocyte_infiltration
+                                        percent_neutrophil_infiltration
+                                        section_location
+                                        percent_granulocyte_infiltration
+                                        percent_necrosis
+                                        percent_inflam_infiltration
+                                        number_proliferating_cells
+                                        percent_tumor_cells
+                                      }
+                                    }
+                                  }
+                                }
                                 portions {
                                   hits(first: 99) {
                                     total

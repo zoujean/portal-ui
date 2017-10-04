@@ -3,8 +3,8 @@
  *   relay-compiler
  *
  * @providesModule BiospecimenCard_relayQuery.graphql
- * @generated SignedSource<<ac363d5a4f710968325b183638d747b6>>
- * @relayHash f000fbb0a8a02b8c17958ef9eb3bafd8
+ * @generated SignedSource<<cdef489c8aee38a934abbca6bc58f3c5>>
+ * @relayHash 23f4cb9f506e9a75022ed7fe0627d745
  * @flow
  * @nogrep
  */
@@ -751,7 +751,7 @@ const batch /*: ConcreteBatch*/ = {
                                                                 "kind": "LinkedField",
                                                                 "alias": null,
                                                                 "args": null,
-                                                                "concreteType": "Slides",
+                                                                "concreteType": "PortionSlides",
                                                                 "name": "slides",
                                                                 "plural": false,
                                                                 "selections": [
@@ -766,7 +766,7 @@ const batch /*: ConcreteBatch*/ = {
                                                                         "type": "Int"
                                                                       }
                                                                     ],
-                                                                    "concreteType": "SlideConnection",
+                                                                    "concreteType": "PortionSlideConnection",
                                                                     "name": "hits",
                                                                     "plural": false,
                                                                     "selections": [
@@ -781,7 +781,7 @@ const batch /*: ConcreteBatch*/ = {
                                                                         "kind": "LinkedField",
                                                                         "alias": null,
                                                                         "args": null,
-                                                                        "concreteType": "SlideEdge",
+                                                                        "concreteType": "PortionSlideEdge",
                                                                         "name": "edges",
                                                                         "plural": true,
                                                                         "selections": [
@@ -789,7 +789,7 @@ const batch /*: ConcreteBatch*/ = {
                                                                             "kind": "LinkedField",
                                                                             "alias": null,
                                                                             "args": null,
-                                                                            "concreteType": "Slide",
+                                                                            "concreteType": "PortionSlide",
                                                                             "name": "node",
                                                                             "plural": false,
                                                                             "selections": [
@@ -1574,7 +1574,7 @@ const batch /*: ConcreteBatch*/ = {
                                                                 "kind": "LinkedField",
                                                                 "alias": null,
                                                                 "args": null,
-                                                                "concreteType": "Slides",
+                                                                "concreteType": "PortionSlides",
                                                                 "name": "slides",
                                                                 "plural": false,
                                                                 "selections": [
@@ -1589,7 +1589,7 @@ const batch /*: ConcreteBatch*/ = {
                                                                         "type": "Int"
                                                                       }
                                                                     ],
-                                                                    "concreteType": "SlideConnection",
+                                                                    "concreteType": "PortionSlideConnection",
                                                                     "name": "hits",
                                                                     "plural": false,
                                                                     "selections": [
@@ -1604,7 +1604,7 @@ const batch /*: ConcreteBatch*/ = {
                                                                         "kind": "LinkedField",
                                                                         "alias": null,
                                                                         "args": null,
-                                                                        "concreteType": "SlideEdge",
+                                                                        "concreteType": "PortionSlideEdge",
                                                                         "name": "edges",
                                                                         "plural": true,
                                                                         "selections": [
@@ -1612,7 +1612,7 @@ const batch /*: ConcreteBatch*/ = {
                                                                             "kind": "LinkedField",
                                                                             "alias": null,
                                                                             "args": null,
-                                                                            "concreteType": "Slide",
+                                                                            "concreteType": "PortionSlide",
                                                                             "name": "node",
                                                                             "plural": false,
                                                                             "selections": [
