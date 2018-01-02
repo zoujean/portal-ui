@@ -2,6 +2,7 @@
 import { replaceFilters, addInFilters } from '@ncigdc/utils/filters';
 import memoize from 'memoizee';
 import { fetchApi, fetchApiChunked } from '@ncigdc/utils/ajax';
+import { head } from 'lodash';
 
 async function getGenes({
   filters,
@@ -21,19 +22,73 @@ async function getGenes({
 }
 
 async function getOccurrences({ filters }): Promise<Object> {
-  return fetchApiChunked('ssm_occurrences', {
+  return fetchApi('graphql', {
     headers: { 'Content-Type': 'application/json' },
+    method: 'post',
     body: {
-      filters,
-      fields: [
-        'ssm.consequence.transcript.consequence_type',
-        'ssm.consequence.transcript.annotation.vep_impact',
-        'ssm.consequence.transcript.gene.gene_id',
-        'ssm.ssm_id',
-        'case.case_id',
-      ].join(),
+      variables: {
+        filters,
+      },
+      query: `
+      query q($filters: FiltersArgument) {
+          explore {
+             ssms {
+              hits(filters: $filters) {
+                edges {
+                  node {
+                    ssm_id
+                    occurrence {
+                      hits {
+                        edges {
+                          node {
+                            case {
+                              case_id
+                            }
+                          }
+                        }
+                      }
+                    }
+                    consequence {
+                      hits(filters: $filters) {
+                        edges {
+                          node {
+                            transcript {
+                              is_canonical
+                              consequence_type
+                              gene {
+                                gene_id
+                              }
+                              annotation {
+                                vep_impact
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
     },
   });
+  //return fetchApiChunked('ssm_occurrences', {
+  //headers: { 'Content-Type': 'application/json' },
+  //body: {
+  //filters,
+  //fields: [
+  //'ssm.consequence.transcript.consequence_type',
+  //'ssm.consequence.transcript.annotation.vep_impact',
+  //'ssm.consequence.transcript.gene.gene_id',
+  //'ssm.consequence.transcript.is_canonical',
+  //'ssm.ssm_id',
+  //'case.case_id',
+  //].join(),
+  //},
+  //});
 }
 
 async function getCases({
@@ -135,7 +190,7 @@ async function getQueries({
         content: [
           {
             op: 'in',
-            content: { field: 'cases.case_id', value: caseIds },
+            content: { field: 'ssms.occurrence.case.case_id', value: caseIds },
           },
         ],
       },
@@ -147,7 +202,7 @@ async function getQueries({
         {
           op: 'in',
           content: {
-            field: 'ssm.consequence.transcript.is_canonical',
+            field: 'ssms.consequence.transcript.is_canonical',
             value: ['true'],
           },
         },
@@ -155,10 +210,27 @@ async function getQueries({
       ],
     },
   );
-  const { data: { hits: occurrences } } = await getOccurrences({
+  const { data } = await getOccurrences({
     filters: occurrenceFilters,
   });
 
+  const occurrences = data.explore.ssms.hits.edges.map(({ node }) => ({
+    case: {
+      case_id: head(
+        node.occurrence.hits.edges.map(
+          occurrence => occurrence.node.case.case_id,
+        ),
+      ),
+    },
+    ssm: {
+      ssm_id: node.ssm_id,
+      consequence: node.consequence.hits.edges.map(consequence => ({
+        transcript: consequence.node.transcript,
+      })),
+    },
+  }));
+  console.log(occurrences);
+  debugger;
   return {
     genes,
     occurrences,
