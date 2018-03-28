@@ -253,18 +253,20 @@ const casesTableModel = [
     {
       name: 'Slides',
       id: 'slides',
+      field:
+        'summary.experimental_strategies.experimental_strategy,summary.experimental_strategies.file_count',
       sortable: false,
-      downloadable: false,
+      downloadable: true,
       hidden: false,
       th: () => <Th rowSpan="2">Slides</Th>,
-      td: ({ node }) => (
-        <Td style={{ textAlign: 'center' }}>
-          <RepositorySlideCount
-            filters={makeFilter([
-              { field: 'cases.case_id', value: node.case_id },
-            ])}
-          >
-            {count => [
+      td: ({ node }) => {
+        let count = node.summary.experimental_strategies.find(
+          s => s.experimental_strategy === 'Tissue Slide',
+        );
+        count = count ? count.file_count : 0;
+        return (
+          <Td style={{ textAlign: 'center' }}>
+            {[
               <ForTsvExport>{count}</ForTsvExport>,
               count ? (
                 <Tooltip Component="View Slide Image">
@@ -283,9 +285,9 @@ const casesTableModel = [
                 <Tooltip Component="No slide images to view.">--</Tooltip>
               ),
             ]}
-          </RepositorySlideCount>
-        </Td>
-      ),
+          </Td>
+        );
+      },
     },
   ]),
   {
