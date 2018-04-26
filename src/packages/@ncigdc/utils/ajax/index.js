@@ -22,10 +22,11 @@ export function fetchAuth(options: { endpoint: string }): Object {
 
 // $FlowIgnore
 export const fetchApi = (endpoint, opts = {}) => {
+  let { user } = window.store.getState().auth;
   const clonedOptions = {
     ...opts,
     ...(opts.body && {
-      body: JSON.stringify(opts.body),
+      body: JSON.stringify({ ...opts.body, user }),
       method: 'POST',
     }),
   };
