@@ -54,7 +54,7 @@ function fetchQuery(operation, variables, cacheConfig) {
   pendingCache[hash] = true;
 
   return fetch(urlJoin(API, `graphql/${componentName}?hash=${hash}`), {
-    ...(IS_AUTH_PORTAL ? { credentials: 'include' } : {}),
+    ...(IS_AUTH_PORTAL !== 'false' ? { credentials: 'include' } : {}),
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ function fetchQuery(operation, variables, cacheConfig) {
         delete pendingCache[hash];
       }
 
-      if (IS_AUTH_PORTAL) {
+      if (IS_AUTH_PORTAL !== 'false') {
         window.intersection = json.intersection;
 
         let tries = 20;

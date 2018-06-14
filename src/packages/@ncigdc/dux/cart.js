@@ -339,7 +339,7 @@ export const fetchCartFiles = async (filters, size) => {
 
   return await fetch(urlJoin(API, `graphql/cart?hash=${hash}`), {
     ...DEFAULTS,
-    ...(IS_AUTH_PORTAL ? { credentials: 'include' } : {}),
+    ...(IS_AUTH_PORTAL !== 'false' ? { credentials: 'include' } : {}),
     body,
   })
     .then(response =>

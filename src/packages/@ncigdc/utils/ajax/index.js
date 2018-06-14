@@ -19,7 +19,7 @@ export function fetchAuth(options: { endpoint: string }): Object {
   return {
     [CALL_API]: {
       ...DEFAULTS,
-      ...(IS_AUTH_PORTAL
+      ...(IS_AUTH_PORTAL !== 'false'
         ? {
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },

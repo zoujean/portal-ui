@@ -74,7 +74,7 @@ const UserDropdown = connect(state => ({
         </NavLink>
       }
     >
-      {AWG && (
+      {AWG !== 'false' && (
         <DropdownItemStyled
           onClick={() => dispatch(setModal(<UserProfileModal />))}
         >

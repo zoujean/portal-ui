@@ -81,7 +81,7 @@ const PortalContainer = ({
   >
     <SkipLink href="#skip">Skip to Main Content</SkipLink>
     <ProgressContainer />
-    {AWG ? <AwgHeader /> : <Header />}
+    {AWG !== 'false' ? <AwgHeader /> : <Header />}
     <div
       id="skip"
       role="main"
@@ -92,7 +92,7 @@ const PortalContainer = ({
         transition: 'padding 0.25s ease',
       }}
     >
-      {AWG ? <AwgRoutes /> : <Routes />}
+      {AWG !== 'false' ? <AwgRoutes /> : <Routes />}
     </div>
     <Footer />
     <RelayLoadingContainer />
