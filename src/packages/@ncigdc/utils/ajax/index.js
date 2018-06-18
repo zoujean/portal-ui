@@ -16,7 +16,7 @@ const DEFAULTS = {
 };
 
 export function fetchAuth(options: { endpoint: string }): Object {
-  return {
+  const apiCall = {
     [CALL_API]: {
       ...DEFAULTS,
       ...(IS_AUTH_PORTAL !== 'false'
@@ -29,6 +29,8 @@ export function fetchAuth(options: { endpoint: string }): Object {
       endpoint: urlJoin(AUTH, options.endpoint),
     },
   };
+  console.log('auth call: ', apiCall);
+  return apiCall;
 }
 
 // $FlowIgnore
