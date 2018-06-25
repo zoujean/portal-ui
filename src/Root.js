@@ -78,21 +78,25 @@ Relay.injectNetworkLayer(
                 }
                 if (!(json.fence_projects || []).length) {
                   clear();
-                  console.log('no fence projects: ', json.fence_projects);
+                  console.log(
+                    'no fence projects: ',
+                    json.fence_projects,
+                    tries,
+                  );
                   window.location.href = '/login?error=no_fence_projects';
                   return;
                 }
 
                 if (!(json.nih_projects || []).length) {
                   clear();
-                  console.log('no nih projects: ', json.nih_projects);
+                  console.log('no nih projects: ', json.nih_projects, tries);
                   window.location.href = '/login?error=no_nih_projects';
                   return;
                 }
 
                 if (!(json.intersection || []).length) {
                   clear();
-                  console.log('no intersection: ', json.intersection);
+                  console.log('no intersection: ', json.intersection, tries);
                   window.location.href = '/login?error=no_intersection';
                   return;
                 }
