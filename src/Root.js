@@ -158,9 +158,11 @@ const Root = (props: mixed) => (
                     return (window.location.href = '/login?error=timeout');
                   }
                   if (failed) {
+                    console.log('failed, redirecting: ', failed);
                     return <Redirect to="/login" />;
                   }
-                  if (user)
+                  if (user) {
+                    console.log('has user: ', user);
                     return (
                       <Relay.Renderer
                         Container={Container}
@@ -168,6 +170,8 @@ const Root = (props: mixed) => (
                         environment={Relay.Store}
                       />
                     );
+                  }
+
                   return null;
                 }}
               </HasUser>
