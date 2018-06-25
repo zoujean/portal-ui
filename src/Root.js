@@ -78,18 +78,21 @@ Relay.injectNetworkLayer(
                 }
                 if (!(json.fence_projects || []).length) {
                   clear();
+                  console.log('no fence projects: ', json.fence_projects);
                   window.location.href = '/login?error=no_fence_projects';
                   return;
                 }
 
                 if (!(json.nih_projects || []).length) {
                   clear();
+                  console.log('no nih projects: ', json.nih_projects);
                   window.location.href = '/login?error=no_nih_projects';
                   return;
                 }
 
                 if (!(json.intersection || []).length) {
                   clear();
+                  console.log('no intersection: ', json.intersection);
                   window.location.href = '/login?error=no_intersection';
                   return;
                 }
@@ -151,12 +154,12 @@ const Root = (props: mixed) => (
               !window.location.pathname.includes('/login') ? (
               <HasUser>
                 {({ user, failed, error }) => {
-                  if (
-                    failed &&
-                    error.message === 'Session timed out or not authorized'
-                  ) {
-                    return (window.location.href = '/login?error=timeout');
-                  }
+                  // if (
+                  //   failed &&
+                  //   error.message === 'Session timed out or not authorized'
+                  // ) {
+                  //   return (window.location.href = '/login?error=timeout');
+                  // }
                   if (failed) {
                     console.log('failed, redirecting: ', failed);
                     return <Redirect to="/login" />;
