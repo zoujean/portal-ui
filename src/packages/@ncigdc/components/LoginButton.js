@@ -25,9 +25,11 @@ const openAuthWindow = ({
   if (navigator.cookieEnabled) {
     const win = open(winUrl, 'Auth', winStyle);
     window.loginPopup = win;
-    console.log('is first, top? ', first);
+    console.log('is first, top? ', first, 'win: ', win);
     const interval = setInterval(() => {
+      console.log('setting interval');
       try {
+        console.log('try clause');
         // Because the login window redirects to a different domain, checking
         // win.document in IE11 throws exceptions right away, which prevents
         // #clearInterval from ever getting called in this block.
