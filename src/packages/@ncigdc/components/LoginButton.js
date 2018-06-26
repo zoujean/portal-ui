@@ -25,7 +25,7 @@ const openAuthWindow = ({
   if (navigator.cookieEnabled) {
     const win = open(winUrl, 'Auth', winStyle);
     window.loginPopup = win;
-
+    console.log('is first, top? ', first);
     const interval = setInterval(() => {
       try {
         // Because the login window redirects to a different domain, checking
@@ -33,21 +33,29 @@ const openAuthWindow = ({
         // #clearInterval from ever getting called in this block.
         // Must check this block (if the login window has been closed) first!
         if (win.closed) {
+          console.log('window closed: ', win, 'first: ', first);
           clearInterval(interval);
         } else if (
           win.document.URL.includes(location.origin) &&
           !win.document.URL.includes('auth')
         ) {
+          console.log('window should be closing', win, ' first: ', first);
           win.close();
-
+          console.log('window is closed');
           setTimeout(() => {
+            console.log('setting first timeout: ', interval);
             clearInterval(interval);
             setTimeout(() => {
+              console.log('setting second timeout', interval);
               // fetch authpublic user
               if (first) {
+                console.log('is first: ', first);
                 first = false;
+                console.log('fetching user from authpublic');
                 dispatch(fetchUser());
+                console.log('user: ', user);
                 // login with fence
+                console.log('open auth window for fence');
                 openAuthWindow({
                   pathname,
                   dispatch,
@@ -69,6 +77,7 @@ const openAuthWindow = ({
       }
     }, pollInterval);
   } else {
+    console.log('need to allow cookies');
     // show cookie needs to be enabled message
   }
 };
