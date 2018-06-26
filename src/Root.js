@@ -8,17 +8,16 @@ import md5 from 'blueimp-md5';
 import urlJoin from 'url-join';
 import { RelayNetworkLayer, urlMiddleware } from 'react-relay-network-layer';
 import retryMiddleware from '@ncigdc/utils/retryMiddleware';
-
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import { viewerQuery } from '@ncigdc/routes/queries';
 import Login from '@ncigdc/routes/Login';
 import Container from './Portal';
-import { API, IS_AUTH_PORTAL } from '@ncigdc/utils/constants';
+import { API } from '@ncigdc/utils/constants';
 import { clear } from '@ncigdc/utils/cookies';
 import { Provider, connect } from 'react-redux';
 import setupStore from '@ncigdc/dux';
 import { fetchApiVersionInfo } from '@ncigdc/dux/versionInfo';
-import { fetchUser, forceLogout } from '@ncigdc/dux/auth';
+import { fetchUser } from '@ncigdc/dux/auth';
 
 Relay.injectNetworkLayer(
   new RelayNetworkLayer([
@@ -48,50 +47,52 @@ Relay.injectNetworkLayer(
           ].join(':'),
         );
 
-      if (IS_AUTH_PORTAL) {
-        req.credentials = 'include';
-      }
+      req.credentials = 'include';
 
       let { user } = window.store.getState().auth;
+      console.log('root user: ', user);
       let parsedBody = JSON.parse(req.body);
-      req.body = JSON.stringify(parsedBody);
+      let body = { ...parsedBody, user };
+      req.body = JSON.stringify(body);
 
       req.url = `${url}?hash=${hash}`;
 
       return next(req).then(res => {
         let { json } = res;
-        // if (IS_AUTH_PORTAL) {
+
+        window.intersection = json.intersection;
+
         let tries = 20;
         let id = setInterval(() => {
           let { user } = window.store.getState().auth;
 
+          // console.log('tries', tries);
+          console.log('/graphql', user, json);
+
           if (user) {
             if (
-              !(json.fence_projects || []).length &&
-              !(json.nih_projects || []).length &&
-              !(json.intersection || []).length
+              !json.fence_projects.length &&
+              !json.nih_projects.length &&
+              !json.intersection.length
             ) {
               clear();
               window.location.href = '/login?error=timeout';
               return;
             }
-            if (!(json.fence_projects || []).length) {
+            if (!json.fence_projects.length) {
               clear();
-              console.log('no fence projects: ', json.fence_projects, tries);
               window.location.href = '/login?error=no_fence_projects';
               return;
             }
 
-            if (!(json.nih_projects || []).length) {
+            if (!json.nih_projects.length) {
               clear();
-              console.log('no nih projects: ', json.nih_projects, tries);
               window.location.href = '/login?error=no_nih_projects';
               return;
             }
 
-            if (!(json.intersection || []).length) {
+            if (!json.intersection.length) {
               clear();
-              console.log('no intersection: ', json.intersection, tries);
               window.location.href = '/login?error=no_intersection';
               return;
             }
@@ -101,16 +102,9 @@ Relay.injectNetworkLayer(
 
           if (!tries) clearInterval(id);
         }, 500);
-        // }
+
         return res;
       });
-      // .catch(err => {
-      //   if (err.fetchResponse.status === 403) {
-      //     if (user) {
-      //       store.dispatch(forceLogout());
-      //     }
-      //   }
-      // });
     },
   ]),
 );
@@ -146,43 +140,26 @@ const Root = (props: mixed) => (
   <Router>
     <Provider store={store}>
       <React.Fragment>
-        {IS_AUTH_PORTAL && <Route exact path="/login" component={Login} />}
+        <Route exact path="/login" component={Login} />
         <Route
           render={props => {
-            return IS_AUTH_PORTAL &&
-              !window.location.pathname.includes('/login') ? (
-              <HasUser>
-                {({ user, failed, error }) => {
-                  // if (
-                  //   failed &&
-                  //   error.message === 'Session timed out or not authorized'
-                  // ) {
-                  //   return (window.location.href = '/login?error=timeout');
-                  // }
-                  if (failed) {
-                    console.log('failed, redirecting: ', failed);
-                    return <Redirect to="/login" />;
-                  }
-                  if (user) {
-                    console.log('has user: ', user);
-                    return (
-                      <Relay.Renderer
-                        Container={Container}
-                        queryConfig={new RelayRoute(props)}
-                        environment={Relay.Store}
-                      />
-                    );
-                  }
-
-                  return null;
-                }}
-              </HasUser>
-            ) : (
-              <Relay.Renderer
-                Container={Container}
-                queryConfig={new RelayRoute(props)}
-                environment={Relay.Store}
-              />
+            return (
+              !window.location.pathname.includes('/login') && (
+                <HasUser>
+                  {({ user, failed, error }) => {
+                    if (failed) return <Redirect to="/login" />;
+                    if (user)
+                      return (
+                        <Relay.Renderer
+                          Container={Container}
+                          queryConfig={new RelayRoute(props)}
+                          environment={Relay.Store}
+                        />
+                      );
+                    return null;
+                  }}
+                </HasUser>
+              )
             );
           }}
         />
