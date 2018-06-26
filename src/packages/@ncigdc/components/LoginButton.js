@@ -73,6 +73,8 @@ const openAuthWindow = ({
               }
             }, pollInterval);
           }, pollInterval);
+        } else {
+          console.log('got here: ', win);
         }
       } catch (err) {
         // console.log('Error while monitoring the Login window: ', err);
