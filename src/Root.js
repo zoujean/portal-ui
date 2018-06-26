@@ -20,6 +20,8 @@ import setupStore from '@ncigdc/dux';
 import { fetchApiVersionInfo } from '@ncigdc/dux/versionInfo';
 import { fetchUser, forceLogout } from '@ncigdc/dux/auth';
 
+let tries = 20;
+
 Relay.injectNetworkLayer(
   new RelayNetworkLayer([
     urlMiddleware({
@@ -61,7 +63,6 @@ Relay.injectNetworkLayer(
       return next(req)
         .then(res => {
           let { json } = res;
-          let tries = 20;
           if (IS_AUTH_PORTAL) {
             let id = setInterval(() => {
               let { user } = window.store.getState().auth;
