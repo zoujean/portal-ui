@@ -20,8 +20,6 @@ import setupStore from '@ncigdc/dux';
 import { fetchApiVersionInfo } from '@ncigdc/dux/versionInfo';
 import { fetchUser, forceLogout } from '@ncigdc/dux/auth';
 
-let tries = 20;
-
 Relay.injectNetworkLayer(
   new RelayNetworkLayer([
     urlMiddleware({
@@ -50,8 +48,6 @@ Relay.injectNetworkLayer(
           ].join(':'),
         );
 
-      req.url = `${url}?hash=${hash}`;
-
       if (IS_AUTH_PORTAL) {
         req.credentials = 'include';
       }
@@ -60,63 +56,61 @@ Relay.injectNetworkLayer(
       let parsedBody = JSON.parse(req.body);
       req.body = JSON.stringify(parsedBody);
 
-      return next(req)
-        .then(res => {
-          let { json } = res;
-          if (IS_AUTH_PORTAL) {
-            let id = setInterval(() => {
-              let { user } = window.store.getState().auth;
+      req.url = `${url}?hash=${hash}`;
 
-              if (user) {
-                if (
-                  !(json.fence_projects || []).length &&
-                  !(json.nih_projects || []).length &&
-                  !(json.intersection || []).length
-                ) {
-                  clear();
-                  window.location.href = '/login?error=timeout';
-                  return;
-                }
-                if (!(json.fence_projects || []).length) {
-                  clear();
-                  console.log(
-                    'no fence projects: ',
-                    json.fence_projects,
-                    tries,
-                  );
-                  window.location.href = '/login?error=no_fence_projects';
-                  return;
-                }
+      return next(req).then(res => {
+        let { json } = res;
+        // if (IS_AUTH_PORTAL) {
+        let tries = 20;
+        let id = setInterval(() => {
+          let { user } = window.store.getState().auth;
 
-                if (!(json.nih_projects || []).length) {
-                  clear();
-                  console.log('no nih projects: ', json.nih_projects, tries);
-                  window.location.href = '/login?error=no_nih_projects';
-                  return;
-                }
+          if (user) {
+            if (
+              !(json.fence_projects || []).length &&
+              !(json.nih_projects || []).length &&
+              !(json.intersection || []).length
+            ) {
+              clear();
+              window.location.href = '/login?error=timeout';
+              return;
+            }
+            if (!(json.fence_projects || []).length) {
+              clear();
+              console.log('no fence projects: ', json.fence_projects, tries);
+              window.location.href = '/login?error=no_fence_projects';
+              return;
+            }
 
-                if (!(json.intersection || []).length) {
-                  clear();
-                  console.log('no intersection: ', json.intersection, tries);
-                  window.location.href = '/login?error=no_intersection';
-                  return;
-                }
-              }
+            if (!(json.nih_projects || []).length) {
+              clear();
+              console.log('no nih projects: ', json.nih_projects, tries);
+              window.location.href = '/login?error=no_nih_projects';
+              return;
+            }
 
-              tries--;
-
-              if (!tries) clearInterval(id);
-            }, 500);
-          }
-          return res;
-        })
-        .catch(err => {
-          if (err.fetchResponse.status === 403) {
-            if (user) {
-              store.dispatch(forceLogout());
+            if (!(json.intersection || []).length) {
+              clear();
+              console.log('no intersection: ', json.intersection, tries);
+              window.location.href = '/login?error=no_intersection';
+              return;
             }
           }
-        });
+
+          tries--;
+
+          if (!tries) clearInterval(id);
+        }, 500);
+        // }
+        return res;
+      });
+      // .catch(err => {
+      //   if (err.fetchResponse.status === 403) {
+      //     if (user) {
+      //       store.dispatch(forceLogout());
+      //     }
+      //   }
+      // });
     },
   ]),
 );
