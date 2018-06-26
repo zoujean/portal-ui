@@ -38,8 +38,10 @@ const openAuthWindow = ({
           console.log('window closed: ', win, 'first: ', first);
           clearInterval(interval);
         } else if (
-          win.document.URL.includes(location.origin) &&
-          !win.document.URL.includes('auth')
+          win.location.href.includes(location.origin) &&
+          !win.location.href.includes('auth')
+          // win.document.URL.includes(location.origin) &&
+          // !win.document.URL.includes('auth')
         ) {
           console.log('window should be closing', win, ' first: ', first);
           win.close();
@@ -77,7 +79,7 @@ const openAuthWindow = ({
           console.log('got here: ', win);
         }
       } catch (err) {
-        // console.log('Error while monitoring the Login window: ', err);
+        console.log('Error while monitoring the Login window: ', err);
       }
     }, pollInterval);
   } else {
