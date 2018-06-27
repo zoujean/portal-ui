@@ -36,7 +36,6 @@ const openAuthWindow = ({
         // Must check this block (if the login window has been closed) first!
         if (win.closed) {
           console.log('window closed: ', win, 'first: ', first);
-          console.log('window closed win location: ', win.location.href);
           clearInterval(interval);
         } else if (
           win.location.href.includes(location.origin) &&
