@@ -29,7 +29,7 @@ const openAuthWindow = ({
     const interval = setInterval(() => {
       console.log('setting interval');
       try {
-        console.log('try clause', win);
+        console.log('try clause');
         // Because the login window redirects to a different domain, checking
         // win.document in IE11 throws exceptions right away, which prevents
         // #clearInterval from ever getting called in this block.
