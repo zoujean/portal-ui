@@ -30,15 +30,12 @@ const openAuthWindow = ({
       console.log('setting interval');
       try {
         console.log('try clause');
-        console.log('try clause href: ', win.location.href);
-        console.log('try clause window href: ', window.location.href);
         // Because the login window redirects to a different domain, checking
         // win.document in IE11 throws exceptions right away, which prevents
         // #clearInterval from ever getting called in this block.
         // Must check this block (if the login window has been closed) first!
         if (win.closed) {
           console.log('window closed: ', win, 'first: ', first);
-          console.log('window closed href: ', win.location.href);
           clearInterval(interval);
         } else if (
           win.location.href.includes(location.origin) &&
@@ -86,7 +83,6 @@ const openAuthWindow = ({
       }
     }, pollInterval);
   } else {
-    console.log('need to allow cookies');
     // show cookie needs to be enabled message
   }
 };
