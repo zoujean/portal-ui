@@ -75,8 +75,7 @@
     "redux-api-middleware": "2.0.0-beta.2",
     "redux-persist": "4.8.0",
     "redux-thunk": "2.2.0",
-    "url-join": "1.1.0",
-    "zoid": "6.0.63"
+    "url-join": "1.1.0"
   },
   "devDependencies": {
     "babel-plugin-import-inspector": "2.0.0",

@@ -8,7 +8,7 @@ import { fetchUser } from '@ncigdc/dux/auth';
 import LocationSubscriber from '@ncigdc/components/LocationSubscriber';
 import styled from '@ncigdc/theme/styled';
 import { AUTH, FENCE } from '@ncigdc/utils/constants';
-import zoid from 'zoid';
+
 /*----------------------------------------------------------------------------*/
 
 let first = true;
@@ -24,11 +24,6 @@ const openAuthWindow = ({
 }) => {
   if (navigator.cookieEnabled) {
     const win = open(winUrl, 'Auth', winStyle);
-    const zoidLogin = zoid.create({
-      tag: 'zoid-login',
-      url: winUrl,
-    });
-    win.zoidPopup = zoidLogin;
     console.log('is first, top? ', first, 'win: ', win);
     const interval = setInterval(() => {
       console.log('setting interval');
