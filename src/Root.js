@@ -54,17 +54,20 @@ Relay.injectNetworkLayer(
         return next(req);
       } else {
         req.credentials = 'include';
-
+        console.log('is auth portal');
         let { user } = window.store.getState().auth;
         let parsedBody = JSON.parse(req.body);
         req.body = JSON.stringify(parsedBody);
+
+        console.log('req body: ', req.body);
         return next(req).then(res => {
           let { json } = res;
 
+          console.log('json: ', json);
           let tries = 20;
           let id = setInterval(() => {
             let { user } = window.store.getState().auth;
-
+            console.log('has user: ', user);
             if (user) {
               if (
                 !(json.fence_projects || []).length &&
