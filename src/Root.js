@@ -51,7 +51,7 @@ Relay.injectNetworkLayer(
       req.url = `${url}?hash=${hash}`;
 
       if (!IS_AUTH_PORTAL) {
-        return next(req)
+        return next(req);
       } else {
         req.credentials = 'include';
 
@@ -103,6 +103,7 @@ Relay.injectNetworkLayer(
             return res;
           })
           .catch(err => {
+            console.log('relay err: ', err);
             if (err.fetchResponse.status === 403) {
               if (user) {
                 store.dispatch(forceLogout());
