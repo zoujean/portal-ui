@@ -61,54 +61,83 @@ Relay.injectNetworkLayer(
         return next(req)
           .then(res => {
             let { json } = res;
-            if (IS_AUTH_PORTAL) {
-              let tries = 20;
-              let id = setInterval(() => {
-                let { user } = window.store.getState().auth;
 
-                if (user) {
-                  if (
-                    !(json.fence_projects || []).length &&
-                    !(json.nih_projects || []).length &&
-                    !(json.intersection || []).length
-                  ) {
-                    clear();
-                    window.location.href = '/login?error=timeout';
-                    return;
-                  }
-                  if (!(json.fence_projects || []).length) {
-                    clear();
-                    window.location.href = '/login?error=no_fence_projects';
-                    return;
-                  }
+            let tries = 20;
+            let id = setInterval(() => {
+              let { user } = window.store.getState().auth;
 
-                  if (!(json.nih_projects || []).length) {
-                    clear();
-                    window.location.href = '/login?error=no_nih_projects';
-                    return;
-                  }
-
-                  if (!(json.intersection || []).length) {
-                    clear();
-                    window.location.href = '/login?error=no_intersection';
-                    return;
-                  }
+              if (user) {
+                if (
+                  !(json.fence_projects || []).length &&
+                  !(json.nih_projects || []).length &&
+                  !(json.intersection || []).length
+                ) {
+                  clear();
+                  window.location.href = '/login?error=timeout';
+                  return;
+                }
+                if (!(json.fence_projects || []).length) {
+                  clear();
+                  window.location.href = '/login?error=no_fence_projects';
+                  return;
                 }
 
-                tries--;
+                if (!(json.nih_projects || []).length) {
+                  clear();
+                  window.location.href = '/login?error=no_nih_projects';
+                  return;
+                }
 
-                if (!tries) clearInterval(id);
-              }, 500);
-            }
+                if (!(json.intersection || []).length) {
+                  clear();
+                  window.location.href = '/login?error=no_intersection';
+                  return;
+                }
+              }
+
+              tries--;
+
+              if (!tries) clearInterval(id);
+            }, 500);
             return res;
           })
           .catch(err => {
             console.log('relay err: ', err);
-            if (err.fetchResponse.status === 403) {
+            console.log('data: ', err.data);
+            if (err.fetchResponse && err.fetchResponse.status === 403) {
               if (user) {
                 store.dispatch(forceLogout());
               }
             }
+            // } else {
+            //   let json = err.data;
+            //   if (
+            //     !(json.fence_projects || []).length &&
+            //     !(json.nih_projects || []).length &&
+            //     !(json.intersection || []).length
+            //   ) {
+            //     clear();
+            //     window.location.href = '/login?error=timeout';
+            //     return;
+            //   }
+            //   if (!(json.fence_projects || []).length) {
+            //     clear();
+            //     window.location.href = '/login?error=no_fence_projects';
+            //     return;
+            //   }
+            //
+            //   if (!(json.nih_projects || []).length) {
+            //     clear();
+            //     window.location.href = '/login?error=no_nih_projects';
+            //     return;
+            //   }
+            //
+            //   if (!(json.intersection || []).length) {
+            //     clear();
+            //     window.location.href = '/login?error=no_intersection';
+            //     return;
+            //   }
+            // }
           });
       }
     },
