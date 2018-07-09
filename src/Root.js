@@ -54,12 +54,10 @@ Relay.injectNetworkLayer(
         return next(req);
       } else {
         req.credentials = 'include';
-        console.log('is auth portal');
         let { user } = window.store.getState().auth;
         let parsedBody = JSON.parse(req.body);
         req.body = JSON.stringify(parsedBody);
 
-        console.log('req body: ', req.body);
         return next(req).then(res => {
           let { json } = res;
 
@@ -67,32 +65,35 @@ Relay.injectNetworkLayer(
           let tries = 20;
           let id = setInterval(() => {
             let { user } = window.store.getState().auth;
-            console.log('has user: ', user);
             if (user) {
+              console.log('has user: ', user);
               if (
                 !(json.fence_projects || []).length &&
                 !(json.nih_projects || []).length &&
                 !(json.intersection || []).length
               ) {
+                console.log('timeout');
                 clear();
                 window.location.href = '/login?error=timeout';
                 return;
               }
+              if (!(json.intersection || []).length) {
+                console.log('no intersection');
+                clear();
+                window.location.href = '/login?error=no_intersection';
+                return;
+              }
               if (!(json.fence_projects || []).length) {
+                console.log('no fence projects');
                 clear();
                 window.location.href = '/login?error=no_fence_projects';
                 return;
               }
 
               if (!(json.nih_projects || []).length) {
+                console.log('no nih projects');
                 clear();
                 window.location.href = '/login?error=no_nih_projects';
-                return;
-              }
-
-              if (!(json.intersection || []).length) {
-                clear();
-                window.location.href = '/login?error=no_intersection';
                 return;
               }
             }
