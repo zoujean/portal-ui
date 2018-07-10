@@ -61,7 +61,7 @@ Relay.injectNetworkLayer(
         return next(req).then(res => {
           let { json } = res;
 
-          console.log('json: ', json);
+          console.log('ROOT json: ', json);
           let tries = 20;
           let id = setInterval(() => {
             let { user } = window.store.getState().auth;
@@ -72,26 +72,26 @@ Relay.injectNetworkLayer(
                 !(json.nih_projects || []).length &&
                 !(json.intersection || []).length
               ) {
-                console.log('timeout');
+                console.log('ROOT timeout error');
                 clear();
                 window.location.href = '/login?error=timeout';
                 return;
               }
               if (!(json.intersection || []).length) {
-                console.log('no intersection');
+                console.log('ROOT no intersection');
                 clear();
                 window.location.href = '/login?error=no_intersection';
                 return;
               }
               if (!(json.fence_projects || []).length) {
-                console.log('no fence projects');
+                console.log('ROOT no fence projects');
                 clear();
                 window.location.href = '/login?error=no_fence_projects';
                 return;
               }
 
               if (!(json.nih_projects || []).length) {
-                console.log('no nih projects');
+                console.log('ROOT no nih projects');
                 clear();
                 window.location.href = '/login?error=no_nih_projects';
                 return;
