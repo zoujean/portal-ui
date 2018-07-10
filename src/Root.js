@@ -102,6 +102,10 @@ Relay.injectNetworkLayer(
 
             if (!tries) clearInterval(id);
           }, 500);
+          console.log('ROOT response: ', res);
+          if (res && res.json) {
+            console.log('RES JSON: ', res.json);
+          }
           return res;
         });
         // .catch(err => {
