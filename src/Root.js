@@ -58,65 +58,66 @@ Relay.injectNetworkLayer(
         let parsedBody = JSON.parse(req.body);
         req.body = JSON.stringify(parsedBody);
 
-        return next(req).then(res => {
-          let { json } = res;
+        return next(req)
+          .then(res => {
+            let { json } = res;
 
-          console.log('ROOT json: ', json);
-          let tries = 20;
-          let id = setInterval(() => {
-            let { user } = window.store.getState().auth;
-            if (user) {
-              console.log('has user: ', user);
-              if (
-                !(json.fence_projects || []).length &&
-                !(json.nih_projects || []).length &&
-                !(json.intersection || []).length
-              ) {
-                console.log('ROOT timeout error');
-                clear();
-                window.location.href = '/login?error=timeout';
-                return;
-              }
-              if (!(json.intersection || []).length) {
-                console.log('ROOT no intersection');
-                clear();
-                window.location.href = '/login?error=no_intersection';
-                return;
-              }
-              if (!(json.fence_projects || []).length) {
-                console.log('ROOT no fence projects');
-                clear();
-                window.location.href = '/login?error=no_fence_projects';
-                return;
+            console.log('ROOT json: ', json);
+            let tries = 20;
+            let id = setInterval(() => {
+              let { user } = window.store.getState().auth;
+              if (user) {
+                console.log('has user: ', user);
+                if (
+                  !(json.fence_projects || []).length &&
+                  !(json.nih_projects || []).length &&
+                  !(json.intersection || []).length
+                ) {
+                  console.log('ROOT timeout error');
+                  clear();
+                  window.location.href = '/login?error=timeout';
+                  return;
+                }
+                if (!(json.intersection || []).length) {
+                  console.log('ROOT no intersection');
+                  clear();
+                  window.location.href = '/login?error=no_intersection';
+                  return;
+                }
+                if (!(json.fence_projects || []).length) {
+                  console.log('ROOT no fence projects');
+                  clear();
+                  window.location.href = '/login?error=no_fence_projects';
+                  return;
+                }
+
+                if (!(json.nih_projects || []).length) {
+                  console.log('ROOT no nih projects');
+                  clear();
+                  window.location.href = '/login?error=no_nih_projects';
+                  return;
+                }
               }
 
-              if (!(json.nih_projects || []).length) {
-                console.log('ROOT no nih projects');
-                clear();
-                window.location.href = '/login?error=no_nih_projects';
-                return;
+              tries--;
+
+              if (!tries) clearInterval(id);
+            }, 500);
+            console.log('ROOT response: ', res);
+            if (res && res.json) {
+              console.log('RES JSON: ', res.json);
+            }
+            return res;
+          })
+          .catch(err => {
+            console.log('ROOT err', err);
+            console.log('ROOT err response: ', err.response);
+            if (err.fetchResponse && err.fetchResponse.status === 403) {
+              if (user) {
+                store.dispatch(forceLogout());
               }
             }
-
-            tries--;
-
-            if (!tries) clearInterval(id);
-          }, 500);
-          console.log('ROOT response: ', res);
-          if (res && res.json) {
-            console.log('RES JSON: ', res.json);
-          }
-          return res;
-        });
-        .catch(err => {
-          console.log('ROOT err', err)
-          console.log('ROOT err response: ', err.response)
-          if (err.fetchResponse && err.fetchResponse.status === 403) {
-            if (user) {
-              store.dispatch(forceLogout());
-            }
-          }
-        });
+          });
       }
     },
   ]),
