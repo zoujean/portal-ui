@@ -108,13 +108,15 @@ Relay.injectNetworkLayer(
           }
           return res;
         });
-        // .catch(err => {
-        //   if (err.fetchResponse && err.fetchResponse.status === 403) {
-        //     if (user) {
-        //       store.dispatch(forceLogout());
-        //     }
-        //   }
-        // });
+        .catch(err => {
+          console.log('ROOT err', err)
+          console.log('ROOT err response: ', err.response)
+          if (err.fetchResponse && err.fetchResponse.status === 403) {
+            if (user) {
+              store.dispatch(forceLogout());
+            }
+          }
+        });
       }
     },
   ]),

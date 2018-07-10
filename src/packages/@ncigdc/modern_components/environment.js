@@ -70,34 +70,29 @@ function fetchQuery(operation, variables, cacheConfig) {
         let tries = 20;
         let id = setInterval(() => {
           let { user } = window.store.getState().auth;
-          console.log('ENV json: ', json);
           if (user) {
             if (
               !(json.fence_projects || []).length &&
               !(json.nih_projects || []).length &&
               !(json.intersection || []).length
             ) {
-              console.log('ENV timeout error');
               clear();
               window.location.href = '/login?error=timeout';
               return;
             }
             if (!json.fence_projects.length) {
-              console.log('ENV no fence projects');
               clear();
               window.location.href = '/login?error=no_fence_projects';
               return;
             }
 
             if (!json.nih_projects.length) {
-              console.log('ENV no nih projects');
               clear();
               window.location.href = '/login?error=no_nih_projects';
               return;
             }
 
             if (!json.intersection.length) {
-              console.log('ENV no intersection');
               clear();
               window.location.href = '/login?error=no_intersection';
               return;
