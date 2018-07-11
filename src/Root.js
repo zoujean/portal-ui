@@ -111,7 +111,8 @@ Relay.injectNetworkLayer(
           })
           .catch(err => {
             console.log('ROOT err', err);
-            console.log('ROOT err response: ', err.response);
+
+            console.log('intersection? ', err.intersection);
             if (err.fetchResponse && err.fetchResponse.status === 403) {
               if (user) {
                 store.dispatch(forceLogout());
