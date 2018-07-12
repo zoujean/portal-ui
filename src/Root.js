@@ -49,55 +49,49 @@ Relay.injectNetworkLayer(
         );
 
       req.url = `${url}?hash=${hash}`;
-      let { user } = window.store.getState().auth;
 
-      console.log('user 1: ', user);
       if (!IS_AUTH_PORTAL) {
         return next(req);
       } else {
         req.credentials = 'include';
         let { user } = window.store.getState().auth;
-        console.log('is auth portal user: ', user);
         let parsedBody = JSON.parse(req.body);
         req.body = JSON.stringify(parsedBody);
 
         return next(req)
           .then(res => {
             let { json } = res;
-
-            console.log('ROOT json: ', json);
-
+            console.log('JSON: ', json);
             let tries = 20;
             let id = setInterval(() => {
               let { user } = window.store.getState().auth;
               if (user) {
-                console.log('if user block: ', user);
                 if (
                   !json.fence_projects[0].length &&
                   !json.nih_projects.length &&
                   !json.intersection[0].length
                 ) {
-                  console.log('ROOT timeout error');
                   clear();
+                  console.log('ROOT timeout error');
                   window.location.href = '/login?error=timeout';
                   return;
                 }
                 if (!json.intersection[0].length) {
-                  console.log('ROOT no intersection');
                   clear();
+                  console.log('ROOT no intersection');
                   window.location.href = '/login?error=no_intersection';
                   return;
                 }
                 if (!json.fence_projects[0].length) {
-                  console.log('ROOT no fence projects');
                   clear();
+                  console.log('ROOT no fence projects');
                   window.location.href = '/login?error=no_fence_projects';
                   return;
                 }
 
                 if (!json.nih_projects.length) {
-                  console.log('ROOT no nih projects');
                   clear();
+                  console.log('ROOT no nih projects');
                   window.location.href = '/login?error=no_nih_projects';
                   return;
                 }
@@ -107,9 +101,6 @@ Relay.injectNetworkLayer(
 
               if (!tries) clearInterval(id);
             }, 500);
-            if (res && res.json) {
-              console.log('RES JSON: ', res.json);
-            }
             return res;
           })
           .catch(err => {
@@ -168,6 +159,7 @@ const Root = (props: mixed) => (
                     failed &&
                     error.message === 'Session timed out or not authorized'
                   ) {
+                    console.log('getting kicked to timeout screen');
                     return (window.location.href = '/login?error=timeout');
                   }
                   if (failed) {
