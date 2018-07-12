@@ -66,20 +66,19 @@ Relay.injectNetworkLayer(
             let id = setInterval(() => {
               let { user } = window.store.getState().auth;
               if (user) {
-                if (
-                  !json.fence_projects[0].length &&
-                  !json.nih_projects.length &&
-                  !json.intersection[0].length
-                ) {
-                  clear();
-                  console.log('ROOT timeout error');
-                  window.location.href = '/login?error=timeout';
-                  return;
-                }
+                // if (
+                //   !json.fence_projects[0].length &&
+                //   !json.nih_projects.length &&
+                //   !json.intersection[0].length
+                // ) {
+                //   clear();
+                //   console.log('ROOT timeout error');
+                //   window.location.href = '/login?error=timeout';
+                //   return;
+                // }
                 if (!json.intersection[0].length) {
                   clear();
                   console.log('ROOT no intersection');
-                  tries = 0;
                   window.location.href = '/login?error=no_intersection';
                   return;
                 }
@@ -98,9 +97,7 @@ Relay.injectNetworkLayer(
                 }
               }
 
-              if (tries > 0) {
-                tries--;
-              }
+              tries--;
 
               if (!tries) clearInterval(id);
             }, 500);
@@ -151,7 +148,7 @@ const Root = (props: mixed) => (
   <Router>
     <Provider store={store}>
       <React.Fragment>
-        {IS_AUTH_PORTAL && <Route exact path="/login" component={Login} />}
+        {IS_AUTH_PORTAL && <Route path="/login" component={Login} />}
         <Route
           render={props => {
             return IS_AUTH_PORTAL &&
