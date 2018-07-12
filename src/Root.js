@@ -79,7 +79,7 @@ Relay.injectNetworkLayer(
                 if (!json.intersection[0].length) {
                   clear();
                   console.log('ROOT no intersection');
-                  store.dispatch(forceLogout());
+                  tries = 0;
                   window.location.href = '/login?error=no_intersection';
                   return;
                 }
@@ -98,7 +98,9 @@ Relay.injectNetworkLayer(
                 }
               }
 
-              tries--;
+              if (tries > 0) {
+                tries--;
+              }
 
               if (!tries) clearInterval(id);
             }, 500);
