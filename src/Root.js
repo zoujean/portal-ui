@@ -79,6 +79,7 @@ Relay.injectNetworkLayer(
                 if (!json.intersection[0].length) {
                   clear();
                   console.log('ROOT no intersection');
+                  store.dispatch(forceLogout());
                   window.location.href = '/login?error=no_intersection';
                   return;
                 }
