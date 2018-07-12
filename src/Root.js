@@ -79,8 +79,9 @@ Relay.injectNetworkLayer(
                 if (!json.intersection[0].length) {
                   clear();
                   console.log('ROOT no intersection');
-                  window.location.href = '/login?error=no_intersection';
-                  return;
+                  throw new Error('no_intersection');
+                  // window.location.href = '/login?error=no_intersection';
+                  // return;
                 }
                 if (!json.fence_projects[0].length) {
                   clear();
@@ -105,7 +106,9 @@ Relay.injectNetworkLayer(
           })
           .catch(err => {
             console.log('ROOT err', err);
-
+            if (err.message === 'no_intersection') {
+              return (window.location.href = '/login?error=no_intersection');
+            }
             if (err.fetchResponse && err.fetchResponse.status === 403) {
               if (user) {
                 store.dispatch(forceLogout());
