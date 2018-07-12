@@ -66,35 +66,44 @@ Relay.injectNetworkLayer(
             let { json } = res;
 
             console.log('ROOT json: ', json);
+            console.log('intersection: ', !json.intersection.length);
+            console.log('fence proj: ', !json.fence_projects.length);
+            console.log('nih proj: ', !json.nih_projects.length);
+            console.log(
+              'timeout: ',
+              !json.fence_projects.length &&
+                !json.nih_projects.length &&
+                !json.intersection.length,
+            );
             let tries = 20;
             let id = setInterval(() => {
               let { user } = window.store.getState().auth;
               if (user) {
                 console.log('if user block: ', user);
                 if (
-                  !(json.fence_projects || []).length &&
-                  !(json.nih_projects || []).length &&
-                  !(json.intersection || []).length
+                  !json.fence_projects.length &&
+                  !json.nih_projects.length &&
+                  !json.intersection.length
                 ) {
                   console.log('ROOT timeout error');
                   clear();
                   window.location.href = '/login?error=timeout';
                   return;
                 }
-                if (!(json.intersection || []).length) {
+                if (!json.intersection.length) {
                   console.log('ROOT no intersection');
                   clear();
                   window.location.href = '/login?error=no_intersection';
                   return;
                 }
-                if (!(json.fence_projects || []).length) {
+                if (!json.fence_projects.length) {
                   console.log('ROOT no fence projects');
                   clear();
                   window.location.href = '/login?error=no_fence_projects';
                   return;
                 }
 
-                if (!(json.nih_projects || []).length) {
+                if (!json.nih_projects.length) {
                   console.log('ROOT no nih projects');
                   clear();
                   window.location.href = '/login?error=no_nih_projects';
@@ -106,7 +115,6 @@ Relay.injectNetworkLayer(
 
               if (!tries) clearInterval(id);
             }, 500);
-            console.log('ROOT response: ', res);
             if (res && res.json) {
               console.log('RES JSON: ', res.json);
             }
