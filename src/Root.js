@@ -20,6 +20,11 @@ import setupStore from '@ncigdc/dux';
 import { fetchApiVersionInfo } from '@ncigdc/dux/versionInfo';
 import { fetchUser, forceLogout } from '@ncigdc/dux/auth';
 
+function AccessException(message, name) {
+  this.message = message;
+  this.name = name;
+}
+
 Relay.injectNetworkLayer(
   new RelayNetworkLayer([
     urlMiddleware({
@@ -79,7 +84,10 @@ Relay.injectNetworkLayer(
                 if (!json.intersection[0].length) {
                   clear();
                   console.log('ROOT no intersection');
-                  throw new Error('no_intersection');
+                  throw new AccessException(
+                    'User has project intersection',
+                    'no_intersection',
+                  );
                   // window.location.href = '/login?error=no_intersection';
                   // return;
                 }
@@ -106,9 +114,11 @@ Relay.injectNetworkLayer(
           })
           .catch(err => {
             console.log('ROOT err', err);
-            if (err.message === 'no_intersection') {
+
+            if (err.name === 'no_intersection') {
               return (window.location.href = '/login?error=no_intersection');
             }
+
             if (err.fetchResponse && err.fetchResponse.status === 403) {
               if (user) {
                 store.dispatch(forceLogout());
