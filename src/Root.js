@@ -66,37 +66,29 @@ Relay.injectNetworkLayer(
             let { json } = res;
 
             console.log('ROOT json: ', json);
-            console.log('intersection: ', !json.intersection.length);
-            console.log('fence proj: ', !json.fence_projects.length);
-            console.log('nih proj: ', !json.nih_projects.length);
-            console.log(
-              'timeout: ',
-              !json.fence_projects.length &&
-                !json.nih_projects.length &&
-                !json.intersection.length,
-            );
+
             let tries = 20;
             let id = setInterval(() => {
               let { user } = window.store.getState().auth;
               if (user) {
                 console.log('if user block: ', user);
                 if (
-                  !json.fence_projects.length &&
+                  !json.fence_projects[0].length &&
                   !json.nih_projects.length &&
-                  !json.intersection.length
+                  !json.intersection[0].length
                 ) {
                   console.log('ROOT timeout error');
                   clear();
                   window.location.href = '/login?error=timeout';
                   return;
                 }
-                if (!json.intersection.length) {
+                if (!json.intersection[0].length) {
                   console.log('ROOT no intersection');
                   clear();
                   window.location.href = '/login?error=no_intersection';
                   return;
                 }
-                if (!json.fence_projects.length) {
+                if (!json.fence_projects[0].length) {
                   console.log('ROOT no fence projects');
                   clear();
                   window.location.href = '/login?error=no_fence_projects';
