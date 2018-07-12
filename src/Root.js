@@ -49,12 +49,15 @@ Relay.injectNetworkLayer(
         );
 
       req.url = `${url}?hash=${hash}`;
+      let { user } = window.store.getState().auth;
 
+      console.log('user 1: ', user);
       if (!IS_AUTH_PORTAL) {
         return next(req);
       } else {
         req.credentials = 'include';
         let { user } = window.store.getState().auth;
+        console.log('is auth portal user: ', user);
         let parsedBody = JSON.parse(req.body);
         req.body = JSON.stringify(parsedBody);
 
@@ -67,7 +70,7 @@ Relay.injectNetworkLayer(
             let id = setInterval(() => {
               let { user } = window.store.getState().auth;
               if (user) {
-                console.log('has user: ', user);
+                console.log('if user block: ', user);
                 if (
                   !(json.fence_projects || []).length &&
                   !(json.nih_projects || []).length &&
@@ -112,7 +115,6 @@ Relay.injectNetworkLayer(
           .catch(err => {
             console.log('ROOT err', err);
 
-            console.log('intersection? ', err.intersection);
             if (err.fetchResponse && err.fetchResponse.status === 403) {
               if (user) {
                 store.dispatch(forceLogout());
