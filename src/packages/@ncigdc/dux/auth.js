@@ -94,7 +94,7 @@ const initialState: State = {
   isFetchingToken: false,
   token: undefined,
   failed: false,
-  intersection: [],
+  intersection: null,
 };
 
 export default handleActions(

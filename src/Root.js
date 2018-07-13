@@ -151,7 +151,7 @@ const Root = (props: mixed) => (
   <Router>
     <Provider store={store}>
       <React.Fragment>
-        {IS_AUTH_PORTAL && <Route path="/login" component={Login} />}
+        {IS_AUTH_PORTAL && <Route exact path="/login" component={Login} />}
         <Route
           render={props => {
             return IS_AUTH_PORTAL &&
@@ -168,7 +168,7 @@ const Root = (props: mixed) => (
                   if (failed) {
                     return <Redirect to="/login" />;
                   }
-                  if (!intersection.length) {
+                  if (user && intersection && !intersection.length) {
                     return <Redirect to="/login?error=no_intersection" />;
                   }
                   if (user)
