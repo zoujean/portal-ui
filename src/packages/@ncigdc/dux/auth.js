@@ -5,7 +5,13 @@ import { handleActions } from 'redux-actions';
 import { fetchAuth } from '@ncigdc/utils/ajax';
 import { AWG } from '@ncigdc/utils/constants';
 
-export type State = { isFetching: boolean, user: ?Object, error?: Object };
+export type State = {
+  isFetching: boolean,
+  user: ?Object,
+  error?: Object,
+  failed?: boolean,
+  intersection?: Array<string>,
+};
 export type Action = { type: string, payload: any };
 
 const USER_REQUEST = 'gdc/USER_REQUEST';
@@ -16,6 +22,8 @@ const TOKEN_REQUEST = 'gdc/TOKEN_REQUEST';
 const TOKEN_SUCCESS = 'gdc/TOKEN_SUCCESS';
 const TOKEN_FAILURE = 'gdc/TOKEN_FAILURE';
 const TOKEN_CLEAR = 'gdc/TOKEN_CLEAR';
+
+const SET_USER_ACCESS = 'gdc/SET_USER_ACCESS';
 
 export function fetchUser() {
   return fetchAuth({
@@ -72,6 +80,12 @@ export function fetchToken() {
   });
 }
 
+export function setUserAccess(access): Action {
+  return {
+    type: SET_USER_ACCESS,
+    payload: access,
+  };
+}
 const initialState: State = {
   firstLoad: true,
   isFetching: false,
@@ -80,6 +94,7 @@ const initialState: State = {
   isFetchingToken: false,
   token: undefined,
   failed: false,
+  intersection: [],
 };
 
 export default handleActions(
@@ -124,6 +139,10 @@ export default handleActions(
       ...state,
       isFetchingToken: false,
       token: undefined,
+    }),
+    [SET_USER_ACCESS]: (state, action) => ({
+      ...state,
+      intersection: action.payload.intersection,
     }),
   },
   initialState,

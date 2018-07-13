@@ -18,7 +18,7 @@ import { clear } from '@ncigdc/utils/cookies';
 import { Provider, connect } from 'react-redux';
 import setupStore from '@ncigdc/dux';
 import { fetchApiVersionInfo } from '@ncigdc/dux/versionInfo';
-import { fetchUser, forceLogout } from '@ncigdc/dux/auth';
+import { fetchUser, forceLogout, setUserAccess } from '@ncigdc/dux/auth';
 
 Relay.injectNetworkLayer(
   new RelayNetworkLayer([
@@ -53,72 +53,67 @@ Relay.injectNetworkLayer(
       if (!IS_AUTH_PORTAL) {
         return next(req);
       } else {
-        store.dispatch(fetchUser()).then(() => {
-          console.log('foo');
-          req.credentials = 'include';
-          let { user } = window.store.getState().auth;
-          let parsedBody = JSON.parse(req.body);
-          req.body = JSON.stringify(parsedBody);
+        req.credentials = 'include';
+        let { user } = window.store.getState().auth;
+        let parsedBody = JSON.parse(req.body);
+        req.body = JSON.stringify(parsedBody);
 
-          return next(req)
-            .then(res => {
-              let { json } = res;
-              console.log('JSON: ', json);
-              // let tries = 20;
-              // let id = setInterval(() => {
-              let { user } = window.store.getState().auth;
+        return next(req)
+          .then(res => {
+            let { json } = res;
+            console.log('JSON: ', json);
+            store.dispatch(
+              setUserAccess({ intersection: json.intersection[0] }),
+            );
+            // let tries = 20;
+            // let id = setInterval(() => {
+            // let { user } = window.store.getState().auth;
+            // if (user) {
+            // if (
+            //   !json.fence_projects[0].length &&
+            //   !json.nih_projects.length &&
+            //   !json.intersection[0].length
+            // ) {
+            //   clear();
+            //   console.log('ROOT timeout error');
+            //   window.location.href = '/login?error=timeout';
+            //   return;
+            // }
+            // if (!json.intersection[0].length) {
+            //   clear();
+            //   console.log('ROOT no intersection');
+            //   window.location.href = '/login?error=no_intersection';
+            //   return;
+            // }
+            // if (!json.fence_projects[0].length) {
+            //   clear();
+            //   console.log('ROOT no fence projects');
+            //   window.location.href = '/login?error=no_fence_projects';
+            //   return;
+            // }
+            //
+            // if (!json.nih_projects.length) {
+            //   clear();
+            //   console.log('ROOT no nih projects');
+            //   window.location.href = '/login?error=no_nih_projects';
+            //   return;
+            // }
+            // }
+
+            // tries--;
+
+            // if (!tries) clearInterval(id);
+            // }, 500);
+            return res;
+          })
+          .catch(err => {
+            console.log('ROOT err', err);
+            if (err.fetchResponse && err.fetchResponse.status === 403) {
               if (user) {
-                // if (
-                //   !json.fence_projects[0].length &&
-                //   !json.nih_projects.length &&
-                //   !json.intersection[0].length
-                // ) {
-                //   clear();
-                //   console.log('ROOT timeout error');
-                //   window.location.href = '/login?error=timeout';
-                //   return;
-                // }
-                if (!json.intersection[0].length) {
-                  clear();
-                  console.log('ROOT no intersection');
-                  window.location.href = '/login?error=no_intersection';
-                  return;
-                }
-                if (!json.fence_projects[0].length) {
-                  clear();
-                  console.log('ROOT no fence projects');
-                  window.location.href = '/login?error=no_fence_projects';
-                  return;
-                }
-
-                if (!json.nih_projects.length) {
-                  clear();
-                  console.log('ROOT no nih projects');
-                  window.location.href = '/login?error=no_nih_projects';
-                  return;
-                }
+                store.dispatch(forceLogout());
               }
-
-              // tries--;
-
-              // if (!tries) clearInterval(id);
-              // }, 500);
-              return res;
-            })
-            .catch(err => {
-              console.log('ROOT err', err);
-
-              if (err.name === 'no_intersection') {
-                return (window.location.href = '/login?error=no_intersection');
-              }
-
-              if (err.fetchResponse && err.fetchResponse.status === 403) {
-                if (user) {
-                  store.dispatch(forceLogout());
-                }
-              }
-            });
-        });
+            }
+          });
       }
     },
   ]),
@@ -134,7 +129,7 @@ window.store = store;
 
 store.dispatch(fetchApiVersionInfo());
 
-if (process.env.NODE_ENV !== 'development' && !IS_AUTH_PORTAL) {
+if (process.env.NODE_ENV !== 'development') {
   store.dispatch(fetchUser());
 }
 
@@ -148,6 +143,7 @@ let HasUser = connect(state => state.auth)(props => {
     user: props.user,
     failed: props.failed,
     error: props.error,
+    intersection: props.intersection,
   });
 });
 
@@ -161,16 +157,19 @@ const Root = (props: mixed) => (
             return IS_AUTH_PORTAL &&
               !window.location.pathname.includes('/login') ? (
               <HasUser>
-                {({ user, failed, error }) => {
+                {({ user, failed, error, intersection }) => {
+                  console.log('has user render: ', intersection, user);
                   if (
                     failed &&
                     error.message === 'Session timed out or not authorized'
                   ) {
-                    console.log('getting kicked to timeout screen');
                     return (window.location.href = '/login?error=timeout');
                   }
                   if (failed) {
                     return <Redirect to="/login" />;
+                  }
+                  if (!intersection.length) {
+                    return <Redirect to="/login?error=no_intersection" />;
                   }
                   if (user)
                     return (
