@@ -61,53 +61,18 @@ Relay.injectNetworkLayer(
         return next(req)
           .then(res => {
             let { json } = res;
-            console.log('JSON: ', json);
+            // intersection and fence_projects coming as nested arrays, all 3 will be changed to boolean values
             store.dispatch(
-              setUserAccess({ intersection: json.intersection[0] }),
+              setUserAccess({
+                intersection: json.intersection[0],
+                nih_projects: json.nih_projects,
+                fence_projects: json.fence_projects[0],
+              }),
             );
-            // let tries = 20;
-            // let id = setInterval(() => {
-            // let { user } = window.store.getState().auth;
-            // if (user) {
-            // if (
-            //   !json.fence_projects[0].length &&
-            //   !json.nih_projects.length &&
-            //   !json.intersection[0].length
-            // ) {
-            //   clear();
-            //   console.log('ROOT timeout error');
-            //   window.location.href = '/login?error=timeout';
-            //   return;
-            // }
-            // if (!json.intersection[0].length) {
-            //   clear();
-            //   console.log('ROOT no intersection');
-            //   window.location.href = '/login?error=no_intersection';
-            //   return;
-            // }
-            // if (!json.fence_projects[0].length) {
-            //   clear();
-            //   console.log('ROOT no fence projects');
-            //   window.location.href = '/login?error=no_fence_projects';
-            //   return;
-            // }
-            //
-            // if (!json.nih_projects.length) {
-            //   clear();
-            //   console.log('ROOT no nih projects');
-            //   window.location.href = '/login?error=no_nih_projects';
-            //   return;
-            // }
-            // }
 
-            // tries--;
-
-            // if (!tries) clearInterval(id);
-            // }, 500);
             return res;
           })
           .catch(err => {
-            console.log('ROOT err', err);
             if (err.fetchResponse && err.fetchResponse.status === 403) {
               if (user) {
                 store.dispatch(forceLogout());
@@ -144,6 +109,8 @@ let HasUser = connect(state => state.auth)(props => {
     failed: props.failed,
     error: props.error,
     intersection: props.intersection,
+    fence_projects: props.fence_projects,
+    nih_projects: props.nih_projects,
   });
 });
 
@@ -157,7 +124,14 @@ const Root = (props: mixed) => (
             return IS_AUTH_PORTAL &&
               !window.location.pathname.includes('/login') ? (
               <HasUser>
-                {({ user, failed, error, intersection }) => {
+                {({
+                  user,
+                  failed,
+                  error,
+                  intersection,
+                  nih_projects,
+                  fence_projects,
+                }) => {
                   console.log('has user render: ', intersection, user);
                   if (
                     failed &&
@@ -171,7 +145,17 @@ const Root = (props: mixed) => (
                   if (user && intersection && !intersection.length) {
                     return <Redirect to="/login?error=no_intersection" />;
                   }
-                  if (user)
+
+                  if (user) {
+                    if (intersection && !intersection.length) {
+                      return <Redirect to="/login?error=no_intersection" />;
+                    }
+                    if (fence_projects && !fence_projects.length) {
+                      return <Redirect to="/login?error=no_fence_projects" />;
+                    }
+                    if (nih_projects && !nih_projects.length) {
+                      return <Redirect to="/login?error=no_nih_projects" />;
+                    }
                     return (
                       <Relay.Renderer
                         Container={Container}
@@ -179,6 +163,8 @@ const Root = (props: mixed) => (
                         environment={Relay.Store}
                       />
                     );
+                  }
+
                   return null;
                 }}
               </HasUser>

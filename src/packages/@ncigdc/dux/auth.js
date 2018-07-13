@@ -95,6 +95,8 @@ const initialState: State = {
   token: undefined,
   failed: false,
   intersection: null,
+  fence_projects: null,
+  nih_projects: null,
 };
 
 export default handleActions(
@@ -143,6 +145,8 @@ export default handleActions(
     [SET_USER_ACCESS]: (state, action) => ({
       ...state,
       intersection: action.payload.intersection,
+      fence_projects: action.payload.fence_projects,
+      nih_projects: action.payload.nih_projects,
     }),
   },
   initialState,
