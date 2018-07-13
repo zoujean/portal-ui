@@ -20,11 +20,6 @@ import setupStore from '@ncigdc/dux';
 import { fetchApiVersionInfo } from '@ncigdc/dux/versionInfo';
 import { fetchUser, forceLogout } from '@ncigdc/dux/auth';
 
-function AccessException(message, name) {
-  this.message = message;
-  this.name = name;
-}
-
 Relay.injectNetworkLayer(
   new RelayNetworkLayer([
     urlMiddleware({
@@ -58,17 +53,19 @@ Relay.injectNetworkLayer(
       if (!IS_AUTH_PORTAL) {
         return next(req);
       } else {
-        req.credentials = 'include';
-        let { user } = window.store.getState().auth;
-        let parsedBody = JSON.parse(req.body);
-        req.body = JSON.stringify(parsedBody);
+        store.dispatch(fetchUser()).then(() => {
+          console.log('foo');
+          req.credentials = 'include';
+          let { user } = window.store.getState().auth;
+          let parsedBody = JSON.parse(req.body);
+          req.body = JSON.stringify(parsedBody);
 
-        return next(req)
-          .then(res => {
-            let { json } = res;
-            console.log('JSON: ', json);
-            let tries = 20;
-            let id = setInterval(() => {
+          return next(req)
+            .then(res => {
+              let { json } = res;
+              console.log('JSON: ', json);
+              // let tries = 20;
+              // let id = setInterval(() => {
               let { user } = window.store.getState().auth;
               if (user) {
                 // if (
@@ -84,12 +81,8 @@ Relay.injectNetworkLayer(
                 if (!json.intersection[0].length) {
                   clear();
                   console.log('ROOT no intersection');
-                  throw new AccessException(
-                    'User has project intersection',
-                    'no_intersection',
-                  );
-                  // window.location.href = '/login?error=no_intersection';
-                  // return;
+                  window.location.href = '/login?error=no_intersection';
+                  return;
                 }
                 if (!json.fence_projects[0].length) {
                   clear();
@@ -106,25 +99,26 @@ Relay.injectNetworkLayer(
                 }
               }
 
-              tries--;
+              // tries--;
 
-              if (!tries) clearInterval(id);
-            }, 500);
-            return res;
-          })
-          .catch(err => {
-            console.log('ROOT err', err);
+              // if (!tries) clearInterval(id);
+              // }, 500);
+              return res;
+            })
+            .catch(err => {
+              console.log('ROOT err', err);
 
-            if (err.name === 'no_intersection') {
-              return (window.location.href = '/login?error=no_intersection');
-            }
-
-            if (err.fetchResponse && err.fetchResponse.status === 403) {
-              if (user) {
-                store.dispatch(forceLogout());
+              if (err.name === 'no_intersection') {
+                return (window.location.href = '/login?error=no_intersection');
               }
-            }
-          });
+
+              if (err.fetchResponse && err.fetchResponse.status === 403) {
+                if (user) {
+                  store.dispatch(forceLogout());
+                }
+              }
+            });
+        });
       }
     },
   ]),
@@ -140,7 +134,7 @@ window.store = store;
 
 store.dispatch(fetchApiVersionInfo());
 
-if (process.env.NODE_ENV !== 'development') {
+if (process.env.NODE_ENV !== 'development' && !IS_AUTH_PORTAL) {
   store.dispatch(fetchUser());
 }
 
