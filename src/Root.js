@@ -20,8 +20,6 @@ import setupStore from '@ncigdc/dux';
 import { fetchApiVersionInfo } from '@ncigdc/dux/versionInfo';
 import { fetchUser, forceLogout, setUserAccess } from '@ncigdc/dux/auth';
 
-let intersection = null;
-
 Relay.injectNetworkLayer(
   new RelayNetworkLayer([
     urlMiddleware({
@@ -40,6 +38,7 @@ Relay.injectNetworkLayer(
     }),
     // Add hash id to request
     next => req => {
+      window.intersection = null;
       const [url, search = ''] = req.url.split('?');
       const hash =
         parse(search).hash ||
@@ -66,7 +65,7 @@ Relay.injectNetworkLayer(
             let { user } = window.store.getState().auth;
             // intersection and fence_projects coming as nested arrays, all 3 will be changed to boolean values
             if (user) {
-              intersection = json.intersection[0];
+              window.intersection = json.intersection[0];
               // store.dispatch(
               //   setUserAccess({
               //     intersection: json.intersection[0],
@@ -147,7 +146,7 @@ const Root = (props: mixed) => (
                     if (nih_projects && !nih_projects.length) {
                       return <Redirect to="/login?error=no_nih_projects" />;
                     }
-                    if (intersection && !intersection.length) {
+                    if (window.intersection && !window.intersection.length) {
                       return <Redirect to="/login?error=no_intersection" />;
                     }
                     return (
