@@ -20,6 +20,8 @@ import setupStore from '@ncigdc/dux';
 import { fetchApiVersionInfo } from '@ncigdc/dux/versionInfo';
 import { fetchUser, forceLogout, setUserAccess } from '@ncigdc/dux/auth';
 
+let intersection = null;
+
 Relay.injectNetworkLayer(
   new RelayNetworkLayer([
     urlMiddleware({
@@ -63,15 +65,16 @@ Relay.injectNetworkLayer(
             let { json } = res;
             let { user } = window.store.getState().auth;
             // intersection and fence_projects coming as nested arrays, all 3 will be changed to boolean values
-            // if (user) {
-            //   store.dispatch(
-            //     setUserAccess({
-            //       intersection: json.intersection[0],
-            //       nih_projects: json.nih_projects,
-            //       fence_projects: json.fence_projects[0],
-            //     }),
-            //   );
-            // }
+            if (user) {
+              intersection = json.intersection[0];
+              // store.dispatch(
+              //   setUserAccess({
+              //     intersection: json.intersection[0],
+              //     nih_projects: json.nih_projects,
+              //     fence_projects: json.fence_projects[0],
+              //   }),
+              // );
+            }
             return res;
           })
           .catch(err => {
@@ -110,7 +113,7 @@ let HasUser = connect(state => state.auth)(props => {
     user: props.user,
     failed: props.failed,
     error: props.error,
-    intersection: props.intersection,
+    // intersection: props.intersection,
     fence_projects: props.fence_projects,
     nih_projects: props.nih_projects,
   });
@@ -126,14 +129,7 @@ const Root = (props: mixed) => (
             return IS_AUTH_PORTAL &&
               !window.location.pathname.includes('/login') ? (
               <HasUser>
-                {({
-                  user,
-                  failed,
-                  error,
-                  intersection,
-                  nih_projects,
-                  fence_projects,
-                }) => {
+                {({ user, failed, error, nih_projects, fence_projects }) => {
                   if (
                     failed &&
                     error.message === 'Session timed out or not authorized'
