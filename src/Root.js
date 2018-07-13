@@ -61,15 +61,17 @@ Relay.injectNetworkLayer(
         return next(req)
           .then(res => {
             let { json } = res;
+            let { user } = window.store.getState().auth;
             // intersection and fence_projects coming as nested arrays, all 3 will be changed to boolean values
-            store.dispatch(
-              setUserAccess({
-                intersection: json.intersection[0],
-                nih_projects: json.nih_projects,
-                fence_projects: json.fence_projects[0],
-              }),
-            );
-
+            // if (user) {
+            //   store.dispatch(
+            //     setUserAccess({
+            //       intersection: json.intersection[0],
+            //       nih_projects: json.nih_projects,
+            //       fence_projects: json.fence_projects[0],
+            //     }),
+            //   );
+            // }
             return res;
           })
           .catch(err => {
@@ -132,7 +134,6 @@ const Root = (props: mixed) => (
                   nih_projects,
                   fence_projects,
                 }) => {
-                  console.log('has user render: ', intersection, user);
                   if (
                     failed &&
                     error.message === 'Session timed out or not authorized'
@@ -142,19 +143,16 @@ const Root = (props: mixed) => (
                   if (failed) {
                     return <Redirect to="/login" />;
                   }
-                  if (user && intersection && !intersection.length) {
-                    return <Redirect to="/login?error=no_intersection" />;
-                  }
 
                   if (user) {
-                    if (intersection && !intersection.length) {
-                      return <Redirect to="/login?error=no_intersection" />;
-                    }
                     if (fence_projects && !fence_projects.length) {
                       return <Redirect to="/login?error=no_fence_projects" />;
                     }
                     if (nih_projects && !nih_projects.length) {
                       return <Redirect to="/login?error=no_nih_projects" />;
+                    }
+                    if (intersection && !intersection.length) {
+                      return <Redirect to="/login?error=no_intersection" />;
                     }
                     return (
                       <Relay.Renderer
