@@ -3,41 +3,19 @@ import React from 'react';
 import { parse } from 'query-string';
 import Column from '@ncigdc/uikit/Flex/Column';
 import Row from '@ncigdc/uikit/Flex/Row';
-import ST from '@ncigdc/modern_components/SsmsTable';
-import GdcDataIcon from '@ncigdc/theme/icons/GdcData';
-import ExploreLink from '@ncigdc/components/Links/ExploreLink';
 import ClinicalCard from '@ncigdc/modern_components/ClinicalCard';
 import CaseSummary from '@ncigdc/modern_components/CaseSummary';
 import AddOrRemoveAllFilesButton from '@ncigdc/modern_components/AddOrRemoveAllFilesButton';
-import { makeFilter } from '@ncigdc/utils/filters';
 import {
   CaseCountsDataCategory,
   CaseCountsExpStrategy,
 } from '@ncigdc/modern_components/CaseCounts';
 import BiospecimenCard from '@ncigdc/modern_components/BiospecimenCard';
 import FullWidthLayout from '@ncigdc/components/Layouts/FullWidthLayout';
-import createCaseSummary from '@ncigdc/modern_components/CaseSummary/CaseSummary.relay';
 import Exists from '@ncigdc/modern_components/Exists';
 import CaseSymbol from '@ncigdc/modern_components/CaseSymbol';
 import HasSsms from '@ncigdc/modern_components/HasSsms';
-
-const SsmsTable = createCaseSummary(
-  ({
-    viewer,
-    node = viewer.repository.cases.hits.edges[0].node,
-    projectId = node.project.project_id,
-    ...props
-  }) => (
-    <ST
-      {...props}
-      contextFilters={makeFilter([
-        { field: 'cases.project.project_id', value: projectId },
-      ])}
-      context={projectId}
-      hideSurvival
-    />
-  ),
-);
+import MutationsCard from '@ncigdc/modern_components/MutationsCard';
 
 const styles = {
   column: {
@@ -65,8 +43,6 @@ export default ({
   location,
   query = parse(location.search),
 }: Object) => {
-  const fmFilters = makeFilter([{ field: 'cases.case_id', value: caseId }]);
-
   return (
     <Exists type="Case" id={caseId}>
       <FullWidthLayout title={<CaseSymbol caseId={caseId} />} entityType="CA">
@@ -94,27 +70,11 @@ export default ({
           <Row id="biospecimen" style={{ flexWrap: 'wrap' }} spacing="2rem">
             <BiospecimenCard caseId={caseId} bioId={query.bioId} />
           </Row>
-          <HasSsms caseId={caseId}>
-            <Column style={{ ...styles.card, marginTop: '2rem' }}>
-              <Row style={{ padding: '1rem 1rem 2rem', alignItems: 'center' }}>
-                <h1 style={{ ...styles.heading }} id="frequent-mutations">
-                  <i
-                    className="fa fa-bar-chart-o"
-                    style={{ paddingRight: '10px' }}
-                  />
-                  Most Frequent Somatic Mutations
-                </h1>
-                <ExploreLink
-                  query={{ searchTableTab: 'mutations', filters: fmFilters }}
-                >
-                  <GdcDataIcon /> Open in Exploration
-                </ExploreLink>
-              </Row>
-              <Column>
-                <SsmsTable caseId={caseId} defaultFilters={fmFilters} />
-              </Column>
-            </Column>
-          </HasSsms>
+          <Row id="mutations" style={{ flexWrap: 'wrap' }} spacing="2rem">
+            <HasSsms caseId={caseId}>
+              <MutationsCard caseId={caseId} />
+            </HasSsms>
+          </Row>
         </Column>
       </FullWidthLayout>
     </Exists>
