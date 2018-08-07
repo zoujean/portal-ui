@@ -31,7 +31,7 @@ let chr20genes = Array.from(Array(516).keys());
 let chr21genes = Array.from(Array(215).keys());
 let chr22genes = Array.from(Array(417).keys());
 
-const chromosomes = [
+export const chromosomes = [
   {
     chr: 1,
     genes: 1961,

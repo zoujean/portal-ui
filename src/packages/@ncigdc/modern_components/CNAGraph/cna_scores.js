@@ -18046,12 +18046,21 @@ const scores = [
   0,
 ];
 
+const scoreMap = {
+  '2': 'amplification',
+  '1': 'gain',
+  '0': 'no_impact',
+  '-1': 'shallow_deletion',
+  '-2': 'deep_deletion',
+};
+
 let cnaPoints = scores.map((score, i) => {
   return {
     score: score,
     start: i,
     end: i,
     gene: i.toString(),
+    impact: scoreMap[score.toString()],
   };
 });
 
