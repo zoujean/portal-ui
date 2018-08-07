@@ -9,25 +9,28 @@ import withRouter from '@ncigdc/utils/withRouter';
 export default (Component: ReactClass<*>) =>
   compose(
     withRouter,
-    withPropsOnChange(['filters', 'location'], ({ filters }) => {
-      return {
-        variables: {
-          // first: 10000,
-          filters: {
-            op: 'and',
-            content: [
-              {
-                op: 'in',
-                content: {
-                  field: 'occurrence.case.case_id',
-                  value: '',
+    withPropsOnChange(
+      ['filters', 'location', 'caseId'],
+      ({ filters, caseId }) => {
+        return {
+          variables: {
+            // first: 10000,
+            filters: {
+              op: 'and',
+              content: [
+                {
+                  op: 'in',
+                  content: {
+                    field: 'occurrence.case.case_id',
+                    value: [caseId],
+                  },
                 },
-              },
-            ],
+              ],
+            },
           },
-        },
-      };
-    }),
+        };
+      },
+    ),
   )((props: Object) => {
     return (
       <Query
@@ -44,6 +47,26 @@ export default (Component: ReactClass<*>) =>
                     edges {
                       node {
                         case_id
+                        # cna_id
+                        # chromosome
+                        # cna_change
+                        # start_position
+                        # end_position
+                        # case {
+                        #   available_variation_data
+                        # }
+                        # occurrence {
+                        #   occurrence_id
+                        # }
+                        # consequence {
+                        #   consequence_id
+                        #   gene {
+                        #     symbol
+                        #     gene_id
+                        #     is_cancer_gene_census
+                        #     biotype
+                        #   }
+                        # }
                       }
                     }
                   }
@@ -55,3 +78,19 @@ export default (Component: ReactClass<*>) =>
       />
     );
   });
+
+//   {
+//   "query": {
+//
+//     "bool": {
+//       "must": [
+//         {
+//
+//           "match": {
+//             "occurrence.case.case_id": "1fc81cd4-fa89-4135-8c3c-027ffae82b05"
+//           }
+//         }
+//       ]
+//     }
+//   }
+// }
