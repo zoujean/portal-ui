@@ -1,7 +1,11 @@
 import React from 'react';
 import { graphql } from 'react-relay';
 import { compose, withPropsOnChange } from 'recompose';
-import { parseIntParam, parseFilterParam } from '@ncigdc/utils/uri';
+import {
+  parseIntParam,
+  parseFilterParam,
+  parseJSONParam,
+} from '@ncigdc/utils/uri';
 import { withRouter } from 'react-router-dom';
 import { parse } from 'query-string';
 import { makeFilter, addInFilters } from '@ncigdc/utils/filters';
@@ -15,9 +19,11 @@ export default (Component: ReactClass<*>) =>
       ({ location: { search }, defaultSize = 10, defaultFilters = null }) => {
         const q = parse(search);
         const score = 'case.project.project_id';
+        const sort = parseJSONParam(q.genes_sort, null);
         return {
           filters: defaultFilters,
           score,
+          sort,
           variables: {
             genesTable_filters: parseFilterParam(
               q.genesTable_filters,
@@ -35,6 +41,7 @@ export default (Component: ReactClass<*>) =>
               ]),
             ),
             score,
+            genes_sort: sort,
             ssmTested: makeFilter([
               {
                 field: 'cases.available_variation_data',
@@ -60,6 +67,7 @@ export default (Component: ReactClass<*>) =>
             $score: String
             $geneCaseFilter: FiltersArgument
             $ssmTested: FiltersArgument
+            $genes_sort: [Sort]
           ) {
             genesTableViewer: viewer {
               explore {
@@ -79,6 +87,7 @@ export default (Component: ReactClass<*>) =>
                     offset: $genesTable_offset
                     filters: $genesTable_filters
                     score: $score
+                    sort: $genes_sort
                   ) {
                     total
                     edges {
