@@ -65,7 +65,7 @@ const openAuthWindow = ({
                   user,
                   push,
                   pollInterval: 500,
-                  winUrl: `${FENCE}/login/shib?redirect=${location.origin}`,
+                  winUrl: `${FENCE}/login/fence?redirect=${location.origin}`,
                   winStyle:
                     'toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,left=50000, top=50000, width=1, height=1, visible=none',
                 });
