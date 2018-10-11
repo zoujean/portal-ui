@@ -57,7 +57,7 @@ const openAuthWindow = ({
                 console.log('will log in with fence');
                 console.log(
                   'fence popup url should be: ',
-                  `${FENCE}/login/shib?redirect=${location.origin}`,
+                  `${FENCE}/login/fence?redirect=${location.origin}`,
                 );
                 openAuthWindow({
                   pathname,
