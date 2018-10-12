@@ -1,7 +1,8 @@
 // @flow
+//@ts-check
 import React from 'react';
 import { groupBy, head } from 'lodash';
-import { compose, withPropsOnChange } from 'recompose';
+import { compose, withPropsOnChange, withState } from 'recompose';
 import { makeFilter } from '@ncigdc/utils/filters';
 import { tableToolTipHint, visualizingButton } from '@ncigdc/theme/mixins';
 import { Tooltip } from '@ncigdc/uikit/Tooltip';
@@ -17,6 +18,9 @@ import { Row } from '@ncigdc/uikit/Flex';
 import GreyBox from '@ncigdc/uikit/GreyBox';
 import MutationsCount from '@ncigdc/components/MutationsCount';
 import timestamp from '@ncigdc/utils/timestamp';
+import ArrowDownIcon from 'react-icons/lib/fa/long-arrow-down';
+import ArrowUpIcon from 'react-icons/lib/fa/long-arrow-up';
+
 const paginationPrefix = 'canDistTable';
 
 export default compose(
@@ -235,6 +239,7 @@ export default compose(
       return { rawData, cancerDistData };
     },
   ),
+  withState('tableSort', 'setTableSort', {}),
 )(
   (
     {
@@ -245,8 +250,28 @@ export default compose(
       rawData,
       cancerDistData,
       tableType,
+      tableSort,
+      setTableSort,
     } = {},
   ) => {
+    const sortButton = (type, tableSort) => {
+      if (tableSort[type] === 'up') {
+        setTableSort({ [type]: 'down' });
+      } else if (tableSort[type] === 'down') {
+        setTableSort({ [type]: '' });
+      } else {
+        setTableSort({ [type]: 'up' });
+      }
+    };
+    const arrowIcon = value => {
+      if (value === 'up') {
+        return <ArrowUpIcon />;
+      } else if (value === 'down') {
+        return <ArrowDownIcon />;
+      } else {
+        return '';
+      }
+    };
     const mutationsHeading = geneId
       ? [
           {
@@ -274,37 +299,43 @@ export default compose(
             {
               key: 'cnv_gain',
               title: (
-                <Tooltip
-                  Component={
-                    <span>
-                      # of Cases tested for CNV in Project affected by CNV gain
-                      event in&nbsp;
-                      {entityName}&nbsp; / # of Cases tested for Copy Number
-                      Variation in Project
-                    </span>
-                  }
-                  style={tableToolTipHint()}
-                >
-                  # CNV Gains
-                </Tooltip>
+                <Row onClick={() => sortButton('cnv_gain', tableSort)}>
+                  <Tooltip
+                    Component={
+                      <span>
+                        # of Cases tested for CNV in Project affected by CNV
+                        loss event in&nbsp;
+                        {entityName}&nbsp; / # of Cases tested for Copy Number
+                        Variation in Project
+                      </span>
+                    }
+                    style={tableToolTipHint()}
+                  >
+                    # CNV Gains
+                    {arrowIcon(tableSort['cnv_gain'])}
+                  </Tooltip>
+                </Row>
               ),
             },
             {
               key: 'cnv_loss',
               title: (
-                <Tooltip
-                  Component={
-                    <span>
-                      # of Cases tested for CNV in Project affected by CNV loss
-                      event in&nbsp;
-                      {entityName}&nbsp; / # of Cases tested for Copy Number
-                      Variation in Project
-                    </span>
-                  }
-                  style={tableToolTipHint()}
-                >
-                  # CNV Losses
-                </Tooltip>
+                <Row onClick={() => sortButton('cnv_loss', tableSort)}>
+                  <Tooltip
+                    Component={
+                      <span>
+                        # of Cases tested for CNV in Project affected by CNV
+                        loss event in&nbsp;
+                        {entityName}&nbsp; / # of Cases tested for Copy Number
+                        Variation in Project
+                      </span>
+                    }
+                    style={tableToolTipHint()}
+                  >
+                    # CNV Losses
+                    {arrowIcon(tableSort['cnv_loss'])}
+                  </Tooltip>
+                </Row>
               ),
             },
           ]
@@ -313,7 +344,10 @@ export default compose(
       <span>
         <LocalPaginationTable
           style={{ width: '100%', minWidth: 450 }}
-          data={cancerDistData}
+          data={cancerDistData.sort((a, b) => {
+            const key = Object.keys(tableSort)[0];
+            return (b[key] - a[key]) * (tableSort[key] === 'up' ? 1 : -1);
+          })}
           prefix={paginationPrefix}
           buttons={
             <Row style={{ alignItems: 'flex-end' }}>
@@ -353,19 +387,22 @@ export default compose(
               {
                 key: 'num_affected_cases',
                 title: (
-                  <Tooltip
-                    Component={
-                      <span>
-                        # Cases tested for Simple Somatic Mutations in Project
-                        affected by&nbsp;
-                        {entityName}&nbsp; / # Cases tested for Simple Somatic
-                        Mutations in Project
-                      </span>
-                    }
-                    style={tableToolTipHint()}
-                  >
-                    # SSM Affected Cases
-                  </Tooltip>
+                  <Row onClick={() => sortButton('freq', tableSort)}>
+                    <Tooltip
+                      Component={
+                        <span>
+                          # Cases tested for Simple Somatic Mutations in Project
+                          affected by&nbsp;
+                          {entityName}&nbsp; / # Cases tested for Simple Somatic
+                          Mutations in Project
+                        </span>
+                      }
+                      style={tableToolTipHint()}
+                    >
+                      # SSM Affected Cases
+                      {arrowIcon(tableSort['freq'])}
+                    </Tooltip>
+                  </Row>
                 ),
               },
               ...cnvHeadings,
