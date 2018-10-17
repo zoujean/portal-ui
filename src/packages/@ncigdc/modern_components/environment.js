@@ -51,6 +51,7 @@ function fetchQuery(operation, variables, cacheConfig) {
   pendingCache[hash] = true;
 
   return fetch(urlJoin(API, `graphql/${componentName}?hash=${hash}`), {
+    credentials: 'include',
     method: 'POST',
     headers: {
       'content-type': 'application/json',

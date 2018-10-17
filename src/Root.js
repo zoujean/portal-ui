@@ -42,6 +42,8 @@ Relay.injectNetworkLayer(
         );
 
       req.url = `${url}?hash=${hash}`;
+      req.credentials = 'include';
+
       return next(req);
     },
   ]),
