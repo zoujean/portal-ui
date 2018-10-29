@@ -22,7 +22,7 @@ import CollapsibleList from '@ncigdc/uikit/CollapsibleList';
 const paginationPrefix = 'canDistTable';
 
 let CollapsibleRowList = props => {
-  const { data } = props;
+  const { data, label } = props;
   if (!data.length) return <GreyBox />;
   return (
     <span>
@@ -32,7 +32,7 @@ let CollapsibleRowList = props => {
           toggleStyle={{ fontStyle: 'normal' }}
           data={data.slice(0).sort()}
           limit={0}
-          expandText={`${data.length} Disease Types`}
+          expandText={`${data.length}` + label}
           collapseText="collapse"
         />
       )}
@@ -56,12 +56,12 @@ export default compose(
         occurrence__case__project__project_id: { buckets: [] },
       }).occurrence__case__project__project_id.buckets.reduce(
         (acc, b) => ({ ...acc, [b.key]: b.doc_count }),
-        {},
+        {}
       );
 
       const projectsById = groupBy(
         (projects.hits || { edges: [] }).edges,
-        e => e.node.project_id,
+        e => e.node.project_id
       );
       let caseFiltered = {};
       let fields = ['filtered', 'total'];
@@ -77,8 +77,8 @@ export default compose(
                 ...caseFiltered[b.key],
                 [type]: b.doc_count,
               },
-            }),
-        ),
+            })
+        )
       );
       const rawData = Object.keys(caseFiltered)
         .filter(b => head(projectsById[b]))
@@ -105,7 +105,7 @@ export default compose(
           };
         })
         .sort(
-          (a, b) => b.num_affected_cases_percent - a.num_affected_cases_percent,
+          (a, b) => b.num_affected_cases_percent - a.num_affected_cases_percent
         );
 
       const cancerDistData = rawData.map(row => {
@@ -163,8 +163,13 @@ export default compose(
           project_id: (
             <ProjectLink uuid={row.project_id}>{row.project_id}</ProjectLink>
           ),
-          disease_type: <CollapsibleRowList data={row.disease_type} />,
-          site: <CollapsibleRowList data={row.site} />,
+          disease_type: (
+            <CollapsibleRowList
+              data={row.disease_type}
+              label={'Disease Types'}
+            />
+          ),
+          site: <CollapsibleRowList data={row.site} label={'Primary Sites'} />,
           num_affected_cases: (
             <span>
               <ExploreLink
@@ -253,8 +258,8 @@ export default compose(
       });
 
       return { rawData, cancerDistData };
-    },
-  ),
+    }
+  )
 )(
   (
     {
@@ -265,7 +270,7 @@ export default compose(
       rawData,
       cancerDistData,
       tableType,
-    } = {},
+    } = {}
   ) => {
     const mutationsHeading = geneId
       ? [
@@ -349,7 +354,7 @@ export default compose(
                     saveFile(
                       JSON.stringify(rawData, null, 2),
                       'JSON',
-                      'cancer-distribution-data.json',
+                      'cancer-distribution-data.json'
                     )}
                 >
                   JSON
@@ -395,5 +400,5 @@ export default compose(
         </LocalPaginationTable>
       </span>
     );
-  },
+  }
 );
