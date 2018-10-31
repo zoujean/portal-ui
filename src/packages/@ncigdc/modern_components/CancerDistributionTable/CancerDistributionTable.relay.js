@@ -19,12 +19,24 @@ export default (Component: ReactClass<*>) =>
       };
       return {
         variables: {
-          ssmTested: makeFilter([
-            {
-              field: 'cases.available_variation_data',
-              value: 'ssm',
-            },
-          ]),
+          ssmTested: {
+            op: 'and',
+            content: [
+              {
+                op: '=',
+                content: {
+                  field: 'cases.available_variation_data',
+                  value: 'ssm'
+                }
+              },
+              {
+                op: 'exists',
+                content: {
+                  field: 'gene.ssm.ssm_id'
+                }
+              }
+            ]
+          },
           cnvTested: makeFilter([cnvAvailableVariationDataFilter]),
           cnvGainFilter: replaceFilters(
             makeFilter([

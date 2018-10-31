@@ -46,12 +46,24 @@ const createContainer = Component =>
     initialVariables: {
       genesBarChart_filters: null,
       score: 'case.project.project_id',
-      ssmTested: makeFilter([
-        {
-          field: 'cases.available_variation_data',
-          value: 'ssm',
-        },
-      ]),
+      ssmTested: {
+        op: 'and',
+        content: [
+          {
+            op: '=',
+            content: {
+              field: 'cases.available_variation_data',
+              value: 'ssm'
+            }
+          },
+          {
+            op: 'exists',
+            content: {
+              field: 'gene.ssm.ssm_id'
+            }
+          }
+        ]
+      },
       // amplificationFilters: makeFilter([
       //   {
       //     field: 'cnvs.cnv_change',

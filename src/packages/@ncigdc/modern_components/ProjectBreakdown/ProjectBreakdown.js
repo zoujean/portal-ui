@@ -34,12 +34,24 @@ const createContainer = Component =>
   Relay.createContainer(Component, {
     initialVariables: {
       aggFilters: null,
-      ssmTested: makeFilter([
-        {
-          field: 'cases.available_variation_data',
-          value: 'ssm',
-        },
-      ]),
+      ssmTested: {
+        op: 'and',
+        content: [
+          {
+            op: '=',
+            content: {
+              field: 'cases.available_variation_data',
+              value: 'ssm'
+            }
+          },
+          {
+            op: 'exists',
+            content: {
+              field: 'gene.ssm.ssm_id'
+            }
+          }
+        ]
+      },
     },
     fragments: {
       viewer: () => Relay.QL`

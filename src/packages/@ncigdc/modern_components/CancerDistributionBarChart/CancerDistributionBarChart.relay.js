@@ -13,6 +13,12 @@ export default (Component: ReactClass<*>) =>
         field: 'cases.available_variation_data',
         value: 'cnv',
       };
+      const ssmExistsFilter = {
+        op: 'exists',
+        content: {
+          field: 'gene.ssm.ssm_id'
+        }
+      };
       return {
         variables: {
           cnvAll: replaceFilters(
@@ -30,12 +36,19 @@ export default (Component: ReactClass<*>) =>
             filters,
           ),
           caseAggsFilters: filters,
-          ssmTested: makeFilter([
-            {
-              field: 'cases.available_variation_data',
-              value: ['ssm'],
-            },
-          ]),
+          ssmTested: {
+            op: 'and',
+            content:[
+              {
+                op: 'in',
+                content: {
+                  field: 'cases.available_variation_data',
+                  value: ['ssm']
+                }
+              },
+              ssmExistsFilter,
+            ]
+          },
           cnvTested: makeFilter([cnvAvailableVariationDataFilter]),
           cnvGain: replaceFilters(
             makeFilter([
