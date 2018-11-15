@@ -121,8 +121,8 @@ Relay.injectNetworkLayer(
           if (user) {
             console.log('forcing logout');
             store.dispatch(forceLogout());
+            return (window.location.href = '/login?error=timeout');
           }
-          return (window.location.href = '/login?error=timeout');
         });
     },
   ]),
