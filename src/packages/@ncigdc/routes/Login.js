@@ -61,6 +61,7 @@ export default connect(state => ({
     state = { loggingIn: false };
     componentDidMount() {}
     render() {
+      console.log('login page: ', this.props.user);
       let NihWarning = () => (
         <div>
           <br />

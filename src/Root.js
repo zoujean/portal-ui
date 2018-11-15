@@ -63,61 +63,60 @@ Relay.injectNetworkLayer(
       req.body = JSON.stringify(parsedBody);
 
       return next(req).then(res => {
-        if (!res.ok) {
+        let { user } = window.store.getState().auth;
+        if (!res.ok && res.status === 403) {
           console.log('response not ok: ', res);
-          // if (err.fetchResponse && err.fetchResponse.status === 403) {
-          //   if (user) {
-          //     store.dispatch(forceLogout());
-          //   }
-          // return (window.location.href = '/login?error=timeout');
-          // }
-        }
-        console.log('response: ', res);
-        let { json } = res;
-        let tries = 20;
-        let id = setInterval(() => {
-          let { user } = window.store.getState().auth;
-
           if (user) {
-            store.dispatch(
-              setUserAccess({
-                fence_projects: json.fence_projects[0],
-                nih_projects: json.nih_projects,
-                intersection: json.intersection[0],
-              }),
-            );
-            // if (
-            //   !json.fence_projects[0] &&
-            //   !json.nih_projects &&
-            //   !json.intersection[0]
-            // ) {
-            //   clear();
-            //   window.location.href = '/login?error=timeout';
-            //   return;
-            // }
-            // if (!json.fence_projects[0]) {
-            //   clear();
-            //   window.location.href = '/login?error=no_fence_projects';
-            //   return;
-            // }
-            //
-            // if (!json.nih_projects) {
-            //   clear();
-            //   window.location.href = '/login?error=no_nih_projects';
-            //   return;
-            // }
-            //
-            // if (!json.intersection[0]) {
-            //   clear();
-            //   window.location.href = '/login?error=no_intersection';
-            //   return;
-            // }
+            console.log('forcing logout');
+            store.dispatch(forceLogout());
           }
-
-          tries--;
-
-          if (!tries) clearInterval(id);
-        }, 500);
+          return (window.location.href = '/login?error=timeout');
+        }
+        console.log('response is ok: ', res);
+        let { json } = res;
+        // let tries = 20;
+        // let id = setInterval(() => {
+        if (user) {
+          store.dispatch(
+            setUserAccess({
+              fence_projects: json.fence_projects[0],
+              nih_projects: json.nih_projects,
+              intersection: json.intersection[0],
+            }),
+          );
+        }
+        // if (
+        //   !json.fence_projects[0] &&
+        //   !json.nih_projects &&
+        //   !json.intersection[0]
+        // ) {
+        //   clear();
+        //   window.location.href = '/login?error=timeout';
+        //   return;
+        // }
+        // if (!json.fence_projects[0]) {
+        //   clear();
+        //   window.location.href = '/login?error=no_fence_projects';
+        //   return;
+        // }
+        //
+        // if (!json.nih_projects) {
+        //   clear();
+        //   window.location.href = '/login?error=no_nih_projects';
+        //   return;
+        // }
+        //
+        // if (!json.intersection[0]) {
+        //   clear();
+        //   window.location.href = '/login?error=no_intersection';
+        //   return;
+        // }
+        //   }
+        //
+        //   tries--;
+        //
+        //   if (!tries) clearInterval(id);
+        // }, 500);
         return res;
       });
       // .catch(err => {
@@ -175,12 +174,12 @@ const Root = (props: mixed) => (
                   nih_projects,
                   fence_projects,
                 }) => {
-                  if (
-                    failed &&
-                    error.message === 'Session timed out or not authorized'
-                  ) {
-                    return (window.location.href = '/login?error=timeout');
-                  }
+                  // if (
+                  //   failed &&
+                  //   error.message === 'Session timed out or not authorized'
+                  // ) {
+                  //   return (window.location.href = '/login?error=timeout');
+                  // }
                   console.log('nih: ', nih_projects);
                   console.log('fence: ', fence_projects);
                   console.log('intersection: ', intersection);
