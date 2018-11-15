@@ -83,6 +83,7 @@ Relay.injectNetworkLayer(
                 fence_projects: json.fence_projects[0],
                 nih_projects: json.nih_projects,
                 intersection: json.intersection[0],
+                accessSet: true,
               }),
             );
             console.log('clearing interval: ', id);
@@ -157,6 +158,7 @@ let HasUser = connect(state => state.auth)(props => {
     intersection: props.intersection,
     fence_projects: props.fence_projects,
     nih_projects: props.nih_projects,
+    accessSet: props.accessSet,
   });
 });
 
@@ -177,6 +179,7 @@ const Root = (props: mixed) => (
                   intersection,
                   nih_projects,
                   fence_projects,
+                  accessSet,
                 }) => {
                   // if (
                   //   failed &&
@@ -187,7 +190,7 @@ const Root = (props: mixed) => (
                   if (failed) {
                     return <Redirect to="/login" />;
                   }
-                  if (user) {
+                  if (user && accessSet) {
                     console.log('nih: ', nih_projects);
                     console.log('fence: ', fence_projects);
                     console.log('intersection: ', intersection);

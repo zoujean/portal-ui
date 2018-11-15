@@ -99,6 +99,7 @@ const initialState: State = {
   intersection: null,
   fence_projects: null,
   nih_projects: null,
+  accessSet: false,
 };
 
 export default handleActions(
@@ -152,6 +153,7 @@ export default handleActions(
       intersection: action.payload.intersection,
       fence_projects: action.payload.fence_projects,
       nih_projects: action.payload.nih_projects,
+      accessSet: action.payload.accessSet,
     }),
   },
   initialState,
