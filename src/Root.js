@@ -70,46 +70,55 @@ Relay.injectNetworkLayer(
             let { user } = window.store.getState().auth;
 
             if (user) {
-              if (
-                !json.fence_projects[0] &&
-                !json.nih_projects &&
-                !json.intersection[0]
-              ) {
-                clear();
-                window.location.href = '/login?error=timeout';
-                return;
-              }
-              if (!json.fence_projects[0]) {
-                clear();
-                window.location.href = '/login?error=no_fence_projects';
-                return;
-              }
-
-              if (!json.nih_projects) {
-                clear();
-                window.location.href = '/login?error=no_nih_projects';
-                return;
-              }
-
-              if (!json.intersection[0]) {
-                clear();
-                window.location.href = '/login?error=no_intersection';
-                return;
-              }
+              store.dispatch(
+                setUserAccess({
+                  fence_projects: json.fence_projects[0],
+                  nih_projects: json.nih_projects,
+                  intersection: json.intersection[0],
+                }),
+              );
+              // if (
+              //   !json.fence_projects[0] &&
+              //   !json.nih_projects &&
+              //   !json.intersection[0]
+              // ) {
+              //   clear();
+              //   window.location.href = '/login?error=timeout';
+              //   return;
+              // }
+              // if (!json.fence_projects[0]) {
+              //   clear();
+              //   window.location.href = '/login?error=no_fence_projects';
+              //   return;
+              // }
+              //
+              // if (!json.nih_projects) {
+              //   clear();
+              //   window.location.href = '/login?error=no_nih_projects';
+              //   return;
+              // }
+              //
+              // if (!json.intersection[0]) {
+              //   clear();
+              //   window.location.href = '/login?error=no_intersection';
+              //   return;
+              // }
             }
 
             tries--;
 
             if (!tries) clearInterval(id);
           }, 500);
-
+          console.log('response: ', res);
           return res;
         })
         .catch(err => {
+          console.log('catch error: ', err);
           if (err.fetchResponse && err.fetchResponse.status === 403) {
             if (user) {
               store.dispatch(forceLogout());
             }
+            // return (window.location.href = '/login?error=timeout');
           }
         });
     },
@@ -140,9 +149,9 @@ let HasUser = connect(state => state.auth)(props => {
     user: props.user,
     failed: props.failed,
     error: props.error,
-    // intersection: props.intersection,
-    // fence_projects: props.fence_projects,
-    // nih_projects: props.nih_projects,
+    intersection: props.intersection,
+    fence_projects: props.fence_projects,
+    nih_projects: props.nih_projects,
   });
 });
 
@@ -160,9 +169,9 @@ const Root = (props: mixed) => (
                   user,
                   failed,
                   error,
-                  // intersection,
-                  // nih_projects,
-                  // fence_projects,
+                  intersection,
+                  nih_projects,
+                  fence_projects,
                 }) => {
                   if (
                     failed &&
@@ -170,10 +179,10 @@ const Root = (props: mixed) => (
                   ) {
                     return (window.location.href = '/login?error=timeout');
                   }
-                  // console.log('nih: ', nih_projects);
-                  // console.log('fence: ', fence_projects);
-                  // console.log('intersection: ', intersection);
-                  // console.log('user: ', user);
+                  console.log('nih: ', nih_projects);
+                  console.log('fence: ', fence_projects);
+                  console.log('intersection: ', intersection);
+                  console.log('user: ', user);
                   if (failed) {
                     return <Redirect to="/login" />;
                   }
@@ -181,15 +190,15 @@ const Root = (props: mixed) => (
                     // if (!fence_projects && !nih_projects && !intersection) {
                     //   return <Redirect to="/login?error=timeout" />;
                     // }
-                    // if (!fence_projects) {
-                    //   return <Redirect to="/login?error=no_fence_projects" />;
-                    // }
-                    // if (!nih_projects) {
-                    //   return <Redirect to="/login?error=no_nih_projects" />;
-                    // }
-                    // if (!intersection) {
-                    //   return <Redirect to="/login?error=no_intersection" />;
-                    // }
+                    if (!fence_projects) {
+                      return <Redirect to="/login?error=no_fence_projects" />;
+                    }
+                    if (!nih_projects) {
+                      return <Redirect to="/login?error=no_nih_projects" />;
+                    }
+                    if (!intersection) {
+                      return <Redirect to="/login?error=no_intersection" />;
+                    }
                     return (
                       <Relay.Renderer
                         Container={Container}
