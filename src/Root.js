@@ -72,11 +72,12 @@ Relay.injectNetworkLayer(
           }
           return (window.location.href = '/login?error=timeout');
         }
-        console.log('response is ok: ', res);
         let { json } = res;
         // let tries = 20;
         let id = setInterval(() => {
-          if (user) {
+          if (user && res.ok) {
+            console.log('response is ok: ', res);
+            console.log('dispatching set user access');
             store.dispatch(
               setUserAccess({
                 fence_projects: json.fence_projects[0],
@@ -84,6 +85,7 @@ Relay.injectNetworkLayer(
                 intersection: json.intersection[0],
               }),
             );
+            console.log('clearing interval: ', id);
             clearInterval(id);
           }
         }, 500);
@@ -182,14 +184,14 @@ const Root = (props: mixed) => (
                   // ) {
                   //   return (window.location.href = '/login?error=timeout');
                   // }
-                  console.log('nih: ', nih_projects);
-                  console.log('fence: ', fence_projects);
-                  console.log('intersection: ', intersection);
-                  console.log('user: ', user);
                   if (failed) {
                     return <Redirect to="/login" />;
                   }
                   if (user) {
+                    console.log('nih: ', nih_projects);
+                    console.log('fence: ', fence_projects);
+                    console.log('intersection: ', intersection);
+                    console.log('user: ', user);
                     // if (!fence_projects && !nih_projects && !intersection) {
                     //   return <Redirect to="/login?error=timeout" />;
                     // }
