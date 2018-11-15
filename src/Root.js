@@ -75,16 +75,19 @@ Relay.injectNetworkLayer(
         console.log('response is ok: ', res);
         let { json } = res;
         // let tries = 20;
-        // let id = setInterval(() => {
-        if (user) {
-          store.dispatch(
-            setUserAccess({
-              fence_projects: json.fence_projects[0],
-              nih_projects: json.nih_projects,
-              intersection: json.intersection[0],
-            }),
-          );
-        }
+        let id = setInterval(() => {
+          if (user) {
+            store.dispatch(
+              setUserAccess({
+                fence_projects: json.fence_projects[0],
+                nih_projects: json.nih_projects,
+                intersection: json.intersection[0],
+              }),
+            );
+            clearInterval(id);
+          }
+        }, 500);
+
         // if (
         //   !json.fence_projects[0] &&
         //   !json.nih_projects &&
@@ -116,7 +119,6 @@ Relay.injectNetworkLayer(
         //   tries--;
         //
         //   if (!tries) clearInterval(id);
-        // }, 500);
         return res;
       });
       // .catch(err => {
