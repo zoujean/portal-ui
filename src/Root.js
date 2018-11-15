@@ -66,8 +66,10 @@ Relay.injectNetworkLayer(
         .then(res => {
           let { user } = window.store.getState().auth;
           let { json } = res;
-          // let tries = 20;
-          let id = setInterval(() => {
+          let tries = 20;
+          let pollInterval = 200;
+          const setAccess = () => {
+            console.log('checking res');
             if (user && res.ok) {
               console.log('response is ok: ', res);
               console.log('dispatching set user access');
@@ -79,10 +81,14 @@ Relay.injectNetworkLayer(
                 }),
               );
               console.log('clearing interval: ', id);
+
               clearInterval(id);
-              return res;
             }
-          }, 500);
+            tries--;
+
+            if (!tries) clearInterval(id);
+          };
+          let id = setInterval(setAccess, pollInterval);
 
           // if (
           //   !json.fence_projects[0] &&
@@ -112,9 +118,7 @@ Relay.injectNetworkLayer(
           // }
           //   }
           //
-          //   tries--;
-          //
-          //   if (!tries) clearInterval(id);
+          return res;
         })
         .catch(err => {
           console.log('catch error: ', err);
