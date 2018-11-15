@@ -72,6 +72,7 @@ Relay.injectNetworkLayer(
           // return (window.location.href = '/login?error=timeout');
           // }
         }
+        console.log('response: ', res);
         let { json } = res;
         let tries = 20;
         let id = setInterval(() => {
