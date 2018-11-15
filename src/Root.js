@@ -62,65 +62,66 @@ Relay.injectNetworkLayer(
       let parsedBody = JSON.parse(req.body);
       req.body = JSON.stringify(parsedBody);
 
-      return next(req)
-        .then(res => {
-          let { json } = res;
-          let tries = 20;
-          let id = setInterval(() => {
-            let { user } = window.store.getState().auth;
+      return next(req).then(res => {
+        if (!res.ok) {
+          console.log('response not ok: ', res);
+          // if (err.fetchResponse && err.fetchResponse.status === 403) {
+          //   if (user) {
+          //     store.dispatch(forceLogout());
+          //   }
+          // return (window.location.href = '/login?error=timeout');
+          // }
+        }
+        let { json } = res;
+        let tries = 20;
+        let id = setInterval(() => {
+          let { user } = window.store.getState().auth;
 
-            if (user) {
-              store.dispatch(
-                setUserAccess({
-                  fence_projects: json.fence_projects[0],
-                  nih_projects: json.nih_projects,
-                  intersection: json.intersection[0],
-                }),
-              );
-              // if (
-              //   !json.fence_projects[0] &&
-              //   !json.nih_projects &&
-              //   !json.intersection[0]
-              // ) {
-              //   clear();
-              //   window.location.href = '/login?error=timeout';
-              //   return;
-              // }
-              // if (!json.fence_projects[0]) {
-              //   clear();
-              //   window.location.href = '/login?error=no_fence_projects';
-              //   return;
-              // }
-              //
-              // if (!json.nih_projects) {
-              //   clear();
-              //   window.location.href = '/login?error=no_nih_projects';
-              //   return;
-              // }
-              //
-              // if (!json.intersection[0]) {
-              //   clear();
-              //   window.location.href = '/login?error=no_intersection';
-              //   return;
-              // }
-            }
-
-            tries--;
-
-            if (!tries) clearInterval(id);
-          }, 500);
-          console.log('response: ', res);
-          return res;
-        })
-        .catch(err => {
-          console.log('catch error: ', err);
-          if (err.fetchResponse && err.fetchResponse.status === 403) {
-            if (user) {
-              store.dispatch(forceLogout());
-            }
-            // return (window.location.href = '/login?error=timeout');
+          if (user) {
+            store.dispatch(
+              setUserAccess({
+                fence_projects: json.fence_projects[0],
+                nih_projects: json.nih_projects,
+                intersection: json.intersection[0],
+              }),
+            );
+            // if (
+            //   !json.fence_projects[0] &&
+            //   !json.nih_projects &&
+            //   !json.intersection[0]
+            // ) {
+            //   clear();
+            //   window.location.href = '/login?error=timeout';
+            //   return;
+            // }
+            // if (!json.fence_projects[0]) {
+            //   clear();
+            //   window.location.href = '/login?error=no_fence_projects';
+            //   return;
+            // }
+            //
+            // if (!json.nih_projects) {
+            //   clear();
+            //   window.location.href = '/login?error=no_nih_projects';
+            //   return;
+            // }
+            //
+            // if (!json.intersection[0]) {
+            //   clear();
+            //   window.location.href = '/login?error=no_intersection';
+            //   return;
+            // }
           }
-        });
+
+          tries--;
+
+          if (!tries) clearInterval(id);
+        }, 500);
+        return res;
+      });
+      // .catch(err => {
+      //   console.log('catch error: ', err);
+      // });
     },
   ]),
 );
