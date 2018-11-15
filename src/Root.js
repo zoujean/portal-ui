@@ -62,71 +62,68 @@ Relay.injectNetworkLayer(
       let parsedBody = JSON.parse(req.body);
       req.body = JSON.stringify(parsedBody);
 
-      return next(req).then(res => {
-        let { user } = window.store.getState().auth;
-        if (!res.ok && res.status === 403) {
-          console.log('response not ok: ', res);
+      return next(req)
+        .then(res => {
+          let { user } = window.store.getState().auth;
+          let { json } = res;
+          // let tries = 20;
+          let id = setInterval(() => {
+            if (user && res.ok) {
+              console.log('response is ok: ', res);
+              console.log('dispatching set user access');
+              store.dispatch(
+                setUserAccess({
+                  fence_projects: json.fence_projects[0],
+                  nih_projects: json.nih_projects,
+                  intersection: json.intersection[0],
+                }),
+              );
+              console.log('clearing interval: ', id);
+              clearInterval(id);
+              return res;
+            }
+          }, 500);
+
+          // if (
+          //   !json.fence_projects[0] &&
+          //   !json.nih_projects &&
+          //   !json.intersection[0]
+          // ) {
+          //   clear();
+          //   window.location.href = '/login?error=timeout';
+          //   return;
+          // }
+          // if (!json.fence_projects[0]) {
+          //   clear();
+          //   window.location.href = '/login?error=no_fence_projects';
+          //   return;
+          // }
+          //
+          // if (!json.nih_projects) {
+          //   clear();
+          //   window.location.href = '/login?error=no_nih_projects';
+          //   return;
+          // }
+          //
+          // if (!json.intersection[0]) {
+          //   clear();
+          //   window.location.href = '/login?error=no_intersection';
+          //   return;
+          // }
+          //   }
+          //
+          //   tries--;
+          //
+          //   if (!tries) clearInterval(id);
+        })
+        .catch(err => {
+          console.log('catch error: ', err);
           if (user) {
             console.log('forcing logout');
             store.dispatch(forceLogout());
           }
           return (window.location.href = '/login?error=timeout');
-        }
-        let { json } = res;
-        // let tries = 20;
-        let id = setInterval(() => {
-          if (user && res.ok) {
-            console.log('response is ok: ', res);
-            console.log('dispatching set user access');
-            store.dispatch(
-              setUserAccess({
-                fence_projects: json.fence_projects[0],
-                nih_projects: json.nih_projects,
-                intersection: json.intersection[0],
-                accessSet: true,
-              }),
-            );
-            console.log('clearing interval: ', id);
-            clearInterval(id);
-          }
-        }, 500);
-
-        // if (
-        //   !json.fence_projects[0] &&
-        //   !json.nih_projects &&
-        //   !json.intersection[0]
-        // ) {
-        //   clear();
-        //   window.location.href = '/login?error=timeout';
-        //   return;
-        // }
-        // if (!json.fence_projects[0]) {
-        //   clear();
-        //   window.location.href = '/login?error=no_fence_projects';
-        //   return;
-        // }
-        //
-        // if (!json.nih_projects) {
-        //   clear();
-        //   window.location.href = '/login?error=no_nih_projects';
-        //   return;
-        // }
-        //
-        // if (!json.intersection[0]) {
-        //   clear();
-        //   window.location.href = '/login?error=no_intersection';
-        //   return;
-        // }
-        //   }
-        //
-        //   tries--;
-        //
-        //   if (!tries) clearInterval(id);
-        return res;
-      });
-      // .catch(err => {
-      //   console.log('catch error: ', err);
-      // });
+        });
     },
   ]),
 );
@@ -158,7 +155,6 @@ let HasUser = connect(state => state.auth)(props => {
     intersection: props.intersection,
     fence_projects: props.fence_projects,
     nih_projects: props.nih_projects,
-    accessSet: props.accessSet,
   });
 });
 
@@ -179,7 +175,6 @@ const Root = (props: mixed) => (
                   intersection,
                   nih_projects,
                   fence_projects,
-                  accessSet,
                 }) => {
                   // if (
                   //   failed &&
@@ -190,7 +185,7 @@ const Root = (props: mixed) => (
                   if (failed) {
                     return <Redirect to="/login" />;
                   }
-                  if (user && accessSet) {
+                  if (user) {
                     console.log('nih: ', nih_projects);
                     console.log('fence: ', fence_projects);
                     console.log('intersection: ', intersection);
