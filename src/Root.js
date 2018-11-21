@@ -154,9 +154,9 @@ let HasUser = connect(state => state.auth)(props => {
 });
 
 const Root = (props: mixed) => (
-  <Router>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <Router>
         <React.Fragment>
           {console.log('loading root')}
           {!IS_AUTH_PORTAL ? (
@@ -206,9 +206,9 @@ const Root = (props: mixed) => (
             </Switch>
           )}
         </React.Fragment>
-      </PersistGate>
-    </Provider>
-  </Router>
+      </Router>
+    </PersistGate>
+  </Provider>
 );
 
 export default Root;
