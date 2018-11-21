@@ -1,6 +1,6 @@
 // @flow
 import { omit } from 'lodash';
-import { REHYDRATE } from 'redux-persist/constants';
+import { REHYDRATE } from 'redux-persist/lib/constants';
 import { trim } from 'lodash';
 import { namespaceActions } from './utils';
 

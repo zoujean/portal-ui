@@ -1,6 +1,6 @@
 // @flow
 import { namespaceActions } from './utils';
-import { REHYDRATE } from 'redux-persist/constants';
+import { REHYDRATE } from 'redux-persist/lib/constants';
 
 const sets = namespaceActions('sets', [
   'ADD_ANALYSIS',

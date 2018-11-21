@@ -1,5 +1,5 @@
 // @flow
-import { REHYDRATE } from 'redux-persist/constants';
+import { REHYDRATE } from 'redux-persist/lib/constants';
 import { uniqBy } from 'lodash';
 
 // Custom

@@ -1,6 +1,6 @@
 /* @flow */
 import { handleActions } from 'redux-actions';
-import { REHYDRATE } from 'redux-persist/constants';
+import { REHYDRATE } from 'redux-persist/lib/constants';
 
 import { saveAs } from 'filesaver.js';
 import { fetchAuth } from '@ncigdc/utils/ajax';
@@ -100,7 +100,7 @@ export default handleActions(
       };
     },
     [USER_REQUEST]: state => (
-      console.log(state.user),
+      console.log('user request state:', state.user),
       {
         ...state,
         isFetching: true,

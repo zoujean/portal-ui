@@ -2,7 +2,7 @@
 
 // Vendor
 import React from 'react';
-import { REHYDRATE } from 'redux-persist/constants';
+import { REHYDRATE } from 'redux-persist/lib/constants';
 import _ from 'lodash';
 import md5 from 'blueimp-md5';
 import urlJoin from 'url-join';

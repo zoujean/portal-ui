@@ -5,7 +5,7 @@ import React from 'react';
 import { ApiOverrideBanner } from '@ncigdc/components/DismissibleBanner';
 import { fetchApi } from '@ncigdc/utils/ajax';
 import { LOCAL_STORAGE_API_OVERRIDE } from '@ncigdc/utils/constants';
-import { REHYDRATE } from 'redux-persist/constants';
+import { REHYDRATE } from 'redux-persist/lib/constants';
 import { uniqBy } from 'lodash';
 
 const NOTIFICATION_SUCCESS = 'NOTIFICATION_SUCCESS';
