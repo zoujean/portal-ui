@@ -487,7 +487,7 @@ export function reducer(state: Object = initialState, action: Object): Object {
   switch (action.type) {
     case REHYDRATE: {
       console.log('cart rehydrate: ', action);
-      const incoming = action.payload.cart;
+      const incoming = action.payload ? action.payload.cart : undefined;
       if (incoming) return { ...state, ...incoming };
       return state;
     }
