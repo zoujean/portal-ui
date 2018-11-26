@@ -355,6 +355,30 @@ export const fetchCartFiles = async (filters, size) => {
     });
 };
 
+// function fetchFilesAndAdd(currentFilters: ?Object, total: number): Function {
+//   return async dispatch => {
+//     // if the total requested in filters is larger than max cart then don't bother fetching
+//     // otherwise need the IDs to tell if they are already in the cart
+//     if (total <= MAX_CART_SIZE) {
+//       messageNotificationDispatcher(
+//         'info',
+//         <span>
+//           Adding <b>{total}</b> files to cart
+//         </span>,
+//         dispatch,
+//       );
+//
+//       const files = await fetchCartFiles(currentFilters, total);
+//       dispatch(addAllFilesInCart(files));
+//     } else {
+//       dispatch({
+//         type: CART_FULL,
+//       });
+//       messageNotificationDispatcher('warning', MAX_CART_WARNING, dispatch);
+//     }
+//   };
+// }
+
 function fetchFilesAndAdd(currentFilters: ?Object, total: number): Function {
   return async dispatch => {
     // if the total requested in filters is larger than max cart then don't bother fetching
@@ -368,7 +392,16 @@ function fetchFilesAndAdd(currentFilters: ?Object, total: number): Function {
         dispatch,
       );
 
-      const files = await fetchCartFiles(currentFilters, total);
+      const search = stringify({
+        filters: currentFilters && JSON.stringify(currentFilters),
+        size: total,
+        fields: 'acl,state,access,file_id,file_size,cases.project.project_id',
+      });
+      const { data } = await fetchApi(`files?${search}`);
+      const files = data.hits.map(({ cases, ...rest }) => ({
+        ...rest,
+        projects: cases.map(({ project: { project_id } }) => project_id),
+      }));
       dispatch(addAllFilesInCart(files));
     } else {
       dispatch({
