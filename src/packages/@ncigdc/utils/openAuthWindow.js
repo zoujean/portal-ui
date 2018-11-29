@@ -11,20 +11,20 @@ export default ({
   new Promise((resolve, reject) => {
     if (navigator.cookieEnabled) {
       const win = open(winUrl, 'Auth', winStyle);
-
+      console.log('win obj: ', win);
       const loginAttempt = () => {
         if (win.closed) {
           clearInterval(interval);
           reject('Window closed manually');
         }
-
+        console.log('inside loginAttempt: ', win);
         if (
           win.document.URL.includes(location.origin) &&
           !win.document.URL.includes('auth')
         ) {
           // Window is not closed yet so close
           win.close();
-
+          console.log('win returned to location.origin: ', win);
           // Clear the interval calling this function
           clearInterval(interval);
 
