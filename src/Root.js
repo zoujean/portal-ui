@@ -155,7 +155,11 @@ let HasUser = connect(state => state.auth)(props => {
 
 const Root = (props: mixed) => (
   <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
+    <PersistGate
+      loading={null}
+      persistor={persistor}
+      onBeforeLift={console.log('persist gate: ', store.getState().auth)}
+    >
       <Router>
         <React.Fragment>
           {console.log('loading root')}
