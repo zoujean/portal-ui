@@ -64,34 +64,35 @@ export default compose(
   })),
   branch(
     ({ ssms }) => !ssms.hits.length,
-    renderComponent(() => <div>Not enough data.</div>),
+    renderComponent(() => <div>Not enough data.</div>)
   ),
   withPropsOnChange(
     (props, nextProps) =>
       !isEqual(
         pick(props, ['activeTranscript', 'ssms', 'state']),
-        pick(nextProps, ['activeTranscript', 'ssms', 'state']),
+        pick(nextProps, ['activeTranscript', 'ssms', 'state'])
       ),
     ({ activeTranscript, blacklist, ssms, setState, state }) => {
       const lolliplotData = mapData({
         transcript: activeTranscript,
         data: (ssms.hits || []).map(x => ({ score: x._score, ...x._source })),
       });
+
       const lolliplotCollisions = pickBy(
         groupBy(
           lolliplotData.mutations.filter(
-            d => !state[`${blacklist}Blacklist`].has(d[blacklist]),
+            d => !state[`${blacklist}Blacklist`].has(d[blacklist])
           ),
-          d => `${d.x},${d.y}`,
+          d => `${d.x},${d.y}`
         ),
-        d => d.length > 1,
+        d => d.length > 1
       );
 
       // pass data up to parent for download button
       setState(s => ({ ...s, lolliplotData }));
       const impactUnknown = isEqual(
         Object.keys(groupByType('impact', lolliplotData.mutations)),
-        ['UNKNOWN'],
+        ['UNKNOWN']
       );
 
       if (blacklist === 'impact' && impactUnknown) {
@@ -105,7 +106,7 @@ export default compose(
             ...acc,
             [type]: highContrastPallet[i % highContrastPallet.length],
           }),
-          {},
+          {}
         ),
         impact: {
           HIGH: 'rgb(221, 60, 60)',
@@ -119,15 +120,15 @@ export default compose(
         lolliplotData,
         proteinTracks: separateOverlapping(lolliplotData.proteins),
         outsideSsms: lolliplotData.mutations.filter(
-          d => d.x > activeTranscript.length_amino_acid,
+          d => d.x > activeTranscript.length_amino_acid
         ),
         impactUnknown,
         lolliplotCollisions,
       };
-    },
+    }
   ),
   withState('expandDomains', 'toggleExpandedDomains', false),
-  withState('selectedCollisions', 'selectCollisions', []),
+  withState('selectedCollisions', 'selectCollisions', [])
 )(
   ({
     activeTranscript,
@@ -190,10 +191,11 @@ export default compose(
                   push(`/ssms/${d.id}`);
                 }
               }}
-              onPointMouseover={({ y: cases = 0, ...d }) => {
+              onPointMouseover={({ y: cases = d.base, ...d }) => {
+                cases = cases - d.base;
                 lolliplotCollisions[`${d.x},${cases}`]
                   ? setTooltip(
-                      'There are multiple mutations at this coordinate. Click to view.',
+                      'There are multiple mutations at this coordinate. Click to view.'
                     )
                   : setTooltip(
                       <span>
@@ -215,7 +217,7 @@ export default compose(
                             {d.polyphen_score}
                           </div>
                         )}
-                      </span>,
+                      </span>
                     );
               }}
               onPointMouseout={() => setTooltip(null)}
@@ -270,7 +272,7 @@ export default compose(
                             <div>
                               <b>Click to reset zoom</b>
                             </div>
-                          </span>,
+                          </span>
                         );
                       }
                     }}
@@ -292,7 +294,7 @@ export default compose(
                                 <b>Click to zoom</b>
                               </div>
                             )}
-                        </span>,
+                        </span>
                       );
                     }}
                     onProteinMouseout={() => setTooltip(null)}
@@ -308,7 +310,7 @@ export default compose(
                 data={{
                   ...lolliplotData,
                   mutations: lolliplotData.mutations.filter(
-                    filterByType(blacklist),
+                    filterByType(blacklist)
                   ),
                 }}
               />
@@ -318,7 +320,7 @@ export default compose(
       </div>
       <div>
         {selectedCollisions.filter(
-          d => !state[`${blacklist}Blacklist`].has(d[blacklist]),
+          d => !state[`${blacklist}Blacklist`].has(d[blacklist])
         ).length > 1 && (
           <div style={collisionDataBoxStyle}>
             <h6 style={{ margin: '0px' }}>
@@ -384,5 +386,5 @@ export default compose(
         />
       </div>
     </Row>
-  ),
+  )
 );
