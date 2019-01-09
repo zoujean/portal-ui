@@ -130,8 +130,6 @@ export const { store, persistor } = setupStore({
   },
 });
 
-console.log('persistor: ', persistor);
-console.log('store: ', store);
 window.store = store;
 
 store.dispatch(fetchApiVersionInfo());
@@ -153,13 +151,13 @@ let HasUser = connect(state => state.auth)(props => {
   });
 });
 
+const fooFunc = () => {
+  console.log('foo Func');
+  store.dispatch(fetchUser());
+};
 const Root = (props: mixed) => (
   <Provider store={store}>
-    <PersistGate
-      loading={null}
-      persistor={persistor}
-      onBeforeLift={console.log('persist gate: ', store.getState().auth)}
-    >
+    <PersistGate loading={null} persistor={persistor} onBeforeLift={fooFunc()}>
       <Router>
         <React.Fragment>
           {console.log('loading root')}
@@ -189,6 +187,7 @@ const Root = (props: mixed) => (
                         console.log('user request failed');
                         return <Redirect to="/login" />;
                       }
+
                       if (user) {
                         console.log('has a user, rendering container');
                         return (

@@ -56,7 +56,6 @@ const reducer = (state: TState = initialState, action: TAction) => {
   const payload = action.payload;
   switch (action.type) {
     case REHYDRATE:
-      console.log('rehydrating sets reducer: ', action);
       return {
         ...state,
         ...action.payload.sets,

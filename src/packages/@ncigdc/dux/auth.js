@@ -18,6 +18,7 @@ const TOKEN_FAILURE = 'gdc/TOKEN_FAILURE';
 const TOKEN_CLEAR = 'gdc/TOKEN_CLEAR';
 
 export function fetchUser() {
+  console.log('fetching user');
   if (IS_DEV) {
     return {
       type: USER_SUCCESS,
