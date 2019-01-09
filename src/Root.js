@@ -164,7 +164,6 @@ const Root = (props: mixed) => (
         </div>
       }
       persistor={persistor}
-      // onBeforeLift={fooFunc()}
     >
       <Router>
         <React.Fragment>
