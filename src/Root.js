@@ -157,7 +157,15 @@ const fooFunc = () => {
 };
 const Root = (props: mixed) => (
   <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor} onBeforeLift={fooFunc()}>
+    <PersistGate
+      loading={
+        <div>
+          <h1>Loading</h1>
+        </div>
+      }
+      persistor={persistor}
+      // onBeforeLift={fooFunc()}
+    >
       <Router>
         <React.Fragment>
           {console.log('loading root')}

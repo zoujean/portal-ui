@@ -83,7 +83,7 @@ export function fetchToken() {
 const initialState: State = {
   firstLoad: true,
   isFetching: false,
-  user: null,
+  user: JSON.parse(localStorage.getItem('ncigdcActiveauth')).user,
   error: {},
   isFetchingToken: false,
   token: undefined,
