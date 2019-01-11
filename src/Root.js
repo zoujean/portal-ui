@@ -151,10 +151,6 @@ let HasUser = connect(state => state.auth)(props => {
   });
 });
 
-const fooFunc = () => {
-  console.log('foo Func');
-  store.dispatch(fetchUser());
-};
 const Root = (props: mixed) => (
   <Provider store={store}>
     <PersistGate

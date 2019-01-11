@@ -1,6 +1,6 @@
 /* @flow */
 import { handleActions } from 'redux-actions';
-import { REHYDRATE } from 'redux-persist/lib/constants';
+// import { REHYDRATE } from 'redux-persist/lib/constants';
 
 import { saveAs } from 'filesaver.js';
 import { fetchAuth } from '@ncigdc/utils/ajax';
@@ -18,7 +18,6 @@ const TOKEN_FAILURE = 'gdc/TOKEN_FAILURE';
 const TOKEN_CLEAR = 'gdc/TOKEN_CLEAR';
 
 export function fetchUser() {
-  console.log('fetching user');
   if (IS_DEV) {
     return {
       type: USER_SUCCESS,
@@ -92,16 +91,15 @@ const initialState: State = {
 
 export default handleActions(
   {
-    [REHYDRATE]: (state, action) => {
-      console.log('rehydrate state: ', state);
-      console.log('rehydrate action: ', action);
-      return {
-        ...state,
-        ...action.payload.auth,
-      };
-    },
+    // [REHYDRATE]: (state, action) => {
+    //   console.log('rehydrate state: ', state);
+    //   console.log('rehydrate action: ', action);
+    //   return {
+    //     ...state,
+    //     ...action.payload.auth,
+    //   };
+    // },
     [USER_REQUEST]: state => (
-      console.log('user request state:', state.user),
       {
         ...state,
         isFetching: true,
