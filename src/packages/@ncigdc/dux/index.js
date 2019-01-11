@@ -15,6 +15,7 @@ type TSetupStore = (args: TSetupStoreArgs) => Object;
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const setupStore: TSetupStore = ({ persistConfig = {} } = {}) => {
+  console.log('storage: ', storage);
   const config = {
     key: 'reducers',
     storage,
@@ -27,8 +28,10 @@ const setupStore: TSetupStore = ({ persistConfig = {} } = {}) => {
       'bannerNotification',
       'auth',
     ],
+    debug: true,
     ...persistConfig,
   };
+  console.log('config: ', config);
   const store = createStore(
     persistCombineReducers(config, reducers),
     undefined,
