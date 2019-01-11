@@ -32,6 +32,7 @@ const setupStore: TSetupStore = ({ persistConfig = {} } = {}) => {
   };
   const store = createStore(
     persistCombineReducers(config, reducers),
+    undefined,
     composeEnhancers(applyMiddleware(thunk, apiMiddleware)),
   );
 
