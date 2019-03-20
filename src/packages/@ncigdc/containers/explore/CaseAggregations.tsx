@@ -17,7 +17,7 @@ import UploadSetButton from '@ncigdc/components/UploadSetButton';
 import { withTheme } from '@ncigdc/theme';
 import CaseIcon from '@ncigdc/theme/icons/Case';
 import escapeForRelay from '@ncigdc/utils/escapeForRelay';
-import tryParseJSON from '@ncigdc/utils/tryParseJSON';
+// import tryParseJSON from '@ncigdc/utils/tryParseJSON';
 import FacetHeader from '@ncigdc/components/Aggregations/FacetHeader';
 import { UploadCaseSet } from '@ncigdc/components/Modals/UploadSet';
 import { presetFacets } from '@ncigdc/containers/explore/presetFacets';
@@ -25,42 +25,42 @@ import { presetFacets } from '@ncigdc/containers/explore/presetFacets';
 import { IBucket } from '@ncigdc/components/Aggregations/types';
 import { CaseAggregationsQuery } from './explore.relay';
 export interface ITProps {
-  caseIdCollapsed: boolean,
-  setCaseIdCollapsed: (caseIdCollapsed: boolean) => void,
-  relay: any,
-  facets: { facets: string },
-  parsedFacets: any,
+  caseIdCollapsed: boolean;
+  setCaseIdCollapsed: (caseIdCollapsed: boolean) => void;
+  relay: any;
+  facets: { facets: string };
+  parsedFacets: any;
   aggregations: {
-    demographic__ethnicity: { buckets: [IBucket] },
-    demographic__gender: { buckets: [IBucket] },
-    demographic__race: { buckets: [IBucket] },
-    diagnoses__vital_status: { buckets: [IBucket] },
-    diagnoses__days_to_death: { max: number, min: number },
-    diagnoses__age_at_diagnosis: { max: number, min: number },
-    disease_type: { buckets: [IBucket] },
-    primary_site: { buckets: [IBucket] },
-    project__program__name: { buckets: [IBucket] },
-    project__project_id: { buckets: [IBucket] },
-  },
+    demographic__ethnicity: { buckets: [IBucket] };
+    demographic__gender: { buckets: [IBucket] };
+    demographic__race: { buckets: [IBucket] };
+    diagnoses__vital_status: { buckets: [IBucket] };
+    diagnoses__days_to_death: { max: number; min: number };
+    diagnoses__age_at_diagnosis: { max: number; min: number };
+    disease_type: { buckets: [IBucket] };
+    primary_site: { buckets: [IBucket] };
+    project__program__name: { buckets: [IBucket] };
+    project__project_id: { buckets: [IBucket] };
+  };
   hits: {
     edges: Array<{
       node: {
-        id: string,
-      },
-    }>,
-  },
-  setAutocomplete: any,
-  theme: any,
-  filters: any,
-  suggestions: any,
-  handleSelectFacet: any,
-  handleResetFacets: (event: any) => void,
-  handleRequestRemoveFacet: any,
-  shouldShowFacetSelection: boolean,
-  facetExclusionTest: any,
-  setShouldShowFacetSelection: any,
-  advancedFilter: boolean,
-  setAdvancedFilter: any,
+        id: string;
+      };
+    }>;
+  };
+  setAutocomplete: any;
+  theme: any;
+  filters: any;
+  suggestions: any;
+  handleSelectFacet: any;
+  handleResetFacets: (event: any) => void;
+  handleRequestRemoveFacet: any;
+  shouldShowFacetSelection: boolean;
+  facetExclusionTest: any;
+  setShouldShowFacetSelection: any;
+  advancedFilter: boolean;
+  setAdvancedFilter: any;
 }
 
 const enhance = compose(
@@ -72,9 +72,9 @@ const enhance = compose(
       filters,
     })
   ),
-  withPropsOnChange(['facets'], ({ facets }) => ({
-    parsedFacets: facets.facets ? tryParseJSON(facets.facets, {}) : {},
-  })),
+  // withPropsOnChange(['facets'], ({ facets }) => ({
+  //   parsedFacets: facets.facets ? tryParseJSON(facets.facets, {}) : {},
+  // })),
   lifecycle({
     componentDidMount(): void {
       const { relay, filters }: any = this.props;

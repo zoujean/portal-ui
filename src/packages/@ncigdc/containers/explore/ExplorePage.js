@@ -15,12 +15,21 @@ import NoResultsMessage from '@ncigdc/components/NoResultsMessage';
 import CaseAggregations from '@ncigdc/containers/explore/CaseAggregations';
 import GeneAggregations from '@ncigdc/containers/explore/GeneAggregations';
 import SSMAggregations from '@ncigdc/containers/explore/SSMAggregations';
-import ClinicalAggregations from '@ncigdc/containers/explore/ClinicalAggregations';
+// import ClinicalAggregations from '@ncigdc/containers/explore/ClinicalAggregations';
+import ClinicalAggregations from '@ncigdc/modern_components/ClinicalAggregations';
 import { CreateExploreCaseSetButton } from '@ncigdc/modern_components/withSetAction';
 import { replaceFilters } from '@ncigdc/utils/filters';
 import { stringifyJSONParam } from '@ncigdc/utils/uri';
 import { Row } from '@ncigdc/uikit/Flex';
 import Button from '@ncigdc/uikit/Button';
+import withFacets from '@ncigdc/modern_components/IntrospectiveType/Introspective.relay.js';
+
+import { CLINICAL_BLACKLIST } from '@ncigdc/utils/constants';
+
+const validClinicalTypesRegex = /(demographic)|(diagnoses)|(exposures)|(treatments)|(follow_ups)/;
+const blacklistRegex = new RegExp(
+  CLINICAL_BLACKLIST.map(item => `(${item})`).join('|')
+);
 
 export type TProps = {
   filters: {},
@@ -94,6 +103,32 @@ function setVariables({ relay, filters }) {
   });
 }
 
+const ClinicalAggregationWithFacets = withFacets(props => {
+  const {
+    __type: { fields, name },
+    filters,
+  } = props;
+  const filteredFields = _.head(
+    fields.filter(field => field.name === 'aggregations')
+  ).type.fields;
+
+  const clinicalAnalysisFields = filteredFields
+    .filter(field => validClinicalTypesRegex.test(field.name))
+    .filter(field => !blacklistRegex.test(field.name))
+    .map(field => field.name.replace('__', '.'))
+    .join(',');
+  return (
+    <ClinicalAggregations
+      facetFields={clinicalAnalysisFields}
+      // caseFacets={viewer.caseFacets}
+      globalFilters={filters || {}}
+      docType="cases"
+      // relayVarName="exploreCaseCustomFacetFields"
+      // aggregations={viewer.explore.cases.aggregations}
+      name={'ExploreCases'}
+    />
+  );
+});
 const enhance = compose(
   withRouter,
   lifecycle({
@@ -129,7 +164,8 @@ export const ExplorePageComponent = ({
               relay.setVariables(
                 { idAutocompleteCases: value, runAutocompleteCases: !!value },
                 onReadyStateChange
-              )}
+              )
+            }
           />
         ),
       },
@@ -137,13 +173,9 @@ export const ExplorePageComponent = ({
         id: 'clinical',
         text: 'Clinical',
         component: (
-          <ClinicalAggregations
-            facets={viewer.explore.customCaseFacets}
-            caseFacets={viewer.caseFacets}
-            globalFilters={filters}
-            docType="cases"
-            relayVarName="exploreCaseCustomFacetFields"
-            aggregations={viewer.explore.cases.aggregations}
+          <ClinicalAggregationWithFacets
+            name={'ExploreCases'}
+            filters={filters}
           />
         ),
       },
@@ -159,7 +191,8 @@ export const ExplorePageComponent = ({
               relay.setVariables(
                 { idAutocompleteGenes: value, runAutocompleteGenes: !!value },
                 onReadyStateChange
-              )}
+              )
+            }
           />
         ),
       },
@@ -176,7 +209,8 @@ export const ExplorePageComponent = ({
               relay.setVariables(
                 { idAutocompleteSsms: value, runAutocompleteSsms: !!value },
                 onReadyStateChange
-              )}
+              )
+            }
           />
         ),
       },
@@ -218,7 +252,8 @@ export const ExplorePageComponent = ({
               onClick={() =>
                 push({
                   pathname: '/repository',
-                })}
+                })
+              }
             >
               View Files in Repository
             </Button>
@@ -328,27 +363,7 @@ export const ExplorePageQuery = {
             }
           }
         }
-        caseFacets: __type(name: "ExploreCases"){
-          name
-          fields {
-            description
-            name
-            type { 
-              name 
-              fields 
-              { 
-                name 
-                description 
-                type { 
-                  name }
-              } 
-            }
-          }
-        }
         explore {
-          customCaseFacets: cases {
-            ${CaseAggregations.getFragment('facets')}
-          }
           cases {
             aggregations(filters: $filters aggregations_filter_themselves: false) {
               ${CaseAggregations.getFragment('aggregations')}

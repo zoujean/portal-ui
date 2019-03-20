@@ -45,7 +45,7 @@ export const API_OVERRIDE_KEYS = [
 ];
 
 export const LOCAL_STORAGE_API_OVERRIDE = API_OVERRIDE_KEYS.some(
-  k => localStorage[k],
+  k => localStorage[k]
 );
 
 export const DATA_CATEGORIES = {
@@ -307,3 +307,15 @@ export const DISPLAY_CDAVE =
   localStorage.REACT_APP_DISPLAY_CDAVE ||
   process.env.REACT_APP_DISPLAY_CDAVE ||
   false;
+
+export const CLINICAL_BLACKLIST = [
+  'state',
+  'score',
+  'submitter_id',
+  'demographic_id',
+  'updated_datetime',
+  'diagnosis_id',
+  'created_datetime',
+  'exposure_id',
+  'treatment_id',
+];
