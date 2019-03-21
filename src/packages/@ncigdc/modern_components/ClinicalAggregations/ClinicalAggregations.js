@@ -1,5 +1,4 @@
 import React from 'react';
-import Relay from 'react-relay/classic';
 import _ from 'lodash';
 import {
   compose,
@@ -8,11 +7,11 @@ import {
   withHandlers,
   withPropsOnChange,
 } from 'recompose';
+
 import FacetHeader from '@ncigdc/components/Aggregations/FacetHeader';
 import FacetWrapper from '@ncigdc/components/FacetWrapper';
 import { withTheme } from '@ncigdc/theme';
 import RecursiveToggledFacet from '@ncigdc/containers/explore/RecursiveToggledFacet';
-// import { CaseAggregationsQuery } from '@ncigdc/containers/explore/explore.relay';
 import { ResultHighlights } from '@ncigdc/components/QuickSearch/QuickSearchResults';
 import SearchIcon from 'react-icons/lib/fa/search';
 import { Row } from '@ncigdc/uikit/Flex';
@@ -25,13 +24,6 @@ import {
 } from '@ncigdc/containers/explore/presetFacets';
 import Input from '@ncigdc/uikit/Form/Input';
 import { ITheme } from '@ncigdc/theme/types';
-
-import { CLINICAL_BLACKLIST } from '@ncigdc/utils/constants';
-
-const validClinicalTypesRegex = /(demographic)|(diagnoses)|(exposures)|(treatments)|(follow_ups)/;
-const blacklistRegex = new RegExp(
-  CLINICAL_BLACKLIST.map(item => `(${item})`).join('|')
-);
 
 interface IFacetProps {
   description: string;
@@ -167,93 +159,30 @@ const enhance = compose(
       'cases.molecular_tests',
     ],
   }),
-  // withProps(({ __type: { fields, name } }) => {
-  //   const filteredFields = _.head(
-  //     fields.filter(field => field.name === 'aggregations')
-  //   ).type.fields;
-  //
-  //   const clinicalAnalysisFields = filteredFields
-  //     .filter(field => validClinicalTypesRegex.test(field.name))
-  //     .filter(field => !blacklistRegex.test(field.name));
-  //   return { clinicalAnalysisFields };
-  // }),
-  // withProps(({ clinicalAnalysisFields }) => )
-  withPropsOnChange(['explore'], ({ explore: { cases: { facets } } }) => {
-    debugger;
-    const foo = facets ? tryParseJSON(facets, {}) : {};
-    return {
-      facetMapping: foo
-        // .filter((f: IGraphFieldProps) => f.name.toLowerCase() === 'aggregations')[0]
-        // .type.fields.filter(
-        //   (f: {
-        //     __dataID: string,
-        //     name: string,
-        //     description: string,
-        //     type: { name: string, __dataID: string },
-        //   }) => !f.name.startsWith('gene')
-        // )
-        .reduce(
-          (acc, f) => ({
-            ...acc,
-            ['cases.' + f.name.replace(/__/g, '.')]: {
-              field: f.name.replace(/__/g, '.'),
-              full: 'cases.' + f.name.replace(/__/g, '.'),
-              doc_type: 'cases',
-              description: f.description,
-              type: f.type.name === 'Aggregations' ? 'keyword' : 'long',
-            },
-          }),
-          {}
-        ),
-    };
-  }),
-  // withPropsOnChange(
-  //   ['globalFilters', 'facetMapping'],
-  //   ({
-  //     relay,
-  //     facetMapping,
-  //     globalFilters,
-  //     setIsLoadingParsedFacets,
-  //     relayVarName,
-  //   }) => {
-  //     setIsLoadingParsedFacets(true);
-  //     return {variables: {
-  //
-  //     }}
-  //     relay.setVariables(
-  //       {
-  //         filters: globalFilters,
-  //         [relayVarName]: _.values(facetMapping)
-  //           .map(({ field }: { field: string }) => field)
-  //           .join(','),
-  //       },
-  //       (readyState: { ready: boolean, aborted: boolean, error: boolean }) => {
-  //         if (
-  //           _.some([readyState.ready, readyState.aborted, readyState.error])
-  //         ) {
-  //           setIsLoadingParsedFacets(false);
-  //         }
-  //       }
-  //     );
-  //   }
-  // ),
-  withProps(
-    ({
-      setIsLoadingParsedFacets,
-      setShouldHideUselessFacets,
-      relayVarName,
-      facetMapping,
-      docType,
-      shouldHideUselessFacets,
-      caseFacets,
-    }) => ({
-      setUselessFacetVisibility: (shouldHide: boolean) => {
-        setShouldHideUselessFacets(shouldHide);
-        localStorage.setItem(
-          'shouldHideUselessFacets',
-          JSON.stringify(shouldHide)
-        );
-      },
+  withProps(({ setIsLoadingParsedFacets, setShouldHideUselessFacets }) => ({
+    setUselessFacetVisibility: (shouldHide: boolean) => {
+      setShouldHideUselessFacets(shouldHide);
+      localStorage.setItem(
+        'shouldHideUselessFacets',
+        JSON.stringify(shouldHide)
+      );
+    },
+  })),
+  withPropsOnChange(
+    ['clinicalAnalysisFields'],
+    ({ clinicalAnalysisFields }) => ({
+      facetMapping: clinicalAnalysisFields.reduce((acc, f) => {
+        return {
+          ...acc,
+          [`cases.${f.name.replace(/__/g, '.')}`]: {
+            field: f.name.replace(/__/g, '.'),
+            full: `cases.${f.name.replace(/__/g, '.')}`,
+            doc_type: 'cases',
+            description: f.description,
+            type: f.type.name === 'Aggregations' ? 'keyword' : 'long',
+          },
+        };
+      }, {}),
     })
   ),
   withPropsOnChange(
@@ -267,8 +196,7 @@ const enhance = compose(
       searchValue,
       relayVarName,
       shouldHideUselessFacets,
-      facetExclusionTest,
-      ...props
+      // facetExclusionTest,
     }) => {
       const parsedFacets = facets ? tryParseJSON(facets, {}) : {};
       const usefulFacets = _.omitBy(
@@ -297,14 +225,12 @@ const enhance = compose(
             _.get(parsedFacets[facet.field], 'buckets', undefined),
             searchValue
           ),
-          !facetExclusionTest(facet),
+          // !facetExclusionTest(facet),
           !shouldHideUselessFacets ||
             Object.keys(usefulFacets).includes(facet.field),
-          // !facet.field.endsWith('id'),
-          // !facet.field.includes('updated_datetime'),
-          // !facet.field.includes('created_datetime'),
         ]);
       });
+
       const fieldHash = {};
       let key = '';
       for (const str of filteredFacets.map((f: any) => f.field)) {
@@ -322,7 +248,6 @@ const enhance = compose(
       }
       return {
         parsedFacets,
-        usefulFacets,
         filteredFacets,
         fieldHash,
       };
@@ -348,7 +273,6 @@ const ClinicalAggregations = ({
   fieldHash,
   parsedFacets,
   isLoadingParsedFacets,
-  usefulFacets,
 }: IClinicalProps): any => {
   return [
     <Row
@@ -381,96 +305,90 @@ const ClinicalAggregations = ({
         style={{ margin: '12px' }}
       />
       Only show fields with values (
-      {isLoadingParsedFacets ? '...' : Object.keys(usefulFacets).length} fields
-      shown)
+      {isLoadingParsedFacets ? '...' : Object.keys(filteredFacets).length}{' '}
+      fields shown)
     </label>,
     ...clinicalFacets
       .filter(
         facet => !searchValue || !!_.get(fieldHash, facet.full, false) // If the user is searching for something, hide the presetFacet with no value.
       )
       .map(facet => {
-        debugger;
-        // return (
-        //   <NestedWrapper
-        //     key={facet.title + 'NestedWrapper'}
-        //     style={{
-        //       position: 'relative',
-        //     }}
-        //     headerStyle={{
-        //       margin: '0.5rem 1rem 0rem 1rem',
-        //       backgroundColor: '#eeeeee',
-        //       borderBottom: `1px solid ${theme.greyScale5}`,
-        //       position: 'relative',
-        //     }}
-        //     Component={
-        //       <RecursiveToggledFacet
-        //         hash={_.omit(
-        //           _.get(fieldHash, facet.full, {}),
-        //           facet.excluded || ''
-        //         )}
-        //         Component={(componentFacet: { [x: string]: any }) => [
-        //           <FacetWrapper
-        //             relayVarName="exploreCaseCustomFacetFields"
-        //             key={componentFacet.full}
-        //             isMatchingSearchValue={(
-        //               componentFacet.full + componentFacet.description
-        //             )
-        //               .toLocaleLowerCase()
-        //               .includes(searchValue.toLocaleLowerCase())}
-        //             facet={componentFacet}
-        //             title={_.startCase(componentFacet.full.split('.').pop())}
-        //             aggregation={parsedFacets[componentFacet.field]}
-        //             searchValue={searchValue}
-        //             additionalProps={{ style: { paddingBottom: 0 } }}
-        //             style={{
-        //               position: 'relative',
-        //               paddingLeft: '10px',
-        //             }}
-        //             headerStyle={{ fontSize: '14px' }}
-        //             collapsed={searchValue.length === 0}
-        //             maxNum={5}
-        //           />,
-        //           <div key={componentFacet.description}>
-        //             {searchValue.length > 0 ? (
-        //               <ResultHighlights
-        //                 item={{ description: componentFacet.description }}
-        //                 query={searchValue}
-        //                 heighlightStyle={{ backgroundColor: '#FFFF00' }}
-        //                 style={{
-        //                   fontStyle: 'italic',
-        //                   position: 'relative',
-        //                   paddingLeft: '30px',
-        //                   paddingRight: '10px',
-        //                 }}
-        //               />
-        //             ) : null}
-        //           </div>,
-        //         ]}
-        //         key={facet.title + 'RecursiveToggledBox'}
-        //       />
-        //     }
-        //     angleIconRight
-        //     title={facet.title}
-        //     isCollapsed={toggledTree[facet.field].toggled}
-        //     setCollapsed={() =>
-        //       setToggledTree({
-        //         ...toggledTree,
-        //         [facet.field]: {
-        //           ...toggledTree[facet.field],
-        //           toggled: !toggledTree[facet.field].toggled,
-        //         },
-        //       })
-        //     }
-        //     isLoading={isLoadingParsedFacets}
-        //   />
-        // );
+        return (
+          <NestedWrapper
+            key={facet.title + 'NestedWrapper'}
+            style={{
+              position: 'relative',
+            }}
+            headerStyle={{
+              margin: '0.5rem 1rem 0rem 1rem',
+              backgroundColor: '#eeeeee',
+              borderBottom: `1px solid ${theme.greyScale5}`,
+              position: 'relative',
+            }}
+            Component={
+              <RecursiveToggledFacet
+                hash={_.omit(
+                  _.get(fieldHash, facet.full, {}),
+                  facet.excluded || ''
+                )}
+                Component={(componentFacet: { [x: string]: any }) => [
+                  <FacetWrapper
+                    relayVarName="exploreCaseCustomFacetFields"
+                    key={componentFacet.full}
+                    isMatchingSearchValue={(
+                      componentFacet.full + componentFacet.description
+                    )
+                      .toLocaleLowerCase()
+                      .includes(searchValue.toLocaleLowerCase())}
+                    facet={componentFacet}
+                    title={_.startCase(componentFacet.full.split('.').pop())}
+                    aggregation={parsedFacets[componentFacet.field]}
+                    searchValue={searchValue}
+                    additionalProps={{ style: { paddingBottom: 0 } }}
+                    style={{
+                      position: 'relative',
+                      paddingLeft: '10px',
+                    }}
+                    headerStyle={{ fontSize: '14px' }}
+                    collapsed={searchValue.length === 0}
+                    maxNum={5}
+                  />,
+                  <div key={componentFacet.description}>
+                    {searchValue.length > 0 ? (
+                      <ResultHighlights
+                        item={{ description: componentFacet.description }}
+                        query={searchValue}
+                        heighlightStyle={{ backgroundColor: '#FFFF00' }}
+                        style={{
+                          fontStyle: 'italic',
+                          position: 'relative',
+                          paddingLeft: '30px',
+                          paddingRight: '10px',
+                        }}
+                      />
+                    ) : null}
+                  </div>,
+                ]}
+                key={facet.title + 'RecursiveToggledBox'}
+              />
+            }
+            angleIconRight
+            title={facet.title}
+            isCollapsed={toggledTree[facet.field].toggled}
+            setCollapsed={() =>
+              setToggledTree({
+                ...toggledTree,
+                [facet.field]: {
+                  ...toggledTree[facet.field],
+                  toggled: !toggledTree[facet.field].toggled,
+                },
+              })
+            }
+            isLoading={isLoadingParsedFacets}
+          />
+        );
       }),
   ];
 };
 
 export default enhance(ClinicalAggregations);
-// const ClinicalAggregations = Relay.createContainer(
-//   enhance,
-//   CaseAggregationsQuery
-// );
-// export default ClinicalAggregations;

@@ -35,7 +35,7 @@ export default (Component: ReactClass<*>) =>
           query ClinicalAggregations_relayQuery($filters: FiltersArgument! $facetFields: [String]!) {
             explore {
               cases {
-                facets(facets: $facetFields)
+                facets(facets: $facetFields filters: $filters)
               }
             }
           }

@@ -110,21 +110,20 @@ const ClinicalAggregationWithFacets = withFacets(props => {
   } = props;
   const filteredFields = _.head(
     fields.filter(field => field.name === 'aggregations')
-  ).type.fields;
+  )
+    .type.fields.filter(field => validClinicalTypesRegex.test(field.name))
+    .filter(field => !blacklistRegex.test(field.name));
 
-  const clinicalAnalysisFields = filteredFields
-    .filter(field => validClinicalTypesRegex.test(field.name))
-    .filter(field => !blacklistRegex.test(field.name))
+  const facets = filteredFields
     .map(field => field.name.replace('__', '.'))
     .join(',');
+
   return (
     <ClinicalAggregations
-      facetFields={clinicalAnalysisFields}
-      // caseFacets={viewer.caseFacets}
+      facetFields={facets}
+      clinicalAnalysisFields={filteredFields}
       globalFilters={filters || {}}
       docType="cases"
-      // relayVarName="exploreCaseCustomFacetFields"
-      // aggregations={viewer.explore.cases.aggregations}
       name={'ExploreCases'}
     />
   );
