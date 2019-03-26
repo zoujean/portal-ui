@@ -121,26 +121,21 @@ const ClinicalGrouping = compose(
               padding: '0 10px',
             }}
           >
-            {fields.length > MAX_FIELDS_LENGTH && showingMore && (
-              <Row>
-                <StyledToggleMoreLink
-                  onClick={() => setShowingMore(!showingMore)}
-                >
-                  {'Less...'}
-                </StyledToggleMoreLink>
-              </Row>
-            )}
+            {fields.length > MAX_FIELDS_LENGTH &&
+              showingMore && (
+                <Row>
+                  <StyledToggleMoreLink
+                    onClick={() => setShowingMore(!showingMore)}
+                  >
+                    {'Less...'}
+                  </StyledToggleMoreLink>
+                </Row>
+              )}
             {_.orderBy(fields, 'name', 'asc')
               .slice(0, showingMore ? Infinity : MAX_VISIBLE_FACETS)
-              .map(field => ({
-                fieldDescription:
-                  field.description || 'No description available',
-                fieldName: parseFieldName(field.name),
-                type: field.type,
-                plotTypes: getPlotType(field),
-              }))
-              .map(({ fieldDescription, fieldName, type, plotTypes }, i) => {
-                const checked = Object.keys(currentAnalysis.variables).includes(
+              .map((field, i) => {
+                const fieldName = parseFieldName(field.name);
+                const checked = currentAnalysis.variables.hasOwnProperty(
                   fieldName
                 );
                 const toggleAction = checked
@@ -159,7 +154,7 @@ const ClinicalGrouping = compose(
                       <Tooltip
                         Component={
                           <div style={{ maxWidth: '24em' }}>
-                            {fieldDescription}
+                            {field.description || 'No description available'}
                           </div>
                         }
                       >
@@ -172,8 +167,8 @@ const ClinicalGrouping = compose(
                       fieldName={fieldName}
                       analysis_id={analysis_id}
                       fieldType={name}
-                      disabled={!type.name}
-                      plotTypes={plotTypes}
+                      disabled={!field.type.name}
+                      plotTypes={getPlotType(field)}
                       checked={checked}
                       toggleAction={toggleAction}
                       dispatch={dispatch}
@@ -247,9 +242,11 @@ export default compose(
       fields.filter(field => field.name === 'aggregations')
     ).type.fields;
 
-    const clinicalAnalysisFields = filteredFields
-      .filter(field => validClinicalTypesRegex.test(field.name))
-      .filter(field => !blacklistRegex.test(field.name));
+    const clinicalAnalysisFields = filteredFields.filter(
+      field =>
+        validClinicalTypesRegex.test(field.name) &&
+        !blacklistRegex.test(field.name)
+    );
     return { clinicalAnalysisFields };
   }),
   withTheme
