@@ -9,6 +9,7 @@ import Demo from './Demo';
 import ClinicalDataAnalysis from '@ncigdc/theme/icons/ClinicalDataAnalysis';
 import { DISPLAY_CDAVE } from '@ncigdc/utils/constants';
 import ClinicalAnalysisContainer from '@ncigdc/modern_components/IntrospectiveType';
+import ClinicalAnalysisResult from '@ncigdc/modern_components/ClinicalAnalysis';
 
 export type TSelectedSets = {
   [TSetTypes]: any,
@@ -157,10 +158,10 @@ const availableAnalysis: [TAnalysis] = [
       ['case', 'gene', 'ssm'].filter(t => t !== type).some(t => sets[t])
         ? 'Please choose only one type'
         : Object.keys(sets[type] || {}).length >= 3
-        ? `Please select two or three ${
-            type === 'ssm' ? 'mutation' : type
-          } sets`
-        : null,
+          ? `Please select two or three ${type === 'ssm'
+              ? 'mutation'
+              : type} sets`
+          : null,
     setTypes: ['case', 'gene', 'ssm'],
     validateSets: sets => {
       const entries = Object.entries(sets);
@@ -251,8 +252,8 @@ const availableAnalysis: [TAnalysis] = [
       !['case'].includes(type)
         ? "This analysis can't be run with this type"
         : Object.keys(sets[type] || {}).length >= 2
-        ? `You can only select two ${type === 'ssm' ? 'mutation' : type} set`
-        : null,
+          ? `You can only select two ${type === 'ssm' ? 'mutation' : type} set`
+          : null,
     setTypes: ['case'],
     validateSets: sets =>
       ['case'].every((t: any) => Object.keys(sets[t] || {}).length === 2),
@@ -321,7 +322,7 @@ const availableAnalysis: [TAnalysis] = [
       ResultComponent: props =>
         props.id.includes('demo-') ? (
           <Demo {...props}>
-            <ClinicalAnalysisResult />
+            <ClinicalAnalysisContainer typeName={'ExploreCases'} {...props} />
           </Demo>
         ) : (
           <ClinicalAnalysisContainer typeName={'ExploreCases'} {...props} />

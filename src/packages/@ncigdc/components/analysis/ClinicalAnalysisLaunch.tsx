@@ -146,7 +146,7 @@ const ClinicalAnalysisLaunch: ComponentType<IProps> = ({
         <Column style={{ paddingTop: 5 }}>
           <Row spacing={'5px'}>
             <Button onClick={onCancel}>Back</Button>
-            <DemoButton demoData={demoData} type={type} disabled />
+            <DemoButton demoData={demoData} type={type} />
           </Row>
         </Column>
       </Row>
@@ -160,17 +160,19 @@ const ClinicalAnalysisLaunch: ComponentType<IProps> = ({
             <ExploreLink>Exploration Page</ExploreLink>.
           </div>
 
-          {setData && setData.length > 0 && (
-            <EntityPageHorizontalTable
-              data={setData}
-              headings={cohortHeadings}
-            />
-          )}
-          {setData && setData.length === 0 && (
-            <Row>
-              <strong>You have not saved any sets yet.</strong>
-            </Row>
-          )}
+          {setData &&
+            setData.length > 0 && (
+              <EntityPageHorizontalTable
+                data={setData}
+                headings={cohortHeadings}
+              />
+            )}
+          {setData &&
+            setData.length === 0 && (
+              <Row>
+                <strong>You have not saved any sets yet.</strong>
+              </Row>
+            )}
         </Column>
       </Row>
       <Row
