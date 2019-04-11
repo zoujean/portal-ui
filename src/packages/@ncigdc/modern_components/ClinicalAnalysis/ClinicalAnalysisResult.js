@@ -3,6 +3,13 @@ import { compose, withState, withPropsOnChange, withProps } from 'recompose';
 import { connect } from 'react-redux';
 import SearchIcon from 'react-icons/lib/fa/search';
 import _ from 'lodash';
+import ReactPDF, {
+  PDFDownloadLink,
+  Document,
+  Page,
+  View,
+  Text,
+} from '@react-pdf/renderer';
 
 import { Row, Column } from '@ncigdc/uikit/Flex';
 import Button from '@ncigdc/uikit/Button';
@@ -45,11 +52,11 @@ import { getDefaultCurve } from '@ncigdc/utils/survivalplot';
 import SurvivalPlotWrapper from '@ncigdc/components/SurvivalPlotWrapper';
 
 interface IAnalysisResultProps {
-  sets: any;
-  config: any;
-  label: string;
-  Icon: () => React.Component<any>;
-  analysis: any;
+  sets: any,
+  config: any,
+  label: string,
+  Icon: () => React.Component<any>,
+  analysis: any,
 }
 //
 // interface ISavedSet {
@@ -90,6 +97,19 @@ const plotTypes = {
   categorical: ['histogram', 'survival'],
   continuous: ['histogram', 'survival', 'box'],
 };
+
+const MyDoc = () => (
+  <Document>
+    <Page>
+      <View>
+        <Text>Section #1</Text>
+      </View>
+      <View>
+        <Text>Section #2</Text>
+      </View>
+    </Page>
+  </Document>
+);
 
 const CopyAnalysisModal = compose(
   withState(
@@ -294,15 +314,21 @@ const ClinicalAnalysisResult = ({
           >
             Copy Analysis
           </Button>
-          <Tooltip Component={<span>Download</span>}>
-            <Button
-              style={{ ...visualizingButton, height: '100%' }}
-              disabled={false}
-            >
-              <DownloadIcon />
-              <Hidden>Download</Hidden>
-            </Button>
-          </Tooltip>
+
+          <PDFDownloadLink document={<MyDoc />} fileName="somename.pdf">
+            {({ blob, url, loading, error }) =>
+              loading ? 'Loading document...' : 'Download now!'}
+          </PDFDownloadLink>
+
+          {/* <Tooltip Component={<span>Download</span>}>
+              <Button
+                style={{ ...visualizingButton, height: '100%' }}
+                disabled={false}
+              >
+                <DownloadIcon />
+                <Hidden>Download</Hidden>
+              </Button>
+            </Tooltip> */}
         </Row>
       </Row>
       <Row>

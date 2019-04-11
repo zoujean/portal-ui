@@ -28,6 +28,7 @@
     "@oncojs/react-lolliplot": "0.11.1",
     "@oncojs/sapien": "0.5.2",
     "@oncojs/survivalplot": "0.6.5",
+    "@react-pdf/renderer": "1.5.1",
     "@types/d3": "5.0.1",
     "@types/filesize": "3.6.0",
     "@types/lodash": "4.14.117",
@@ -90,6 +91,7 @@
     "redux-api-middleware": "2.0.0-beta.2",
     "redux-persist": "5.9.1",
     "redux-thunk": "2.2.0",
+    "save": "2.3.3",
     "url-join": "1.1.0"
   },
   "devDependencies": {
