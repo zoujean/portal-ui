@@ -13,6 +13,7 @@ import {
 } from 'recompose';
 import _ from 'lodash';
 import * as ss from 'simple-statistics';
+import './qq.css';
 
 // Custom
 import { withTheme } from '@ncigdc/theme';
@@ -71,28 +72,6 @@ const qnorm = function(p) {
 
   return ppnd;
 };
-const ageValues = [
-  20517,
-  27082,
-  25149,
-  19226,
-  9975,
-  16175,
-  17829,
-  20302,
-  24768,
-  27662,
-  24392,
-  22131,
-  27313,
-  31692,
-  19775,
-  23406,
-  16157,
-  23102,
-  23834,
-  22204,
-].sort(sortAscending);
 
 const QQPlot = ({
   data = [],
@@ -145,9 +124,9 @@ const QQPlot = ({
   const margin = m || { top: 20, right: 50, bottom: 65, left: 55 };
   const chartWidth = width - margin.left - margin.right;
   const height = (h || 200) - margin.top - margin.bottom;
-
-  const firstQuartile = Math.ceil(data.length * (1 / 4));
-  const thirdQuartile = Math.ceil(data.length * (3 / 4));
+  //
+  // const firstQuartile = Math.ceil(data.length * (1 / 4));
+  // const thirdQuartile = Math.ceil(data.length * (3 / 4));
 
   const w = 600;
   // const h = 400;
@@ -204,14 +183,7 @@ const QQPlot = ({
     .append('svg')
     .attr('width', w)
     .attr('height', h);
-  // const svg = d3
-  //   .select(el)
-  //   .append('svg')
-  //   .attr('width', width)
-  //   .attr('height', height + margin.top + margin.bottom)
-  //   .append('g', 'chart')
-  //   .attr('fill', '#fff')
-  //   .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
   svg
     .append('text')
     .attr('y', 0)
@@ -238,34 +210,161 @@ const QQPlot = ({
     .attr('stroke', 'green')
     .attr('fill', 'white');
 
-  // svg
-  //   .selectAll('line')
-  //   .data(fooScores)
-  //   .enter()
-  //   .append('circle')
-  //   .attr('cx', function(d) {
-  //     return xScale(d.x);
-  //   })
-  //   .attr('cy', function(d) {
-  //     return yScale(d.y);
-  //   })
-  //   .attr('r', 1)
-  //   .attr('stroke', 'black')
-  //   .attr('fill', 'black');
+  svg
+    .append('defs')
+    .append('clipPath')
+    .attr('id', 'clip')
+    .append('rect')
+    .attr('width', width)
+    .attr('height', height + 55); // calculate from height instead of hardcoded
 
-  // const qqLineCoords = {
-  //   x1: firstQuartile,
-  //   y1: data[firstQuartile],
-  //   x2: thirdQuartile,
-  //   y2: data[thirdQuartile],
-  // };
+  function LeastSquares(values_x, values_y) {
+    var sum_x = 0;
+    var sum_y = 0;
+    var sum_xy = 0;
+    var sum_xx = 0;
+    var count = 0;
+
+    /*
+     * We'll use those variables for faster read/write access.
+     */
+    var x = 0;
+    var y = 0;
+    var values_length = values_x.length;
+
+    if (values_length !== values_y.length) {
+      throw new Error(
+        'The parameters values_x and values_y need to have same size!'
+      );
+    }
+
+    /*
+     * Nothing to do.
+     */
+    if (values_length === 0) {
+      return [[], []];
+    }
+
+    /*
+     * Calculate the sum for each of the parts necessary.
+     */
+    for (var v = 0; v < values_length; v++) {
+      x = values_x[v];
+      y = values_y[v];
+      sum_x += x;
+      sum_y += y;
+      sum_xx += x * x;
+      sum_xy += x * y;
+      count++;
+    }
+
+    /*
+     * Calculate m and b for the formular:
+     * y = x * m + b
+     */
+    var m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
+    var b = sum_y / count - (m * sum_x) / count;
+
+    return { b: b, m: m };
+  }
+
+  // var drawline = function(data) {
+  //   console.log('hiiiii');
+  //   var xValues = data.map(function(d) {
+  //     return xScale(d.x);
+  //   });
+  //   var yValues = data.map(function(d) {
+  //     return yScale(d.y);
+  //   });
+  //   var lsCoef = [LeastSquares(xValues, yValues)];
   //
-  // console.log('x1:', zScores[firstQuartile][0]);
-  // console.log('y1', zScores[firstQuartile][1]);
-  // console.log('x2', zScores[thirdQuartile][0]);
-  // console.log('y2', zScores[thirdQuartile][1]);
-  // console.log('hii:', _.last(zScores)[0]);
-  // console.log('hello: ', zScores[0][0]);
+  //   var lineFunction = d3
+  //     .line()
+  //     .x(function(d) {
+  //       return xScale(d.x);
+  //     })
+  //     .y(function(d) {
+  //       return yScale(d.y);
+  //     });
+  //
+  //   svg
+  //     .append('path')
+  //     .attr(
+  //       'd',
+  //       lineFunction([
+  //         { x: 50, y: lsCoef[0].m * 50 + lsCoef[0].b },
+  //         { x: 450, y: lsCoef[0].m * 450 + lsCoef[0].b },
+  //       ])
+  //     )
+  //     .attr('stroke-width', 2)
+  //     .attr('stroke', 'black')
+  //     .attr('id', 'regline');
+  // };
+
+  var transitionline = function(data) {
+    // const myXScale = d3
+    //   .scaleLinear()
+    //   .domain([
+    //     d3.min(zScores, function(d) {
+    //       return d[0];
+    //     }),
+    //     // 0,
+    //     d3.max(zScores, function(d) {
+    //       return d[0];
+    //     }),
+    //   ])
+    //   .range([padding, w - padding * 2]);
+    //
+    // const myYScale = d3
+    //   .scaleLinear()
+    //   .domain([
+    //     0,
+    //     d3.max(zScores, function(d) {
+    //       return d[1];
+    //     }),
+    //   ])
+    //   .range([h - padding, padding]);
+
+    var xValues = data.map(function(d) {
+      return xScale(d.x);
+    });
+    var yValues = data.map(function(d) {
+      return yScale(d.y);
+    });
+
+    var lsCoef = [LeastSquares(xValues, yValues)];
+
+    var lineFunction = d3
+      .line()
+      .x(function(d) {
+        return d.x;
+      })
+      .y(function(d) {
+        return d.y;
+      });
+
+    // console.log(
+    //   lineFunction([
+    //     { x: 50, y: lsCoef[0].m * 50 + lsCoef[0].b },
+    //     { x: 450, y: lsCoef[0].m * 450 + lsCoef[0].b },
+    //   ])
+    // );
+
+    svg
+      .append('path')
+      .attr(
+        'd',
+        lineFunction([
+          { x: 50, y: lsCoef[0].m * 50 + lsCoef[0].b },
+          { x: 450, y: lsCoef[0].m * 450 + lsCoef[0].b },
+        ])
+      )
+      .attr('stroke-width', 2)
+      .attr('stroke', 'black');
+  };
+
+  // transitionline(objZScores);
+
   const linearRegression = ss.linearRegression(
     objZScores.map(d => {
       return [d.x, d.y];
@@ -311,6 +410,15 @@ const QQPlot = ({
     .attr('class', 'y axis')
     .attr('transform', 'translate(' + padding + ', 0)')
     .call(yAxis);
+
+  // svg
+  //   .append('rect')
+  //   .attr('x', w)
+  //   .attr('y', 100)
+  //   .attr('clip-path', 'url(#regression-clip)')
+  //   .style('fill', 'white')
+  //   .attr('height', 100)
+  //   .attr('width', w);
 
   // const x = d3
   //   .scaleBand()

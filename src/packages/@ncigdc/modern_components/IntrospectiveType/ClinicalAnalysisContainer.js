@@ -78,7 +78,7 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
         data={insectSprays}
         margin={CHART_MARGINS}
         yAxis={{ title: '' }}
-        title={'Insect Sprays$count'}
+        title={'InsectSprays$count'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
       />
