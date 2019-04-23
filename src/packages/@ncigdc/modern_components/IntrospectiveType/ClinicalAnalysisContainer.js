@@ -62,14 +62,14 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
         data={ChickWeight}
         margin={CHART_MARGINS}
         yAxis={{ title: 'ChickWeight' }}
-        title={'ChickWeight'}
+        title={'ChickWeight$Weight'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
       />
       <QQPlot
         data={DNase}
         margin={CHART_MARGINS}
-        yAxis={{ title: 'DNase' }}
+        yAxis={{ title: 'DNase$conc' }}
         title={'DNase'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
@@ -78,7 +78,7 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
         data={insectSprays}
         margin={CHART_MARGINS}
         yAxis={{ title: '' }}
-        title={'Insect Sprays'}
+        title={'Insect Sprays$count'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
       />
@@ -86,7 +86,7 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
         data={indoTime}
         margin={CHART_MARGINS}
         yAxis={{ title: '' }}
-        title={'Pharmacokinetics of Indomethacin'}
+        title={'Indometh$time'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
       />
@@ -94,7 +94,7 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
         data={lakeHuron}
         margin={CHART_MARGINS}
         yAxis={{ title: '' }}
-        title={'Lake Huron'}
+        title={'LakeHuron'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
       />
@@ -102,7 +102,7 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
         data={nile}
         margin={CHART_MARGINS}
         yAxis={{ title: '' }}
-        title={'Nile Flow'}
+        title={'Nile'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
       />
@@ -110,7 +110,7 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
         data={wwwUsage}
         margin={CHART_MARGINS}
         yAxis={{ title: '' }}
-        title={'Internet Usage'}
+        title={'WWWusage'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
       />
@@ -118,7 +118,7 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
         data={orchardSprays}
         margin={CHART_MARGINS}
         yAxis={{ title: '' }}
-        title={'Orchard Sprays'}
+        title={'OrchardSprays$decrease'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
       />
@@ -126,7 +126,7 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
         data={ozone}
         margin={CHART_MARGINS}
         yAxis={{ title: '' }}
-        title={'Ozone (filtered for N/A values)'}
+        title={'airquality$Ozone'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
       />
@@ -134,7 +134,7 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
         data={solarRadiation}
         margin={CHART_MARGINS}
         yAxis={{ title: '' }}
-        title={'Solar Radiation (filtered for N/A values)'}
+        title={'airquality$Solar.R'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
       />
