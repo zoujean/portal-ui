@@ -106,7 +106,7 @@ const QQPlot = ({
   theme,
   size: { width },
 }) => {
-  const testValues = data.sort(sortAscending);
+  const testValues = data.filter(d => _.isNumber(d)).sort(sortAscending);
   const n = testValues.length;
 
   const mean = testValues.reduce((acc, i) => acc + i, 0) / n;

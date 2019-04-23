@@ -13,6 +13,11 @@ import {
   indoTime,
   lakeHuron,
   insectSprays,
+  nile,
+  ozone,
+  solarRadiation,
+  wwwUsage,
+  orchardSprays,
 } from '@ncigdc/components/qq_test_data';
 import { CLINICAL_BLACKLIST } from '@ncigdc/utils/constants';
 
@@ -90,6 +95,46 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
         margin={CHART_MARGINS}
         yAxis={{ title: '' }}
         title={'Lake Huron'}
+        height={CHART_HEIGHT}
+        styles={{ border: '1px solid lightgray' }}
+      />
+      <QQPlot
+        data={nile}
+        margin={CHART_MARGINS}
+        yAxis={{ title: '' }}
+        title={'Nile Flow'}
+        height={CHART_HEIGHT}
+        styles={{ border: '1px solid lightgray' }}
+      />
+      <QQPlot
+        data={wwwUsage}
+        margin={CHART_MARGINS}
+        yAxis={{ title: '' }}
+        title={'Internet Usage'}
+        height={CHART_HEIGHT}
+        styles={{ border: '1px solid lightgray' }}
+      />
+      <QQPlot
+        data={orchardSprays}
+        margin={CHART_MARGINS}
+        yAxis={{ title: '' }}
+        title={'Orchard Sprays'}
+        height={CHART_HEIGHT}
+        styles={{ border: '1px solid lightgray' }}
+      />
+      <QQPlot
+        data={ozone}
+        margin={CHART_MARGINS}
+        yAxis={{ title: '' }}
+        title={'Ozone (filtered for N/A values)'}
+        height={CHART_HEIGHT}
+        styles={{ border: '1px solid lightgray' }}
+      />
+      <QQPlot
+        data={solarRadiation}
+        margin={CHART_MARGINS}
+        yAxis={{ title: '' }}
+        title={'Solar Radiation (filtered for N/A values)'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
       />
