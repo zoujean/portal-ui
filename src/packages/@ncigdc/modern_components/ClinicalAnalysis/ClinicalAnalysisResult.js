@@ -470,7 +470,7 @@ const ClinicalAnalysisResult = ({
               ...(controlPanelExpanded ? {} : { marginLeft: '1%' }),
             }}
           >
-            <Column
+            {/* <Column
               style={{
                 ...zDepth1,
                 height: 560,
@@ -507,7 +507,7 @@ const ClinicalAnalysisResult = ({
                   survivalPlotLoading={survivalPlotLoading}
                 />
               </div>
-            </Column>
+            </Column> */}
 
             {_.map(displayVariables, (varProperties, varFieldName) => {
               const filters = {

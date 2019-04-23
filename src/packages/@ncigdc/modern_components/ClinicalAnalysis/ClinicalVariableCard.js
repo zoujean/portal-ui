@@ -25,6 +25,7 @@ import { setModal } from '@ncigdc/dux/modal';
 import SaveSetModal from '@ncigdc/components/Modals/SaveSetModal';
 import AppendSetModal from '@ncigdc/components/Modals/AppendSetModal';
 import RemoveSetModal from '@ncigdc/components/Modals/RemoveSetModal';
+import QQPlot from '@ncigdc/components/QQPlot';
 
 // survival plot
 import {
@@ -971,7 +972,7 @@ const ClinicalVariableCard: React.ComponentType<IVariableCardProps> = ({
                 margin: '5px 5px 10px',
               }}
             >
-              {variable.active_chart}
+              <QQPlot />
             </div>
           )}
           <Row style={{ justifyContent: 'space-between', margin: '5px 0' }}>

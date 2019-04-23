@@ -3,6 +3,8 @@ import ClinicalAnalysisResult from '@ncigdc/modern_components/ClinicalAnalysis';
 import { compose, withProps, branch } from 'recompose';
 import withRouter from '@ncigdc/utils/withRouter';
 import { connect } from 'react-redux';
+import QQPlot from '@ncigdc/components/QQPlot';
+import _ from 'lodash';
 
 import { CLINICAL_BLACKLIST } from '@ncigdc/utils/constants';
 
@@ -33,11 +35,25 @@ const enhance = compose(
 );
 
 const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
+  const CHART_HEIGHT = 295;
+  const CHART_MARGINS = {
+    top: 20,
+    right: 50,
+    bottom: 75,
+    left: 55,
+  };
+
   return (
-    <ClinicalAnalysisResult
-      clinicalAnalysisFields={clinicalAnalysisFields}
-      {...props}
+    <QQPlot
+      margin={CHART_MARGINS}
+      yAxis={{ title: 'Bla' }}
+      height={CHART_HEIGHT}
+      styles={{ border: '1px solid lightgray', backgroundColor: 'pink' }}
     />
+    // <ClinicalAnalysisResult
+    //   clinicalAnalysisFields={clinicalAnalysisFields}
+    //   {...props}
+    // />
   );
 };
 
