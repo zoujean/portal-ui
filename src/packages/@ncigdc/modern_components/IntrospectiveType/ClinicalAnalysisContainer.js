@@ -6,6 +6,14 @@ import { connect } from 'react-redux';
 import QQPlot from '@ncigdc/components/QQPlot';
 import _ from 'lodash';
 
+import { Column } from '@ncigdc/uikit/Flex';
+import {
+  ChickWeight,
+  DNase,
+  indoTime,
+  lakeHuron,
+  insectSprays,
+} from '@ncigdc/components/qq_test_data';
 import { CLINICAL_BLACKLIST } from '@ncigdc/utils/constants';
 
 const validClinicalTypesRegex = /(demographic)|(diagnoses)|(exposures)|(treatments)|(follow_ups)/;
@@ -44,12 +52,49 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
   };
 
   return (
-    <QQPlot
-      margin={CHART_MARGINS}
-      yAxis={{ title: 'Bla' }}
-      height={CHART_HEIGHT}
-      styles={{ border: '1px solid lightgray', backgroundColor: 'pink' }}
-    />
+    <Column>
+      <QQPlot
+        data={ChickWeight}
+        margin={CHART_MARGINS}
+        yAxis={{ title: 'ChickWeight' }}
+        title={'ChickWeight'}
+        height={CHART_HEIGHT}
+        styles={{ border: '1px solid lightgray' }}
+      />
+      <QQPlot
+        data={DNase}
+        margin={CHART_MARGINS}
+        yAxis={{ title: 'DNase' }}
+        title={'DNase'}
+        height={CHART_HEIGHT}
+        styles={{ border: '1px solid lightgray' }}
+      />
+      <QQPlot
+        data={insectSprays}
+        margin={CHART_MARGINS}
+        yAxis={{ title: '' }}
+        title={'Insect Sprays'}
+        height={CHART_HEIGHT}
+        styles={{ border: '1px solid lightgray' }}
+      />
+      <QQPlot
+        data={indoTime}
+        margin={CHART_MARGINS}
+        yAxis={{ title: '' }}
+        title={'Pharmacokinetics of Indomethacin'}
+        height={CHART_HEIGHT}
+        styles={{ border: '1px solid lightgray' }}
+      />
+      <QQPlot
+        data={lakeHuron}
+        margin={CHART_MARGINS}
+        yAxis={{ title: '' }}
+        title={'Lake Huron'}
+        height={CHART_HEIGHT}
+        styles={{ border: '1px solid lightgray' }}
+      />
+    </Column>
+
     // <ClinicalAnalysisResult
     //   clinicalAnalysisFields={clinicalAnalysisFields}
     //   {...props}

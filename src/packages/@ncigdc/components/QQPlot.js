@@ -19,7 +19,6 @@ import { withTheme } from '@ncigdc/theme';
 import { withTooltip } from '@ncigdc/uikit/Tooltip';
 import withSize from '@ncigdc/utils/withSize';
 import '@ncigdc/components/Charts/style.css';
-import { test1 } from './qq_test_data';
 
 const sortAscending = (a, b) => {
   return a - b;
@@ -95,43 +94,8 @@ const ageValues = [
   22204,
 ].sort(sortAscending);
 
-const testValues = test1.sort(sortAscending);
-const n = testValues.length;
-
-const mean = testValues.reduce((acc, i) => acc + i, 0) / n;
-const deviations = testValues.map(v => v - mean);
-const squaredDeviations = deviations
-  .map(d => d * d)
-  .reduce((acc, d) => acc + d, 0);
-
-const variance = squaredDeviations / n;
-
-const standardDeviation = Math.sqrt(variance);
-
-const getZScore = (age, m, stdDev) => (age - m) / stdDev;
-
-// i think this is giving you the qq line
-
-const qqLine = testValues.map((age, i) => [
-  getZScore(age, mean, standardDeviation),
-  age,
-]);
-
-const zScores = testValues.map((age, i) => [
-  qnorm((i + 1 - 0.5) / testValues.length),
-  age,
-]);
-// console.log(zScores);
-const objZScores = zScores.map(score => ({ x: score[0], y: score[1] }));
-
-const fooScores = testValues.map(age => ({
-  x: getZScore(age, mean, standardDeviation),
-  y: age,
-}));
-
-console.log(fooScores);
 const QQPlot = ({
-  data = zScores,
+  data = [],
   title,
   // yAxis = {},
   // xAxis = {},
@@ -142,6 +106,35 @@ const QQPlot = ({
   theme,
   size: { width },
 }) => {
+  const testValues = data.sort(sortAscending);
+  const n = testValues.length;
+
+  const mean = testValues.reduce((acc, i) => acc + i, 0) / n;
+  const deviations = testValues.map(v => v - mean);
+  const squaredDeviations = deviations
+    .map(d => d * d)
+    .reduce((acc, d) => acc + d, 0);
+
+  const variance = squaredDeviations / n;
+
+  const standardDeviation = Math.sqrt(variance);
+
+  const getZScore = (age, m, stdDev) => (age - m) / stdDev;
+
+  // i think this is giving you the qq line
+  const qqLine = testValues.map((age, i) => [
+    getZScore(age, mean, standardDeviation),
+    age,
+  ]);
+
+  const zScores = testValues.map((age, i) => [qnorm((i + 1 - 0.5) / n), age]);
+  // console.log(zScores);
+  const objZScores = zScores.map(score => ({ x: score[0], y: score[1] }));
+
+  // const fooScores = testValues.map(age => ({
+  //   x: getZScore(age, mean, standardDeviation),
+  //   y: age,
+  // }));
   const el = ReactFauxDOM.createElement('div');
   el.style.width = '100%';
 
@@ -162,11 +155,10 @@ const QQPlot = ({
   const xScale = d3
     .scaleLinear()
     .domain([
-      d3.min(data, function(d) {
-        // what's the best way to generate a min with space to spare?
+      d3.min(zScores, function(d) {
         return Math.floor(d[0]);
       }),
-      d3.max(data, function(d) {
+      d3.max(zScores, function(d) {
         return Math.ceil(d[0]);
       }),
     ])
@@ -176,7 +168,7 @@ const QQPlot = ({
     .scaleLinear()
     .domain([
       0,
-      d3.max(data, function(d) {
+      d3.max(zScores, function(d) {
         return d[1];
       }),
     ])
@@ -212,10 +204,28 @@ const QQPlot = ({
     .append('svg')
     .attr('width', w)
     .attr('height', h);
-
+  // const svg = d3
+  //   .select(el)
+  //   .append('svg')
+  //   .attr('width', width)
+  //   .attr('height', height + margin.top + margin.bottom)
+  //   .append('g', 'chart')
+  //   .attr('fill', '#fff')
+  //   .attr('transform', `translate(${margin.left}, ${margin.top})`);
+  svg
+    .append('text')
+    .attr('y', 0)
+    .attr('x', width / 4)
+    .attr('dy', '1em')
+    .style('text-anchor', 'middle')
+    .style('fontSize', '2rem')
+    .style('fontWeight', '500')
+    .style('marginBottom', 10)
+    // .attr('fill', yAxisStyle.textFill)
+    .text(title);
   svg
     .selectAll('circle')
-    .data(data)
+    .data(zScores)
     .enter()
     .append('circle')
     .attr('cx', function(d) {
@@ -243,12 +253,12 @@ const QQPlot = ({
   //   .attr('stroke', 'black')
   //   .attr('fill', 'black');
 
-  const qqLineCoords = {
-    x1: firstQuartile,
-    y1: data[firstQuartile],
-    x2: thirdQuartile,
-    y2: data[thirdQuartile],
-  };
+  // const qqLineCoords = {
+  //   x1: firstQuartile,
+  //   y1: data[firstQuartile],
+  //   x2: thirdQuartile,
+  //   y2: data[thirdQuartile],
+  // };
   //
   // console.log('x1:', zScores[firstQuartile][0]);
   // console.log('y1', zScores[firstQuartile][1]);
@@ -288,276 +298,6 @@ const QQPlot = ({
     .attr('stroke', 'black')
     .attr('stroke-width', 2);
 
-  function calcLinear(data, x, y, minX, minY) {
-    /////////
-    //SLOPE//
-    /////////
-
-    // Let n = the number of data points
-    var n = data.length;
-
-    // Get just the points
-    var pts = [];
-    data.forEach(function(d, i) {
-      var obj = {};
-      obj.x = d[0];
-      obj.y = d[1];
-      obj.mult = obj.x * obj.y;
-      pts.push(obj);
-    });
-
-    // Let a equal n times the summation of all x-values multiplied by their corresponding y-values
-    // Let b equal the sum of all x-values times the sum of all y-values
-    // Let c equal n times the sum of all squared x-values
-    // Let d equal the squared sum of all x-values
-    var sum = 0;
-    var xSum = 0;
-    var ySum = 0;
-    var sumSq = 0;
-    pts.forEach(function(pt) {
-      sum = sum + pt.mult;
-      xSum = xSum + pt.x;
-      ySum = ySum + pt.y;
-      sumSq = sumSq + pt.x * pt.x;
-    });
-    var a = sum * n;
-    var b = xSum * ySum;
-    var c = sumSq * n;
-    var d = xSum * xSum;
-
-    // Plug the values that you calculated for a, b, c, and d into the following equation to calculate the slope
-    // slope = m = (a - b) / (c - d)
-    var m = (a - b) / (c - d);
-
-    /////////////
-    //INTERCEPT//
-    /////////////
-
-    // Let e equal the sum of all y-values
-    var e = ySum;
-
-    // Let f equal the slope times the sum of all x-values
-    var f = m * xSum;
-
-    // Plug the values you have calculated for e and f into the following equation for the y-intercept
-    // y-intercept = b = (e - f) / n
-    var bb = (e - f) / n;
-    // // Print the equation below the chart
-    // document.getElementsByClassName('equation')[0].innerHTML =
-    //   'y = ' + m + 'x + ' + bb;
-    // document.getElementsByClassName('equation')[1].innerHTML =
-    //   'x = ( y - ' + bb + ' ) / ' + m;
-
-    // return an object of two points
-    // each point is an object with an x and y coordinate
-    // debugger;
-    return {
-      ptA: {
-        x: minX,
-        y: m * minX + bb,
-      },
-      ptB: {
-        y: minY,
-        x: (minY - bb) / m,
-      },
-    };
-  }
-  // var lg = calcLinear(
-  //   zScores,
-  //   'x',
-  //   'y',
-  //   d3.min(data, function(d) {
-  //     return d[0];
-  //   }),
-  //   d3.min(data, function(d) {
-  //     return d[1];
-  //   })
-  // );
-  //
-  // console.log(lg);
-
-  const leastSquares = (xSeries, ySeries) => {
-    var reduceSumFunc = function(prev, cur) {
-      return prev + cur;
-    };
-
-    var xBar = (xSeries.reduce(reduceSumFunc) * 1.0) / xSeries.length;
-    var yBar = (ySeries.reduce(reduceSumFunc) * 1.0) / ySeries.length;
-
-    var ssXX = xSeries
-      .map(function(d) {
-        return Math.pow(d - xBar, 2);
-      })
-      .reduce(reduceSumFunc);
-
-    var ssYY = ySeries
-      .map(function(d) {
-        return Math.pow(d - yBar, 2);
-      })
-      .reduce(reduceSumFunc);
-
-    var ssXY = xSeries
-      .map(function(d, i) {
-        return (d - xBar) * (ySeries[i] - yBar);
-      })
-      .reduce(reduceSumFunc);
-
-    var slope = ssXY / ssXX;
-    var intercept = yBar - xBar * slope;
-    var rSquare = Math.pow(ssXY, 2) / (ssXX * ssYY);
-
-    return [slope, intercept, rSquare];
-  };
-  // var xSeries = d3.range(1, xLabels.length + 1);
-  // var ySeries = data.map(function(d) { return parseFloat(d['rate']); });
-
-  const xSeries = zScores.map(z => z[0]);
-  const ySeries = zScores.map(z => z[1]);
-  var leastSquaresCoeff = leastSquares(xSeries, ySeries);
-
-  // apply the reults of the least squares regression
-  var x1 = zScores[0][0];
-  var y1 = leastSquaresCoeff[0] + leastSquaresCoeff[1];
-  var x2 = zScores[zScores.length - 1][0];
-  var y2 = leastSquaresCoeff[0] * xSeries.length + leastSquaresCoeff[1];
-  var trendData = [[x1, y1, x2, y2]];
-
-  var trendline = svg.selectAll('.trendline').data(trendData);
-  // console.log(trendData);
-  // svg
-  //   .selectAll('.trendline')
-  //   .data(trendData)
-  //   .enter()
-  //   .append('line')
-  //   .attr('class', 'trendline')
-  //   .attr('x1', function(d) {
-  //     return xScale(d[0]);
-  //   })
-  //   .attr('y1', function(d) {
-  //     return yScale(d[1]);
-  //   })
-  //   .attr('x2', function(d) {
-  //     return xScale(d[2]);
-  //   })
-  //   .attr('y2', function(d) {
-  //     return yScale(d[3]);
-  //   })
-  //   .attr('stroke', 'black')
-  //   .attr('stroke-width', 1);
-  // const lineData = [
-  //   // { x: zScores[0][0], y: zScores[0][1] },
-  //   { x: zScores[firstQuartile][0], y: zScores[firstQuartile][1] },
-  //   { x: zScores[thirdQuartile][0], y: zScores[thirdQuartile][1] },
-  //   // { x: _.last(zScores)[0], y: _.last(zScores)[1] },
-  // ];
-  //
-  // const slope = 74.87030242867768;
-  // const lineFunction = d3
-  //   .line()
-  //   .x(function(d) {
-  //     return xScale(d.x);
-  //   })
-  //   .y(function(d) {
-  //     return yScale(d.y);
-  //   });
-  // .curve(d3.curveLinear);
-  //.attr('d', lineFunction(lineData))
-  // svg
-  //   .append('line')
-  //   .attr('class', 'regression')
-  //   .attr('x1', xScale(lg.ptA.x))
-  //   .attr('y1', yScale(lg.ptA.y))
-  //   .attr('x2', xScale(lg.ptB.x))
-  //   .attr('y2', yScale(lg.ptB.y));
-  // svg
-  //   .append('path')
-  //   .attr('d', lineFunction(lineData))
-  //   .attr('stroke', 'black')
-  //   .attr('stroke-width', '2px');
-  // svg
-  //   .append('line')
-  // .attr('stroke', 'black')
-  // .attr('stroke-width', '2px')
-  //   .attr('x1', xScale(zScores[0][0]))
-  //   .attr('y1', yScale(zScores[0][1]))
-  //   .attr('x2', xScale(_.last(zScores)[0]))
-  //   .attr('y2', yScale(_.last(zScores)[1]));
-  // debugger;
-  // .attr('x1', xScale(-3))
-  // .attr('x2', xScale(4))
-  // .attr('y1', yScale(0))
-  // .attr('y2', yScale(160));
-
-  // .attr({
-  //   x1: zScores[firstQuartile][0],
-  //   y1: zScores[firstQuartile][1],
-  //   x2: zScores[thirdQuartile][0],
-  //   y2: zScores[thirdQuartile][1],
-  // })
-
-  // .attr('stroke-width', 2)
-  // .attr('stroke', 'black');
-  // const lineFunction = svg
-  //   .line()
-  //   .x(function(d) {
-  //     return d.x;
-  //   })
-  //   .y(function(d) {
-  //     return d.y;
-  //   })
-  //   .interpolate('linear');
-
-  // svg
-  //   .selectAll('line')
-  //   .append('line')
-  //   .attr({
-  //     x1: 0,
-  //     x2: 3,
-  //     y1: 0,
-  //     y2: testValues[testValues.length - 1],
-  //   })
-  // .attr('stroke', 'blue')
-  // .attr('stroke-width', 2)
-  // .attr('fill', 'none');
-
-  // .attr('x1', 0)
-  // .attr('y1', -50)
-  // .attr('x2', 3)
-  // .attr('y2', -500)
-  // .attr('x1', 30)
-  // .attr('y1', 180)
-  // .attr('x2', 1550)
-  // .attr('y2', -480)
-  // .data(fooScores)
-  // .enter()
-  // .attr({
-  //   x1: function(d) {
-  //     return d.x;
-  //   },
-  //   x2: function(d) {
-  //     return d.x;
-  //   },
-  //   y2: function(d) {
-  //     return d.y;
-  //   },
-  //   // y2: _self.height,
-  //   // 'class': _self.prefix + 'donor-column',
-  // })
-  // // .attr('d', lineFunction(fooScores))
-
-  // svg
-  //   .selectAll('path')
-  //   .append('path')
-  //   .data(fooScores)
-  //   // .data([0, 1])
-  //   // .left(function(d) {
-  //   //   w * d;
-  //   // })
-  //   // .bottom(function(d) {
-  //   //   h * d;
-  //   // })
-  //   .strokeStyle('#000')
-  //   .lineWidth(1);
   //x axis
   svg
     .append('g')
@@ -571,37 +311,6 @@ const QQPlot = ({
     .attr('class', 'y axis')
     .attr('transform', 'translate(' + padding + ', 0)')
     .call(yAxis);
-
-  // svg.append('line').attr({
-  //   x1: _.min(zScores.map(z => z[0])),
-  //   x2: _.max(zScores.map(z => z[0])),
-  //   y2: _.max(testValues),
-  //   // 'class': _self.prefix + 'donor-column',
-  // });
-  // .attr(
-  //   'x1',
-  //   _.min(zScores.map(z => z[0]))
-  //   // d3.min(data, function(d) {
-  //   //   return d[0];
-  //   // })
-  // )
-  // .attr(
-  //   'x2',
-  //   _.max(zScores.map(z => z[0]))
-  //   // d3.max(data, function(d) {
-  //   //   return d[0];
-  //   // })
-  // )
-  // .attr('y1', 0)
-  // .attr(
-  //   'y2',
-  //   _.max(ageValues)
-  //   // d3.max(data, function(d) {
-  //   //   return d[1];
-  //   // })
-  // )
-  // .attr('stroke', 'black')
-  // .attr('stroke-width', 2);
 
   // const x = d3
   //   .scaleBand()
@@ -624,16 +333,6 @@ const QQPlot = ({
   //   .attr('fill', '#fff')
   //   .attr('transform', `translate(${margin.left}, ${margin.top})`);
   //
-  // svg
-  //   .append('text')
-  //   .attr('y', 0 - margin.top)
-  //   .attr('x', width / 2)
-  //   .attr('dy', '1em')
-  //   .style('text-anchor', 'middle')
-  //   .style('fontSize', '1.1rem')
-  //   .style('fontWeight', '500')
-  //   .attr('fill', yAxisStyle.textFill)
-  //   .text(title);
   //
   // const yG = svg.append('g').call(
   //   d3
