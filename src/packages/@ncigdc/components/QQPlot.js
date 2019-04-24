@@ -159,7 +159,7 @@ const QQPlot = ({
   const xAxis = d3
     .axisBottom()
     .scale(xScale)
-    .ticks(4);
+    .ticks(Object.keys(_.groupBy(zScores.map(z => z.x), Math.floor)).length);
 
   const yAxis = d3
     .axisLeft()
