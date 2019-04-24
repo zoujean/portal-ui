@@ -25,7 +25,7 @@ import { setModal } from '@ncigdc/dux/modal';
 import SaveSetModal from '@ncigdc/components/Modals/SaveSetModal';
 import AppendSetModal from '@ncigdc/components/Modals/AppendSetModal';
 import RemoveSetModal from '@ncigdc/components/Modals/RemoveSetModal';
-import QQPlot from '@ncigdc/components/QQPlot';
+import QQPlot from '@ncigdc/modern_components/QQPlot';
 
 // survival plot
 import {

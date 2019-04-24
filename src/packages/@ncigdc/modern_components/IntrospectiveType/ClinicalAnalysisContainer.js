@@ -3,7 +3,7 @@ import ClinicalAnalysisResult from '@ncigdc/modern_components/ClinicalAnalysis';
 import { compose, withProps, branch } from 'recompose';
 import withRouter from '@ncigdc/utils/withRouter';
 import { connect } from 'react-redux';
-import QQPlot from '@ncigdc/components/QQPlot';
+import QQPlot from '@ncigdc/modern_components/QQPlot';
 import _ from 'lodash';
 
 import { Column } from '@ncigdc/uikit/Flex';
@@ -63,13 +63,22 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
 
   return (
     <Column>
-      <QQPlot
+      {/* <QQPlot
         data={generateValues(100000, 10000)}
         margin={CHART_MARGINS}
         yAxis={{ title: 'random' }}
         title={'100,000 random values'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
+      /> */}
+      <QQPlot
+        data={[]}
+        margin={CHART_MARGINS}
+        yAxis={{ title: 'Age at Diagnosis' }}
+        title={'Age at Diagnosis'}
+        height={CHART_HEIGHT}
+        styles={{ border: '1px solid lightgray' }}
+        realData
       />
       <QQPlot
         data={ChickWeight}

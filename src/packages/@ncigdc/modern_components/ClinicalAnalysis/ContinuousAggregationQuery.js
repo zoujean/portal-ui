@@ -15,7 +15,6 @@ import _ from 'lodash';
 import ClinicalVariableCard from './ClinicalVariableCard.js';
 import consoleDebug from '@ncigdc/utils/consoleDebug';
 import { redirectToLogin } from '@ncigdc/utils/auth';
-import { withLoader } from '@ncigdc/uikit/Loaders/Loader';
 import Loader from '@ncigdc/uikit/Loaders/Loader';
 
 import { API, IS_AUTH_PORTAL } from '@ncigdc/utils/constants';

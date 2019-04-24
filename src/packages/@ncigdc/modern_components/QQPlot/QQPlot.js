@@ -19,6 +19,7 @@ import './qq.css';
 import { withTheme } from '@ncigdc/theme';
 import { withTooltip } from '@ncigdc/uikit/Tooltip';
 import withSize from '@ncigdc/utils/withSize';
+
 import '@ncigdc/components/Charts/style.css';
 
 const sortAscending = (a, b) => {
@@ -84,8 +85,25 @@ const QQPlot = ({
   setTooltip,
   theme,
   size: { width },
+  viewer,
+  realData,
 }) => {
-  const testValues = data.filter(d => _.isNumber(d)).sort(sortAscending);
+  console.log(viewer);
+  let gdcData;
+
+  if (viewer && viewer.explore.cases.hits) {
+    gdcData = _.flattenDeep(
+      viewer.explore.cases.hits.edges.map(edge => {
+        return edge.node.diagnoses.hits.edges.map(e => {
+          return e.node.age_at_diagnosis;
+        });
+      })
+    );
+  }
+
+  const testValues = realData
+    ? gdcData.filter(d => _.isNumber(d)).sort(sortAscending)
+    : data.filter(d => _.isNumber(d)).sort(sortAscending);
   const n = testValues.length;
 
   const mean = testValues.reduce((acc, i) => acc + i, 0) / n;
@@ -498,5 +516,6 @@ export default compose(
   withTooltip,
   withState('chart', 'setState', <span />),
   withSize({ refreshRate: 16 }),
+  withProps(({ viewer }) => ({ viewer })),
   pure
 )(QQPlot);
