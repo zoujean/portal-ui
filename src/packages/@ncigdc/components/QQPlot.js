@@ -100,15 +100,17 @@ const QQPlot = ({
 
   const getZScore = (age, m, stdDev) => (age - m) / stdDev;
 
-  // i think this is giving you the qq line
-  const qqLine = testValues.map((age, i) => [
-    getZScore(age, mean, standardDeviation),
-    age,
-  ]);
+  // const qqLine = testValues.map((age, i) => [
+  //   getZScore(age, mean, standardDeviation),
+  //   age,
+  // ]);
 
-  const zScores = testValues.map((age, i) => [qnorm((i + 1 - 0.5) / n), age]);
-  // console.log(zScores);
-  const objZScores = zScores.map(score => ({ x: score[0], y: score[1] }));
+  const zScores = testValues.map((age, i) => ({
+    x: qnorm((i + 1 - 0.5) / n),
+    y: age,
+  }));
+  console.log(title, ' : ', zScores);
+  // const objZScores = zScores.map(score => ({ x: score[0], y: score[1] }));
 
   // const fooScores = testValues.map(age => ({
   //   x: getZScore(age, mean, standardDeviation),
@@ -135,10 +137,10 @@ const QQPlot = ({
     .scaleLinear()
     .domain([
       d3.min(zScores, function(d) {
-        return Math.floor(d[0]);
+        return Math.floor(d.x);
       }),
       d3.max(zScores, function(d) {
-        return Math.ceil(d[0]);
+        return Math.ceil(d.x);
       }),
     ])
     .range([padding, w - padding * 2]);
@@ -148,7 +150,7 @@ const QQPlot = ({
     .domain([
       0,
       d3.max(zScores, function(d) {
-        return d[1];
+        return d.y;
       }),
     ])
     //.range([padding, w-padding * 2]);
@@ -201,10 +203,10 @@ const QQPlot = ({
     .enter()
     .append('circle')
     .attr('cx', function(d) {
-      return xScale(d[0]);
+      return xScale(d.x);
     })
     .attr('cy', function(d) {
-      return yScale(d[1]);
+      return yScale(d.y);
     })
     .attr('r', 5)
     .attr('stroke', 'green')
@@ -363,10 +365,10 @@ const QQPlot = ({
       .attr('stroke', 'black');
   };
 
-  // transitionline(objZScores);
+  // transitionline(zScores);
 
   const linearRegression = ss.linearRegression(
-    objZScores.map(d => {
+    zScores.map(d => {
       return [d.x, d.y];
     })
   );
@@ -392,7 +394,7 @@ const QQPlot = ({
   svg
     .append('path')
     .classed('regressionLine', true)
-    .datum(regressionPoints(objZScores))
+    .datum(regressionPoints(zScores))
     .attr('d', line)
     .attr('stroke', 'black')
     .attr('stroke-width', 2);
