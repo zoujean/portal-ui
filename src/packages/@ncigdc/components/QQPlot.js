@@ -109,13 +109,8 @@ const QQPlot = ({
     x: qnorm((i + 1 - 0.5) / n),
     y: age,
   }));
-  console.log(title, ' : ', zScores);
-  // const objZScores = zScores.map(score => ({ x: score[0], y: score[1] }));
+  // console.log(title, ' : ', zScores);
 
-  // const fooScores = testValues.map(age => ({
-  //   x: getZScore(age, mean, standardDeviation),
-  //   y: age,
-  // }));
   const el = ReactFauxDOM.createElement('div');
   el.style.width = '100%';
 
@@ -126,9 +121,6 @@ const QQPlot = ({
   const margin = m || { top: 20, right: 50, bottom: 65, left: 55 };
   const chartWidth = width - margin.left - margin.right;
   const height = (h || 200) - margin.top - margin.bottom;
-  //
-  // const firstQuartile = Math.ceil(data.length * (1 / 4));
-  // const thirdQuartile = Math.ceil(data.length * (3 / 4));
 
   const w = 600;
   // const h = 400;
@@ -148,9 +140,11 @@ const QQPlot = ({
   const yScale = d3
     .scaleLinear()
     .domain([
-      0,
+      d3.min(zScores, function(d) {
+        return Math.floor(d.y);
+      }),
       d3.max(zScores, function(d) {
-        return d.y;
+        return Math.ceil(d.y);
       }),
     ])
     //.range([padding, w-padding * 2]);

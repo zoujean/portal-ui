@@ -56,13 +56,26 @@ const ClinicalAnalysisContainer = ({ clinicalAnalysisFields, ...props }) => {
     left: 55,
   };
 
+  const getRandomInt = max => {
+    return Math.floor(Math.random() * Math.floor(max));
+  };
+  const generateValues = (n, max) => _.times(n, () => getRandomInt(max));
+
   return (
     <Column>
       <QQPlot
+        data={generateValues(100000, 10000)}
+        margin={CHART_MARGINS}
+        yAxis={{ title: 'random' }}
+        title={'100,000 random values'}
+        height={CHART_HEIGHT}
+        styles={{ border: '1px solid lightgray' }}
+      />
+      <QQPlot
         data={ChickWeight}
         margin={CHART_MARGINS}
-        yAxis={{ title: 'ChickWeight' }}
-        title={'ChickWeight$Weight'}
+        yAxis={{ title: 'ChickWeight$weight' }}
+        title={'ChickWeight$weight'}
         height={CHART_HEIGHT}
         styles={{ border: '1px solid lightgray' }}
       />
