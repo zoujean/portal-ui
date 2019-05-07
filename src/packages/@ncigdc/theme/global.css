@@ -8574,3 +8574,14 @@ fieldset[disabled] .btn-primary.active {
   cursor: pointer;
   background-color: #dbdbdb;
 }
+
+#explore-case-table th {
+  word-wrap: break-word !important;
+  white-space: normal !important;
+  max-width: 100px !important;
+  vertical-align: bottom !important;
+}
+
+abbr span {
+  display: inline !important;
+}

@@ -70,21 +70,21 @@ export const DATA_CATEGORIES = {
     abbr: 'Meth',
   },
   CLINICAL: {
-    full: 'Clinical',
+    full: 'Clinical Metadata',
     abbr: 'Clinical',
   },
-  CLINICAL_SUPPLEMENT: {
-    full: 'Clinical Supplement',
-    abbr: 'Clinical Supplement',
-  },
+  // CLINICAL_SUPPLEMENT: {
+  //   full: 'Clinical Supplement',
+  //   abbr: 'Clinical Supplement',
+  // },
   BIOSPECIMEN: {
-    full: 'Biospecimen',
+    full: 'Biospecimen Metadata',
     abbr: 'Bio',
   },
-  BIOSPECIMEN_SUPPLEMENT: {
-    full: 'Biospecimen',
-    abbr: 'Bio Supplement',
-  },
+  // BIOSPECIMEN_SUPPLEMENT: {
+  //   full: 'Biospecimen Supplement',
+  //   abbr: 'Biospecimen Supplement',
+  // },
 };
 
 export const DATA_TYPES = {
