@@ -82,7 +82,10 @@ export const DATA_CATEGORIES = {
 };
 
 export const DATA_TYPES = {
-  GEQ: { full: 'Gene Expression Quantification', abbr: 'GEQ' },
+  GEQ: {
+    full: 'Gene Expression Quantification',
+    abbr: 'GEQ',
+  },
 };
 
 export const EXPERIMENTAL_STRATEGIES = [
@@ -138,7 +141,11 @@ export const MUTATION_SUBTYPE_MAP = {
   'small insertion': 'Insertion',
 };
 
-export const DNA_CHANGE_MARKERS = ['del', 'ins', '>'];
+export const DNA_CHANGE_MARKERS = [
+  'del',
+  'ins',
+  '>',
+];
 
 export const HUMAN_BODY_SITES_MAP = {
   'accessory sinuses': 'Head and Neck',
@@ -310,20 +317,41 @@ export const IMPACT_SHORT_FORMS = {
 
 export const FAKE_USER =
   localStorage.REACT_APP_ALLOW_FAKE_USER || process.env.REACT_APP_ALLOW_FAKE_USER
-  ? {
+    ? {
       username: 'DEV_USER',
       projects: {
         phs_ids: {
-          phs000178: ['_member_', 'read', 'delete'],
+          phs000178: [
+            '_member_',
+            'read',
+            'delete',
+          ],
         },
         gdc_ids: {
-          'TCGA-LIHC': ['read', 'delete', 'create', 'update', 'read_report'],
-          'CGCI-BLGSP': ['create', 'update', 'release', 'read_report'],
-          'TCGA-DEV3': ['read', 'create', 'update', 'release', 'delete'],
+          'TCGA-LIHC': [
+            'read',
+            'delete',
+            'create',
+            'update',
+            'read_report',
+          ],
+          'CGCI-BLGSP': [
+            'create',
+            'update',
+            'release',
+            'read_report',
+          ],
+          'TCGA-DEV3': [
+            'read',
+            'create',
+            'update',
+            'release',
+            'delete',
+          ],
         },
       },
     }
-  : null;
+    : null;
 
 export const IS_DEV = process.env.NODE_ENV === 'development';
 
