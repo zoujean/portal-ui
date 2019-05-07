@@ -72,7 +72,7 @@ export const DATA_CATEGORIES = {
   CLINICAL_SUPPLEMENT: {
     full: 'Clinical',
     abbr: 'Clinical Supplement',
-    tooltio: 'Clinical Supplement',
+    tooltip: 'Clinical Supplement',
   },
   BIOSPECIMEN_SUPPLEMENT: {
     full: 'Biospecimen',

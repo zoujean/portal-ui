@@ -96,7 +96,7 @@ export const createDataCategoryColumns = ({
       downloadable: true,
       subHeadingIds: _.map(DATA_CATEGORIES, category => category.abbr),
     },
-    ..._.map(DATA_CATEGORIES, (category: { full: string; abbr: TCategoryAbbr }) => ({
+    ..._.map(DATA_CATEGORIES, (category: { full: string; abbr: TCategoryAbbr, tooltip: string; }) => ({
       name: category.abbr,
       id: category.abbr,
       subHeading: true,
@@ -104,7 +104,7 @@ export const createDataCategoryColumns = ({
       th: () => (
         <ThNum>
           <abbr>
-            <Tooltip Component={category.full} style={tableToolTipHint()}>
+            <Tooltip Component={category.tooltip || category.full} style={tableToolTipHint()}>
               {category.abbr}
             </Tooltip>
           </abbr>
