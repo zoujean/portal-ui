@@ -34,7 +34,7 @@ export default compose(
             justifyContent: 'space-between',
             alignItems: 'center',
           }}
-        >
+          >
           {tableHeader && <h3 className="panel-title">{tableHeader}</h3>}
           <div>
             <b>{hits.total}</b>
@@ -54,7 +54,7 @@ export default compose(
             tsvFilename={`projects-table.${timestamp()}.tsv`}
             tsvSelector="#projects-table"
             type="project"
-          />
+            />
         </Row>
         <div style={{ overflowX: 'auto' }}>
           <Table
@@ -75,7 +75,7 @@ export default compose(
                         x => (x.total ? (
                           <x.total hits={hits} key={x.id} />
                         ) : (
-                            <Td key={x.id} />
+                          <Td key={x.id} />
                           ))
                       )}
                 </Tr>
@@ -88,7 +88,7 @@ export default compose(
             subheadings={tableInfo
               .filter(x => x.subHeading)
               .map(x => <x.th key={x.id} />)}
-          />
+            />
         </div>
       </div>
     );
