@@ -8574,3 +8574,14 @@ fieldset[disabled] .btn-primary.active {
   cursor: pointer;
   background-color: #dbdbdb;
 }
+
+#projects-table th {
+  word-wrap: break-word !important;
+  white-space: normal !important;
+  vertical-align: bottom;
+  max-width: 100px;
+}
+
+abbr span {
+  display: inline !important;
+}

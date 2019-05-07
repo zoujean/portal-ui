@@ -49,13 +49,36 @@ export const LOCAL_STORAGE_API_OVERRIDE = API_OVERRIDE_KEYS.some(
 );
 
 export const DATA_CATEGORIES = {
-  SEQ: { full: 'Sequencing Reads', abbr: 'Seq' },
-  EXP: { full: 'Transcriptome Profiling', abbr: 'Exp' },
-  SNV: { full: 'Simple Nucleotide Variation', abbr: 'SNV' },
-  CNV: { full: 'Copy Number Variation', abbr: 'CNV' },
-  METH: { full: 'DNA Methylation', abbr: 'Meth' },
-  CLINICAL: { full: 'Clinical', abbr: 'Clinical' },
-  BIOSPECIMEN: { full: 'Biospecimen', abbr: 'Bio' },
+  SEQ: {
+    full: 'Sequencing Reads',
+    abbr: 'Seq',
+  },
+  EXP: {
+    full: 'Transcriptome Profiling',
+    abbr: 'Exp',
+  },
+  SNV: {
+    full: 'Simple Nucleotide Variation',
+    abbr: 'SNV',
+  },
+  CNV: {
+    full: 'Copy Number Variation',
+    abbr: 'CNV',
+  },
+  METH: {
+    full: 'DNA Methylation',
+    abbr: 'Meth',
+  },
+  CLINICAL_SUPPLEMENT: {
+    full: 'Clinical',
+    abbr: 'Clinical Supplement',
+    tooltio: 'Clinical Supplement',
+  },
+  BIOSPECIMEN_SUPPLEMENT: {
+    full: 'Biospecimen',
+    abbr: 'Bio Supplement',
+    tooltip: 'Biospecimen Supplement',
+  },
 };
 
 export const DATA_TYPES = {
