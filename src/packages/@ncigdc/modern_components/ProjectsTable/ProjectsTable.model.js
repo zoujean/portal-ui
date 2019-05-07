@@ -5,7 +5,9 @@ import {
   RepositoryFilesLink,
 } from '@ncigdc/components/Links/RepositoryLink';
 import ProjectLink from '@ncigdc/components/Links/ProjectLink';
-import { Th, Td, ThNum, TdNum } from '@ncigdc/uikit/Table';
+import {
+  Th, Td, ThNum, TdNum,
+} from '@ncigdc/uikit/Table';
 import { makeFilter } from '@ncigdc/utils/filters';
 import formatFileSize from '@ncigdc/utils/formatFileSize';
 import withRouter from '@ncigdc/utils/withRouter';
@@ -19,6 +21,7 @@ const dataCategoryColumns = createDataCategoryColumns({
   title: 'Available Cases per Data Category',
   countKey: 'case_count',
   Link: RepositoryCasesLink,
+  getProjectId: node => [{ projectId: node.project_id }],
   getCellLinkFilters: node => [
     {
       field: 'cases.project.project_id',
@@ -33,29 +36,30 @@ const dataCategoryColumns = createDataCategoryColumns({
   ],
 });
 
-const CasesLink: TLink = ({ node, fields = [], children }) =>
-  children === '0' ? (
-    <span>0</span>
-  ) : (
-    <RepositoryCasesLink
+const CasesLink: TLink = ({ node, fields = [], children }) => (children === '0' ? (
+  <span>0</span>
+) : (
+  <RepositoryCasesLink
       query={{
         filters: makeFilter([
-          { field: 'cases.project.project_id', value: [node.project_id] },
+          {
+            field: 'cases.project.project_id',
+            value: [node.project_id],
+          },
           ...fields,
         ]),
       }}
-    >
+      >
       {children}
     </RepositoryCasesLink>
-  );
+  ));
 
-const getProjectIdFilter = projects =>
-  makeFilter([
-    {
-      field: 'cases.project.project_id',
-      value: projects.edges.map(({ node: p }) => p.project_id),
-    },
-  ]);
+const getProjectIdFilter = projects => makeFilter([
+  {
+    field: 'cases.project.project_id',
+    value: projects.edges.map(({ node: p }) => p.project_id),
+  },
+]);
 
 const projectsTableModel = [
   {
@@ -84,16 +88,19 @@ const projectsTableModel = [
           padding: '3px 15px 3px 3px',
           whiteSpace: 'normal',
         }}
-      >
+        >
         {node.disease_type.length > 1 && (
           <CollapsibleList
-            liStyle={{ whiteSpace: 'normal', listStyleType: 'disc' }}
-            toggleStyle={{ fontStyle: 'normal' }}
-            data={node.disease_type.slice(0).sort()}
-            limit={0}
-            expandText={`${node.disease_type.length} Disease Types`}
             collapseText="collapse"
-          />
+            data={node.disease_type.slice(0).sort()}
+            expandText={`${node.disease_type.length} Disease Types`}
+            limit={0}
+            liStyle={{
+              whiteSpace: 'normal',
+              listStyleType: 'disc',
+            }}
+            toggleStyle={{ fontStyle: 'normal' }}
+            />
         )}
         {node.disease_type.length <= 1 && node.disease_type}
       </Td>
@@ -113,16 +120,19 @@ const projectsTableModel = [
           padding: '3px 15px 3px 3px',
           whiteSpace: 'normal',
         }}
-      >
+        >
         {node.primary_site.length > 1 && (
           <CollapsibleList
-            liStyle={{ whiteSpace: 'normal', listStyleType: 'disc' }}
-            toggleStyle={{ fontStyle: 'normal' }}
-            data={node.primary_site.slice(0).sort()}
-            limit={0}
-            expandText={`${node.primary_site.length} Primary Sites`}
             collapseText="collapse"
-          />
+            data={node.primary_site.slice(0).sort()}
+            expandText={`${node.primary_site.length} Primary Sites`}
+            limit={0}
+            liStyle={{
+              whiteSpace: 'normal',
+              listStyleType: 'disc',
+            }}
+            toggleStyle={{ fontStyle: 'normal' }}
+            />
         )}
         {node.primary_site.length <= 1 && node.primary_site}
       </Td>
@@ -155,7 +165,7 @@ const projectsTableModel = [
           query={{
             filters: query.filters ? getProjectIdFilter(hits) : null,
           }}
-        >
+          >
           {hits.edges
             .reduce((acc, val) => acc + val.node.summary.case_count, 0)
             .toLocaleString()}
@@ -175,10 +185,13 @@ const projectsTableModel = [
         <RepositoryFilesLink
           query={{
             filters: makeFilter([
-              { field: 'cases.project.project_id', value: node.project_id },
+              {
+                field: 'cases.project.project_id',
+                value: node.project_id,
+              },
             ]),
           }}
-        >
+          >
           {node.summary.file_count.toLocaleString()}
         </RepositoryFilesLink>
       </TdNum>
@@ -189,7 +202,7 @@ const projectsTableModel = [
           query={{
             filters: query.filters ? getProjectIdFilter(hits) : null,
           }}
-        >
+          >
           {hits.edges
             .reduce((acc, val) => acc + val.node.summary.file_count, 0)
             .toLocaleString()}

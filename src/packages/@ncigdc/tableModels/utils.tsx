@@ -15,11 +15,17 @@ interface ICreateDataCategoryColumnsProps{
   Link: (props: IListLinkProps) => React.Component<IListLinkProps>; 
   getCellLinkFilters: (node: INode) => IFilter[]; 
   getTotalLinkFilters: (hits: IHits) => IFilter[];
+  getProjectId: (node: INode) => IProject[];
+  // cases: number;
 }
 
-interface IFilter{
-    field: string;
-    value: string;
+interface IProject {
+  projectId: string;
+}
+
+interface IFilter {
+  field: string;
+  value: string;
 }
 
 interface INode {
@@ -78,6 +84,8 @@ export const createDataCategoryColumns = ({
   Link,
   getCellLinkFilters,
   getTotalLinkFilters,
+  getProjectId,
+  // cases,
 }: ICreateDataCategoryColumnsProps)=> {
   return [
     {
@@ -115,9 +123,22 @@ export const createDataCategoryColumns = ({
           category.abbr,
           node.summary.data_categories
         )[countKey];
+        const projectIdVar = getProjectId(node);
         return (
           <TdNum>
             {count === 0 ? (
+              category.abbr === 'Clinical' || category.abbr === 'Bio' ?
+             (<Link
+                query={{
+                  filters: makeFilter([
+                    ...getCellLinkFilters(node),
+                    { field: 'files.data_category', value: category.full },
+                  ]),
+                }}
+              >
+                {projectIdVar.projectId}
+              </Link>) 
+              :
               '0'
             ) : (
               <Link
