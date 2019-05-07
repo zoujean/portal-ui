@@ -73,9 +73,17 @@ export const DATA_CATEGORIES = {
     full: 'Clinical',
     abbr: 'Clinical',
   },
+  CLINICAL_SUPPLEMENT: {
+    full: 'Clinical Supplement',
+    abbr: 'Clinical Supplement',
+  },
   BIOSPECIMEN: {
     full: 'Biospecimen',
     abbr: 'Bio',
+  },
+  BIOSPECIMEN_SUPPLEMENT: {
+    full: 'Biospecimen',
+    abbr: 'Bio Supplement',
   },
 };
 
