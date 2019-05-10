@@ -69,20 +69,10 @@ export const DATA_CATEGORIES = {
     full: 'DNA Methylation',
     abbr: 'Meth',
   },
-  CLINICAL_METADATA: {
-    full: 'Cases',
-    abbr: 'Clinical',
-    tooltip: 'Clinical Metadata',
-  },
   CLINICAL_SUPPLEMENT: {
     full: 'Clinical',
     abbr: 'Clinical Supplement',
     tooltip: 'Clinical Supplement',
-  },
-  BIOSPECIMEN_METADATA: {
-    full: 'Cases',
-    abbr: 'Bio',
-    tooltip: 'Biospecimen Metadata',
   },
   BIOSPECIMEN_SUPPLEMENT: {
     full: 'Biospecimen',
