@@ -1,5 +1,4 @@
 #!/bin/bash
-# Copied from tungsten
 export REACT_APP_GDC_DISPLAY_SLIDES=true
 export REACT_APP_SLIDE_IMAGE_ENDPOINT="https://api.gdc.cancer.gov/tile/"
 export REACT_APP_COMMIT_HASH=`git rev-parse --short HEAD`
@@ -9,6 +8,13 @@ export REACT_APP_GDC_AUTH="https://portal.gdc.cancer.gov/auth/"
 export GDC_BASE="/"
 export NODE_ENV=production
 export REACT_APP_COMMIT_HASH=$TRAVIS_COMMIT
+
+# Enable clinical DAVE
+export REACT_APP_DISPLAY_CDAVE=true
+export REACT_APP_IS_CDAVE_DEV=true
+
+# Disable AWG
 unset REACT_APP_AWG
 unset REACT_APP_IS_AUTH_PORTAL
+
 npm run build
