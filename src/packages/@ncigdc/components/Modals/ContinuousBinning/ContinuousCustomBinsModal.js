@@ -85,6 +85,7 @@ class ContinuousCustomBinsModal extends Component {
       min: '',
     },
     intervalFields: {
+      // 2642: seed this with custom interval data if available
       // seed input values, from props
       amount: this.props.defaultData.quartile,
       max: this.props.defaultData.max,
@@ -93,6 +94,7 @@ class ContinuousCustomBinsModal extends Component {
     modalWarning: '',
     rangeNameErrors: [],
     rangeOverlapErrors: [],
+    // 2642: seed this with custom range data if available
     rangeRows: defaultRangeRow,
     // rangeRows: defaultRangesTESTWithOverlap,
     // rangeRows: defaultRangesTESTNoOverlap,
@@ -238,8 +240,8 @@ class ContinuousCustomBinsModal extends Component {
     const formHasErrors = this.validateRangeRow();
 
     if (!formHasErrors) {
-      const { onUpdate } = this.props;
-      const { rangeRows } = this.state;
+      const { onUpdate, setContinuousBinType } = this.props;
+      const { binningMethod, rangeRows } = this.state;
 
       const newBins = rangeRows.map(row => row.fields).reduce((acc, curr) => {
         const rowKey = `${curr.from}-${curr.to}`;
@@ -254,6 +256,7 @@ class ContinuousCustomBinsModal extends Component {
         });
       }, {});
 
+      setContinuousBinType(`custom-${binningMethod}`);
       onUpdate(newBins);
     }
   };
