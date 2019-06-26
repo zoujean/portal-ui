@@ -557,9 +557,12 @@ const getHeadings = (chartType, dataDimension, fieldName) => {
 };
 
 const ClinicalVariableCard: React.ComponentType<IVariableCardProps> = ({
-  continuousBinType,
-  currentAnalysis,
   binData,
+  bucketsOrganizedByKey,
+  continuousBinType,
+  continuousIntervalFields,
+  continuousRangeRows,
+  currentAnalysis,
   dataBuckets,
   dataDimension,
   dataValues,
@@ -569,15 +572,19 @@ const ClinicalVariableCard: React.ComponentType<IVariableCardProps> = ({
   filters,
   getContinuousBuckets,
   id,
-  bucketsOrganizedByKey,
   overallSurvivalData,
   plots,
+  qqData,
   selectedBuckets,
   selectedSurvivalData,
   selectedSurvivalLoadingIds,
   selectedSurvivalValues,
   setContinuousBinType,
+  setContinuousIntervalFields,
+  setContinuousRangeRows,
   setId,
+  setQQData,
+  setQQDataIsSet,
   setSelectedBuckets,
   style = {},
   survivalPlotLoading,
@@ -586,9 +593,6 @@ const ClinicalVariableCard: React.ComponentType<IVariableCardProps> = ({
   updateSelectedSurvivalValues,
   variable,
   wrapperId,
-  qqData,
-  setQQData,
-  setQQDataIsSet,
 }) => {
   const tableData = variable.active_chart === 'box'
     ? getBoxTableData(dataValues)
@@ -1194,6 +1198,9 @@ const ClinicalVariableCard: React.ComponentType<IVariableCardProps> = ({
                           ? (
                             <ContinuousCustomBinsModal
                               bins={bucketsOrganizedByKey}
+                              continuousBinType={continuousBinType}
+                              continuousIntervalFields={continuousIntervalFields}
+                              continuousRangeRows={continuousRangeRows}
                               defaultData={defaultData}
                               fieldName={humanify({ term: fieldName })}
                               onClose={() => dispatch(setModal(null))}
@@ -1210,6 +1217,8 @@ const ClinicalVariableCard: React.ComponentType<IVariableCardProps> = ({
                               }
                               }
                               setContinuousBinType={setContinuousBinType}
+                              setContinuousIntervalFields={setContinuousIntervalFields}
+                              setContinuousRangeRows={setContinuousRangeRows}
                             />
                           )
                           : (
@@ -1297,6 +1306,8 @@ export default compose(
   withState('selectedSurvivalLoadingIds', 'setSelectedSurvivalLoadingIds', []),
   withState('survivalPlotLoading', 'setSurvivalPlotLoading', true),
   withState('selectedBuckets', 'setSelectedBuckets', []),
+  withState('continuousRangeRows', 'setContinuousRangeRows', []),
+  withState('continuousIntervalFields', 'setContinuousIntervalFields', {}),
   withState('continuousBinType', 'setContinuousBinType', 'default'),
   withState('qqData', 'setQQData', []),
   withState('qqDataIsSet', 'setQQDataIsSet', false),

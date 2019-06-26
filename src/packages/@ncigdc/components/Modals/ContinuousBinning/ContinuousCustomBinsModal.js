@@ -78,24 +78,29 @@ const countDecimals = num => {
 
 class ContinuousCustomBinsModal extends Component {
   state = {
-    binningMethod: 'range', // interval or range
+    binningMethod: this.props.continuousBinType === 'default'
+      ? 'range' // interval or range
+      : this.props.continuousBinType,
     intervalErrors: {
       amount: '',
       max: '',
       min: '',
     },
     intervalFields: {
-      // 2642: seed this with custom interval data if available
-      // seed input values, from props
-      amount: this.props.defaultData.quartile,
-      max: this.props.defaultData.max,
-      min: this.props.defaultData.min,
+      ...(this.props.continuousBinType === 'interval'
+        ? this.props.continuousIntervalFields
+        : {
+          amount: this.props.defaultData.quartile,
+          max: this.props.defaultData.max,
+          min: this.props.defaultData.min,
+        }),
     },
     modalWarning: '',
     rangeNameErrors: [],
     rangeOverlapErrors: [],
-    // 2642: seed this with custom range data if available
-    rangeRows: defaultRangeRow,
+    rangeRows: this.props.continuousBinType === 'range'
+      ? this.props.continuousRangeRows
+      : defaultRangeRow,
     // rangeRows: defaultRangesTESTWithOverlap,
     // rangeRows: defaultRangesTESTNoOverlap,
   };
@@ -240,8 +245,13 @@ class ContinuousCustomBinsModal extends Component {
     const formHasErrors = this.validateRangeRow();
 
     if (!formHasErrors) {
-      const { onUpdate, setContinuousBinType } = this.props;
-      const { binningMethod, rangeRows } = this.state;
+      const {
+        onUpdate,
+        setContinuousBinType,
+        setContinuousIntervalFields,
+        setContinuousRangeRows,
+      } = this.props;
+      const { binningMethod, intervalFields, rangeRows } = this.state;
 
       const newBins = rangeRows.map(row => row.fields).reduce((acc, curr) => {
         const rowKey = `${curr.from}-${curr.to}`;
@@ -256,7 +266,13 @@ class ContinuousCustomBinsModal extends Component {
         });
       }, {});
 
-      setContinuousBinType(`custom-${binningMethod}`);
+      setContinuousBinType(binningMethod);
+      setContinuousRangeRows(binningMethod === 'range'
+        ? rangeRows
+        : []);
+      setContinuousIntervalFields(binningMethod === 'interval'
+        ? intervalFields
+        : {});
       onUpdate(newBins);
     }
   };
