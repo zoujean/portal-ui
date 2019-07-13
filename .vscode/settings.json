@@ -1,11 +1,7 @@
 {
-    "editor.tabSize": 2,
-    "eslint.autoFixOnSave": true,
-    "flow.stopFlowOnExit": true,
-    "flow.enabled": true,
-    "flow.useNPMPackagedFlow": true,
-    "flow.showStatus": true,
-    "flow.runOnEdit": true,
     "javascript.validate.enable": false,
-    "cSpell.enabled": false
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
+    "editor.formatOnType": false,
+    "eslint.autoFixOnSave": true,
 }
