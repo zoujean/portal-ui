@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { debounce, isEmpty, isFinite } from 'lodash';
 import { Row, Column } from '@ncigdc/uikit/Flex';
 import Button from '@ncigdc/uikit/Button';
-import { createContinuousGroupName } from '@ncigdc/utils/string';
+import { createContinuousGroupName, parseContinuousKey } from '@ncigdc/utils/string';
 import Undo from '@ncigdc/theme/icons/Undo';
 import RangeTableRow from './RangeTableRow';
 import BinningMethodInput from './BinningMethodInput';
@@ -263,6 +263,12 @@ class ContinuousCustomBinsModal extends Component {
     this.setState({ rangeRows: nextRangeRows });
     this.validateRangeRow(nextRangeRows);
   };
+
+  handleAddRow = inputRow => {
+    const { rangeRows } = this.state;
+
+    this.setState({ rangeRows: rangeRows.concat(inputRow) });
+  }
 
   handleUpdateRow = (inputRowIndex, inputRow) => {
     const { rangeRows } = this.state;
