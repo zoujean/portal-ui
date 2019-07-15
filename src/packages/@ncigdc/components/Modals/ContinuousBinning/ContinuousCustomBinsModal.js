@@ -24,6 +24,12 @@ const defaultRangeFieldsState = {
   to: '',
 };
 
+const checkOverlapRanges = (x1, x2, y1, y2) => {
+  return (x2 > y1 && x2 <= y2) ||
+  (x1 >= y1 && x1 < y2) ||
+  (x1 <= y1 && x2 >= y2);
+};
+
 const rangeFieldsOrder = [
   'name',
   'from',
@@ -380,8 +386,8 @@ class ContinuousCustomBinsModal extends Component {
           const overlapToStr = curr.fields.to;
 
           if (rowIndex === overlapIndex ||
-            curr.fields.from === '' ||
-            curr.fields.to === '') {
+            overlapFromStr === '' ||
+            overlapToStr === '') {
             return acc;
           }
 
@@ -389,9 +395,7 @@ class ContinuousCustomBinsModal extends Component {
           const overlapTo = Number(overlapToStr);
           const overlapName = curr.fields.name;
 
-          const hasOverlap = (rowTo > overlapFrom && rowTo < overlapTo) ||
-            (rowFrom > overlapFrom && rowFrom < overlapTo) ||
-            (rowFrom === overlapFrom && rowTo === overlapTo);
+          const hasOverlap = checkOverlapRanges(rowFrom, rowTo, overlapFrom, overlapTo);
 
           return hasOverlap ? [...acc, overlapName] : acc;
         }, []);
@@ -538,10 +542,8 @@ class ContinuousCustomBinsModal extends Component {
       const overlapFrom = Number(overlapFromStr);
       const overlapTo = Number(overlapToStr);
       const overlapName = curr.fields.name;
-
-      const hasOverlap = (fieldTo > overlapFrom && fieldTo <= overlapTo) ||
-        (fieldFrom >= overlapFrom && fieldFrom < overlapTo) ||
-        (fieldFrom <= overlapFrom && fieldTo >= overlapTo);
+        
+      const hasOverlap = checkOverlapRanges(fieldFrom, fieldTo, overlapFrom, overlapTo);
 
       return hasOverlap
         ? [...acc, overlapName]
