@@ -110,7 +110,9 @@ class RangeTableRow extends React.Component {
         ? 'Required field.' : curr === 'name'
           ? '' : !isFinite(currentValueNumber)
             ? `'${currentValue}' is not a number.`
-            : countDecimals(currentValueNumber) > 2 ? 'Use up to 2 decimal places.' : '';
+            : countDecimals(currentValueNumber) > 2
+              ? 'Use up to 2 decimal places.'
+              : '';
 
       return ({
         ...acc,
@@ -182,6 +184,9 @@ class RangeTableRow extends React.Component {
                   disabled={!rangeMethodActive}
                   id={`range-row-${rowIndex}-save`}
                   onClick={() => {
+                    this.handleSave();
+                  }}
+                  onMouseDown={() => {
                     this.handleSave();
                   }}
                   style={{
@@ -257,7 +262,8 @@ class RangeTableRow extends React.Component {
         }
         {rangeMethodActive && rowOverlapErrors.length > 0 && (
           <div style={rowError}>
-            {`'${fieldValues.name}' overlaps with ${rowOverlapErrors.map(err => `'${err}'`).join(', ')}`}
+            {`'${fieldValues.name}' overlaps with ${rowOverlapErrors
+              .map(err => `'${err}'`).join(', ')}`}
           </div>
         )
         }
