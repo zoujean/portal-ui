@@ -15,7 +15,7 @@ import { createFacetFieldString, parseContinuousKey } from '@ncigdc/utils/string
 import Loader from '@ncigdc/uikit/Loaders/Loader';
 
 import { API, IS_AUTH_PORTAL } from '@ncigdc/utils/constants';
-import ClinicalVariableCard from './ClinicalVariableCard';
+import ContinuousCard from './ContinuousCard';
 
 const simpleAggCache = {};
 const pendingAggCache = {};
@@ -216,7 +216,7 @@ export default compose(
   }
 
   return (
-    <ClinicalVariableCard
+    <ContinuousCard
       data={{
         ...aggData,
         hits,

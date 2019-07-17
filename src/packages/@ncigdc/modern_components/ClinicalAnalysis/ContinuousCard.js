@@ -60,7 +60,7 @@ import {
   MAXIMUM_CURVES,
   MINIMUM_CASES,
 } from '@ncigdc/utils/survivalplot';
-import '../survivalPlot.css';
+import './survivalPlot.css';
 import {
   SpinnerIcon,
   CloseIcon,
@@ -91,10 +91,10 @@ import {
   boxTableAllowedStats,
   boxTableRenamedStats,
   dataDimensions,
-} from './helpers';
+} from './ClinicalVariableCard/helpers';
 
-import '../boxplot.css';
-import '../qq.css';
+import './boxplot.css';
+import './qq.css';
 
 const colors = scaleOrdinal(schemeCategory10);
 
@@ -554,7 +554,7 @@ const getHeadings = (chartType, dataDimension, fieldName) => {
     ];
 };
 
-const ClinicalVariableCard: React.ComponentType<IVariableCardProps> = ({
+const ContinuousCard: React.ComponentType<IVariableCardProps> = ({
   currentAnalysis,
   binData,
   dataBuckets,
@@ -1862,4 +1862,4 @@ export default compose(
       );
     },
   })
-)(ClinicalVariableCard);
+)(ContinuousCard);
