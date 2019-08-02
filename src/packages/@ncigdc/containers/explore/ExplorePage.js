@@ -1,4 +1,3 @@
-/* @flow */
 import React from 'react';
 import Relay from 'react-relay/classic';
 import { get, isEqual } from 'lodash';
@@ -11,7 +10,7 @@ import MutationsTab from '@ncigdc/components/Explore/MutationsTab';
 import OncogridTab from '@ncigdc/components/Explore/OncogridTab';
 import CasesTab from '@ncigdc/components/Explore/CasesTab';
 import NoResultsMessage from '@ncigdc/components/NoResultsMessage';
-import CaseAggregations from '@ncigdc/containers/explore/CaseAggregations';
+import ExploreCasesAggregations from '@ncigdc/modern_components/ExploreCasesAggregations';
 import GeneAggregations from '@ncigdc/containers/explore/GeneAggregations';
 import SSMAggregations from '@ncigdc/containers/explore/SSMAggregations';
 import { CreateExploreCaseSetButton } from '@ncigdc/modern_components/withSetAction';
@@ -24,16 +23,10 @@ export type TProps = {
   filters: {},
   relay: Object,
   viewer: {
-    autocomplete_cases: { hits: Array<Object> },
     autocomplete_genes: { hits: Array<Object> },
     autocomplete_ssms: { hits: Array<Object> },
     explore: {
       customCaseFacets: {
-        facets: {
-          facets: string,
-        },
-      },
-      customFileFacets: {
         facets: {
           facets: string,
         },
@@ -104,7 +97,8 @@ class ExplorePageComponent extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!isEqual(this.props.filters, nextProps.filters)) {
+    const { filters } = this.props;
+    if (!isEqual(filters, nextProps.filters)) {
       setVariables(nextProps);
     }
   }
@@ -123,18 +117,7 @@ class ExplorePageComponent extends React.Component {
         facetTabs={[
           {
             component: (
-              <CaseAggregations
-                aggregations={viewer.explore.cases.aggregations}
-                facets={viewer.explore.customCaseFacets}
-                setAutocomplete={(value, onReadyStateChange) => relay.setVariables(
-                  {
-                    idAutocompleteCases: value,
-                    runAutocompleteCases: !!value,
-                  },
-                  onReadyStateChange
-                )}
-                suggestions={get(viewer, 'autocomplete_cases.hits', [])}
-                />
+              <ExploreCasesAggregations relay={relay} />
             ),
             id: 'cases',
             text: 'Cases',
@@ -280,8 +263,6 @@ export const ExplorePageQuery = {
     ssms_size: null,
     ssms_sort: null,
     filters: null,
-    idAutocompleteCases: null,
-    runAutocompleteCases: false,
     idAutocompleteGenes: null,
     runAutocompleteGenes: false,
     idAutocompleteSsms: null,
@@ -292,18 +273,6 @@ export const ExplorePageQuery = {
   fragments: {
     viewer: () => Relay.QL`
       fragment on Root {
-        autocomplete_cases: query (query: $idAutocompleteCases types: ["case"]) @include(if: $runAutocompleteCases) {
-          hits {
-            id
-            ...on Case {
-              case_id
-              project {
-                project_id
-              }
-              submitter_id
-            }
-          }
-        }
         autocomplete_genes: query (query: $idAutocompleteGenes types: ["gene_centric"]) @include(if: $runAutocompleteGenes) {
           hits {
             id
@@ -326,13 +295,7 @@ export const ExplorePageQuery = {
           }
         }
         explore {
-          customCaseFacets: cases {
-            ${CaseAggregations.getFragment('facets')}
-          }
           cases {
-            aggregations(filters: $filters aggregations_filter_themselves: false) {
-              ${CaseAggregations.getFragment('aggregations')}
-            }
             hits(first: $cases_size offset: $cases_offset filters: $filters score: $cases_score sort: $cases_sort) {
               total
             }
