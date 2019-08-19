@@ -1,4 +1,3 @@
-/* @flow */
 import React from 'react';
 import Relay from 'react-relay/classic';
 import { get, isEqual } from 'lodash';
@@ -14,10 +13,10 @@ import CasesTab from '@ncigdc/components/Explore/CasesTab';
 import NoResultsMessage from '@ncigdc/components/NoResultsMessage';
 import ExploreCasesAggregations from '@ncigdc/modern_components/ExploreCasesAggregations';
 import GeneAggregations from '@ncigdc/modern_components/GeneAggregations';
-import SSMAggregations from '@ncigdc/containers/explore/SSMAggregations';
+// import SSMAggregations from '@ncigdc/containers/explore/SSMAggregations';
+import SSMAggregations from '@ncigdc/modern_components/SSMAggregations';
 import ClinicalAggregations from '@ncigdc/containers/explore/ClinicalAggregations';
 import { CreateExploreCaseSetButton } from '@ncigdc/modern_components/withSetAction';
-import { replaceFilters } from '@ncigdc/utils/filters';
 import { stringifyJSONParam } from '@ncigdc/utils/uri';
 import { Row } from '@ncigdc/uikit/Flex';
 import Button from '@ncigdc/uikit/Button';
@@ -65,55 +64,55 @@ export type TProps = {
   push: Function,
 };
 
-function setVariables({ filters, relay }) {
-  relay.setVariables({
-    cosmicFilters: replaceFilters(
-      {
-        content: [
-          {
-            content: {
-              field: 'cosmic_id',
-              value: ['MISSING'],
-            },
-            op: 'not',
-          },
-        ],
-        op: 'and',
-      },
-      filters,
-    ),
-    dbsnpRsFilters: replaceFilters(
-      {
-        content: [
-          {
-            content: {
-              field: 'consequence.transcript.annotation.dbsnp_rs',
-              value: ['MISSING'],
-            },
-            op: 'not',
-          },
-        ],
-        op: 'and',
-      },
-      filters,
-    ),
-  });
-}
+// function setVariables({ filters, relay }) {
+//   relay.setVariables({
+//     cosmicFilters: replaceFilters(
+//       {
+//         content: [
+//           {
+//             content: {
+//               field: 'cosmic_id',
+//               value: ['MISSING'],
+//             },
+//             op: 'not',
+//           },
+//         ],
+//         op: 'and',
+//       },
+//       filters,
+//     ),
+//     dbsnpRsFilters: replaceFilters(
+//       {
+//         content: [
+//           {
+//             content: {
+//               field: 'consequence.transcript.annotation.dbsnp_rs',
+//               value: ['MISSING'],
+//             },
+//             op: 'not',
+//           },
+//         ],
+//         op: 'and',
+//       },
+//       filters,
+//     ),
+//   });
+// }
 
 const enhance = compose(
   withRouter,
   withState('maxFacetsPanelHeight', 'setMaxFacetsPanelHeight', 0),
-  lifecycle({
-    componentDidMount() {
-      setVariables(this.props);
-    },
-    componentWillReceiveProps(nextProps) {
-      const { filters } = this.props;
-      if (!isEqual(filters, nextProps.filters)) {
-        setVariables(nextProps);
-      }
-    },
-  })
+  // lifecycle({
+  //   componentDidMount() {
+  //     setVariables(this.props);
+  //   },
+  //   componentWillReceiveProps(nextProps) {
+  //     const { filters } = this.props;
+  //     if (!isEqual(filters, nextProps.filters)) {
+  //       setVariables(nextProps);
+  //     }
+  //   },
+  // })
 );
 
 const ExplorePageComponent = ({
@@ -170,17 +169,18 @@ const ExplorePageComponent = ({
         {
           component: (
             <SSMAggregations
-              aggregations={viewer.explore.ssms.aggregations}
-              defaultFilters={filters}
+              // aggregations={viewer.explore.ssms.aggregations}
+              // defaultFilters={filters}
               maxFacetsPanelHeight={maxFacetsPanelHeight}
-              setAutocomplete={(value, onReadyStateChange) => relay.setVariables(
-                {
-                  idAutocompleteSsms: value,
-                  runAutocompleteSsms: !!value,
-                },
-                onReadyStateChange,
-              )}
-              ssms={viewer.explore.ssms}
+              // setAutocomplete={(value, onReadyStateChange) => relay.setVariables(
+              //   {
+              //     idAutocompleteSsms: value,
+              //     runAutocompleteSsms: !!value,
+              //   },
+              //   onReadyStateChange,
+              // )}
+              // ssms={viewer.explore.ssms}
+              relay={relay}
               suggestions={get(viewer, 'autocomplete_ssms.hits', [])}
               />
           ),
@@ -361,16 +361,7 @@ export const ExplorePageQuery = {
             }
           }
           ssms {
-            aggregations(filters: $filters aggregations_filter_themselves: false) {
-              ${SSMAggregations.getFragment('aggregations')}
-            }
             hits(first: $ssms_size offset: $ssms_offset, filters: $filters) {
-              total
-            }
-            cosmic_id_not_missing: hits(filters: $cosmicFilters) {
-              total
-            }
-            dbsnp_rs_not_missing: hits(filters: $dbsnpRsFilters) {
               total
             }
           }
