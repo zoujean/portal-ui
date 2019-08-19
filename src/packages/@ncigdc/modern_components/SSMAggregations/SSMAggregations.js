@@ -1,7 +1,7 @@
 import React from 'react';
 import { compose, withState } from 'recompose';
 
-import SuggestionFacet from '@ncigdc/components/Aggregations/SuggestionFacet';
+import SuggestionFacet from '@ncigdc/modern_components/SuggestionFacet';
 import FacetWrapper from '@ncigdc/components/FacetWrapper';
 import FacetHeader from '@ncigdc/components/Aggregations/FacetHeader';
 
@@ -88,11 +88,6 @@ const presetFacets: Array<{
 ];
 
 export type TProps = {
-  aggregations: {
-    consequence__transcript__annotation__vep_impact: { buckets: [IBucket] },
-    consequence__transcript__consequence_type: { buckets: [IBucket] },
-    mutation_type: { buckets: [IBucket] },
-  },
   hits: {
     edges: Array<{
       node: {
@@ -108,13 +103,22 @@ export type TProps = {
   cosmicIdCollapsed: boolean,
   setCosmicIdCollapsed: boolean,
   relay: {},
-  ssms: {
-    cosmic_id_not_missing: {
-      total: number,
-    },
-    dbsnp_rs_not_missing: {
-      total: number,
-    },
+  viewer: {
+    explore: {
+      ssms: {
+        aggregations: {
+          consequence__transcript__annotation__vep_impact: { buckets: [IBucket] },
+          consequence__transcript__consequence_type: { buckets: [IBucket] },
+          mutation_type: { buckets: [IBucket] },
+        },
+        cosmicIdNotMissing: {
+          total: number
+        },
+        dbsnpRsNotMissing: {
+          total: number
+        }
+      }
+    }
   },
   dbSNPCollapsed: boolean,
   setDbSNPCollapsed: Function,
@@ -126,16 +130,13 @@ export const SSMAggregations = compose(
   withState('cosmicIdCollapsed', 'setCosmicIdCollapsed', false),
   withState('dbSNPCollapsed', 'setDbSNPCollapsed', false),
 )(({
-  additionalProps,
   cosmicIdCollapsed,
   dbSNPCollapsed,
   idCollapsed,
   maxFacetsPanelHeight,
   relay,
-  setAutocomplete,
   setCosmicIdCollapsed,
   setIdCollapsed,
-  suggestions,
   theme,
   viewer: {
     explore: {
@@ -158,19 +159,23 @@ export const SSMAggregations = compose(
     <SuggestionFacet
       collapsed={idCollapsed}
       doctype="ssms"
-      dropdownItem={(x, inputValue) => (
-        <div>
+      dropdownItem={(x, inputValue) => {
+        return (
           <div>
-            <b>{x.ssm_id}</b>
+            <div>
+              <b>{x.ssm_id}</b>
+            </div>
+            <ResultHighlights
+              item={x}
+              query={inputValue}
+              />
+            <div>{x.genomic_dna_change}</div>
           </div>
-          <ResultHighlights item={x} query={inputValue} />
-          <div>{x.genomic_dna_change}</div>
-        </div>
-      )}
+        );
+      }}
       fieldNoDoctype="ssm_id"
-      hits={suggestions}
       placeholder="e.g. BRAF V600E, chr7:g.140753336A>T"
-      setAutocomplete={setAutocomplete}
+      queryType="ssm_centric"
       title="Mutation"
       />
     <UploadSetButton

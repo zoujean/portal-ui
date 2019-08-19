@@ -14,6 +14,7 @@ export default (Component: ReactClass<*>) => compose(
       const showFiles = queryType === 'file';
       const showProjects = queryType === 'project';
       const showGenes = queryType === 'gene_centric';
+      const showSsms = queryType === 'ssm_centric';
       return {
         variables: {
           query: trim(facetSearch),
@@ -22,6 +23,7 @@ export default (Component: ReactClass<*>) => compose(
           showFiles,
           showGenes,
           showProjects,
+          showSsms,
         },
       };
     },
@@ -29,9 +31,9 @@ export default (Component: ReactClass<*>) => compose(
 )((props: Object) => {
   return (
     <Query
-        Component={Component}
-        parentProps={props}
-        query={graphql`
+      Component={Component}
+      parentProps={props}
+      query={graphql`
           query SuggestionFacet_relayQuery(
             $query: String
             $queryType: [String]
@@ -39,6 +41,7 @@ export default (Component: ReactClass<*>) => compose(
             $showFiles: Boolean!
             $showGenes: Boolean!
             $showProjects: Boolean!
+            $showSsms: Boolean!
           ) {
             facetSearchHits: query(query: $query, types: $queryType) {
               files: hits @include(if: $showFiles) {
@@ -75,11 +78,20 @@ export default (Component: ReactClass<*>) => compose(
                   gene_id
                 }
               }
+              ssms: hits @include(if: $showSsms) {
+                id
+                ...on Ssm {
+                  ssm_id
+                  cosmic_id
+                  gene_aa_change
+                  genomic_dna_change
+                }
+              }
             }
           }
         `}
-        setFacetSearch={props.setFacetSearch}
-        variables={props.variables}
-        />
+      setFacetSearch={props.setFacetSearch}
+      variables={props.variables}
+      />
   );
 });
