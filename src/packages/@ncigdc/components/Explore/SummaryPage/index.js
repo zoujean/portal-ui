@@ -5,6 +5,22 @@ import SummaryPageQuery from '@ncigdc/components/Explore/SummaryPage/SummaryPage
 import MasonryLayout from '@ncigdc/components/Layouts/MasonryLayout';
 import { get } from 'lodash';
 
+const Tooltip = (key, count) => (
+  <span>
+    <b>
+      Sample Type:
+      {' '}
+      {key}
+      <br />
+      {count.toLocaleString()}
+      {' '}
+      case
+      {count > 1 ? 's' : ''}
+    </b>
+    <br />
+
+  </span>
+);
 const SummaryPage = ({
   numPerRow = 3,
   viewer,
@@ -24,6 +40,7 @@ const SummaryPage = ({
               data={sampleTypeData.map(s => ({
                 count: s.doc_count,
                 id: s.key,
+                tooltip: Tooltip(s.key, s.doc_count),
               }))}
               />
           ),
