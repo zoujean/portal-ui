@@ -118,7 +118,7 @@ const SummaryPage = ({
       component: () => '',
       data: [],
       space: 3,
-      title: 'Categorical Completeness',
+      title: 'Variable Completeness',
     },
   ];
   return (
