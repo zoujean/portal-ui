@@ -37,7 +37,7 @@ const getContinuousAggs = ({
   stats,
 }) => {
   // prevent query failing if interval will equal 0
-  if (isNull(stats.min) || isNull(stats.max)) {
+  if (isNull(stats.min) || isNull(stats.max) || isNull(bins)) {
     return null;
   }
 
@@ -96,6 +96,17 @@ const getContinuousAggs = ({
     filters2,
   };
   const componentName = 'ContinuousAggregationQuery';
+  if (fieldName === 'exposures.cigarettes_per_day') {
+    console.log('!!!!!!!!!!!!!!!!!!!');
+    console.log('bins', bins);
+    console.log('continuousBinType', continuousBinType);
+    console.log('fieldName', fieldName);
+    console.log('filters', filters);
+    console.log('stats', stats);
+    console.log('!!!!!!!!!!!!!!!!!!!');
+  }
+
+
   const body = JSON.stringify({
     query: `query ${componentName}($filters: FiltersArgument, $filters2: FiltersArgument) {
       viewer {
@@ -134,13 +145,12 @@ const getContinuousAggs = ({
 
   if (pendingAggCache[hash]) {
     return new Promise((res, rej) => {
+      let timer = 0;
       const id = setInterval(() => {
-        let timer = 0;
         if (simpleAggCache[hash]) {
           clearInterval(id);
           res(simpleAggCache[hash]);
         }
-
         if (timer > 10000) {
           clearInterval(id);
           delete pendingAggCache[hash];
@@ -171,7 +181,6 @@ const getContinuousAggs = ({
         consoleDebug('throwing error in Environment');
         throw response;
       }
-
       if (response.status === 200) {
         simpleAggCache[hash] = json;
         delete pendingAggCache[hash];
@@ -180,6 +189,7 @@ const getContinuousAggs = ({
       return json;
     })
     .catch(err => {
+      delete pendingAggCache[hash];
       if (err.status) {
         switch (err.status) {
           case 401:
@@ -257,9 +267,9 @@ export default compose(
   ),
 )(({
   aggData, hits, isLoading, setId, stats, ...props
-}) => isLoading 
+}) => (isLoading
   ? (
-   <Column
+    <Column
       className="clinical-analysis-card"
       style={{
         ...zDepth1,
@@ -269,7 +279,7 @@ export default compose(
         margin: '0 1rem 1rem',
       }}
       >
-        <Spinner />
+      <Spinner />
     </Column>
   )
   : (
@@ -282,5 +292,4 @@ export default compose(
       stats={stats}
       {...props}
       />
-  )
-);
+  )));
