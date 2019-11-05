@@ -230,7 +230,7 @@ export default compose(
   withState('isLoading', 'setIsLoading', 'first time'),
   withPropsOnChange(
     (props, nextProps) => 
-      !(props.setIdWithData === nextProps.setIdWithData &&
+      !(props.setId === nextProps.setId &&
       isEqual(props.variable, nextProps.variable)),
     ({
       fieldName,
