@@ -368,6 +368,7 @@ const ClinicalAnalysisResult = ({
                       overallSurvivalData={overallSurvivalData}
                       plots={PLOT_TYPES[varProperties.plotTypes || 'categorical']}
                       setId={setIdWithData || setId}
+                      // setIdWithData isn't available on initial page load
                       stats={parsedFacets[varFieldName].stats}
                       style={{ minWidth: controlPanelExpanded ? 310 : 290 }}
                       variable={varProperties}
