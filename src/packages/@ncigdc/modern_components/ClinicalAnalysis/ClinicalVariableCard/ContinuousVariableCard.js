@@ -391,14 +391,33 @@ export default compose(
       return getBinData(binsForBinData, dataBuckets);
     }
   ),
+  // WIP reset custom survival on case set change.
+  // this isn't working - it fires all the time.
+  // withPropsOnChange(
+  //   (props, nextProps) => nextProps.variable.isSurvivalCustom &&
+  //     props.setId !== nextProps.setId &&
+  //     !nextProps.variable.binsAreCustom,
+  //   ({
+  //     dispatch,
+  //     fieldName,
+  //     id,
+  //     setId,
+  //   }) => {
+  //     console.log('reset')
+  //     // reset custom survival if bins are default
+  //     dispatch(updateClinicalAnalysisVariable({
+  //       fieldName,
+  //       id,
+  //       variable: resetVariableDefaults.survival,
+  //     }));
+  // }),
   withPropsOnChange(
     (props, nextProps) => nextProps.variable.active_chart === 'survival' && !(
-      isEqual(props.selectedSurvivalBins, nextProps.selectedSurvivalBins) &&
-      isEqual(props.variable.bins, nextProps.variable.bins) &&
-      isEqual(props.variable.customSurvivalPlots, props.variable.customSurvivalPlots) &&
-      props.setId === nextProps.setId &&
-      props.variable.active_chart === nextProps.variable.active_chart &&
-      props.variable.isSurvivalCustom === nextProps.variable.isSurvivalCustom
+      // isEqual(props.variable.bins, nextProps.variable.bins) &&
+      isEqual(props.variable.customSurvivalPlots, nextProps.variable.customSurvivalPlots) &&
+      // props.setId === nextProps.setId &&
+      props.variable.active_chart === nextProps.variable.active_chart
+      // props.variable.isSurvivalCustom === nextProps.variable.isSurvivalCustom
     ),
     ({
       dispatch,
@@ -413,6 +432,10 @@ export default compose(
         isSurvivalCustom,
       },
     }) => {
+      console.log('boop!');
+      const showOverallSurvival = isSurvivalCustom &&
+        customSurvivalPlots.length === 0;
+
       const binsWithNames = Object.keys(bins).map(bin => ({
         ...bins[bin],
         displayName: continuousBinType === 'default'
@@ -458,16 +481,20 @@ export default compose(
         })
       ).slice(0, isUsingCustomSurvival ? Infinity : 2);
 
-      const survivalPlotValues = survivalBins.map(bin => {
-        return {
-          ...bin,
-          filters: bin.filters,
-          key: bin.key,
-          keyName: bin.key,
-        };
-      });
+      const survivalPlotValues = showOverallSurvival
+      ? []
+      : survivalBins.map(bin => {
+          return {
+            ...bin,
+            filters: bin.filters,
+            key: bin.key,
+            keyName: bin.key,
+          };
+        });
 
-      const survivalTableValues = survivalBins
+      const survivalTableValues = showOverallSurvival
+      ? []
+      : survivalBins
         .map(bin => {
           return {
             ...bin,
@@ -488,8 +515,9 @@ export default compose(
         id,
         variable: {
           customSurvivalPlots: nextCustomSurvivalPlots,
-          isSurvivalCustom: isUsingCustomSurvival,
-          showOverallSurvival: false,
+          isSurvivalCustom: isUsingCustomSurvival ||
+            showOverallSurvival,
+          showOverallSurvival: showOverallSurvival,
         },
       }));
 
