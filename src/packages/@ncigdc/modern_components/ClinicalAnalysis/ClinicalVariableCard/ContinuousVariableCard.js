@@ -5,6 +5,7 @@ import {
   withProps,
   withPropsOnChange,
   withState,
+  lifecycle,
 } from 'recompose';
 import { connect } from 'react-redux';
 import {
@@ -122,6 +123,16 @@ export default compose(
   withTheme,
   withState('qqData', 'setQQData', []),
   withState('qqDataIsSet', 'setQQDataIsSet', false),
+  withState('survivalPlotValues', 'setSurvivalPlotValues', []),
+  withState('survivalTableValues', 'setSurvivalTableValues', []),
+  // withPropsOnChange((props, nextProps) => false,
+  // () => {
+  //   console.log('CONTINUOUS', false);
+  // }),
+  // withPropsOnChange((props, nextProps) => true,
+  // () => {
+  //   console.log('CONTINUOUS', true);
+  // }),
   withProps(({
     data: { explore },
     fieldName,
@@ -391,114 +402,114 @@ export default compose(
       return getBinData(binsForBinData, dataBuckets);
     }
   ),
-  withPropsOnChange(
-    (props, nextProps) => nextProps.variable.active_chart === 'survival' && !(
-      isEqual(props.selectedSurvivalBins, nextProps.selectedSurvivalBins) &&
-      isEqual(props.variable.bins, nextProps.variable.bins) &&
-      isEqual(props.variable.customSurvivalPlots, props.variable.customSurvivalPlots) &&
-      props.setId === nextProps.setId &&
-      props.variable.active_chart === nextProps.variable.active_chart &&
-      props.variable.isSurvivalCustom === nextProps.variable.isSurvivalCustom
-    ),
-    ({
-      dispatch,
-      fieldName,
-      id,
-      setId,
-      totalDocs,
-      variable: {
-        bins = {},
-        continuousBinType,
-        customSurvivalPlots,
-        isSurvivalCustom,
-      },
-    }) => {
-      const binsWithNames = Object.keys(bins).map(bin => ({
-        ...bins[bin],
-        displayName: continuousBinType === 'default'
-            ? createContinuousGroupName(bins[bin].key)
-            : bins[bin].groupName,
-      }));
+  // withPropsOnChange(
+  //   (props, nextProps) => nextProps.variable.active_chart === 'survival' && !(
+  //     isEqual(props.selectedSurvivalBins, nextProps.selectedSurvivalBins) &&
+  //     isEqual(props.variable.bins, nextProps.variable.bins) &&
+  //     isEqual(props.variable.customSurvivalPlots, props.variable.customSurvivalPlots) &&
+  //     props.setId === nextProps.setId &&
+  //     props.variable.active_chart === nextProps.variable.active_chart &&
+  //     props.variable.isSurvivalCustom === nextProps.variable.isSurvivalCustom
+  //   ),
+  //   ({
+  //     dispatch,
+  //     fieldName,
+  //     id,
+  //     setId,
+  //     totalDocs,
+  //     variable: {
+  //       bins = {},
+  //       continuousBinType,
+  //       customSurvivalPlots,
+  //       isSurvivalCustom,
+  //     },
+  //   }) => {
+  //     const binsWithNames = Object.keys(bins).map(bin => ({
+  //       ...bins[bin],
+  //       displayName: continuousBinType === 'default'
+  //           ? createContinuousGroupName(bins[bin].key)
+  //           : bins[bin].groupName,
+  //     }));
 
-      const availableColors = SURVIVAL_PLOT_COLORS
-        .filter(color => !find(customSurvivalPlots, ['color', color]));
+  //     const availableColors = SURVIVAL_PLOT_COLORS
+  //       .filter(color => !find(customSurvivalPlots, ['color', color]));
 
-      const customBinMatches = isSurvivalCustom
-          ? binsWithNames.filter(bin => find(customSurvivalPlots, ['keyName', bin.displayName])).map((b, i) => {
-            const match = find(customSurvivalPlots, ['keyName', b.displayName]);
-            return {
-              ...b,
-              color: (match && match.color) || availableColors[i],
-            };
-          })
-          : [];
+  //     const customBinMatches = isSurvivalCustom
+  //         ? binsWithNames.filter(bin => find(customSurvivalPlots, ['keyName', bin.displayName])).map((b, i) => {
+  //           const match = find(customSurvivalPlots, ['keyName', b.displayName]);
+  //           return {
+  //             ...b,
+  //             color: (match && match.color) || availableColors[i],
+  //           };
+  //         })
+  //         : [];
 
-      const isUsingCustomSurvival = customBinMatches.length > 0;
+  //     const isUsingCustomSurvival = customBinMatches.length > 0;
 
-      const survivalBins = (isUsingCustomSurvival
-        ? filterSurvivalData(getContinuousBins({
-          binData: customBinMatches,
-          continuousBinType,
-          fieldName,
-          setId,
-          totalDocs,
-        }))
-      : filterSurvivalData(getContinuousBins({
-        binData: binsWithNames.sort((a, b) => a.key - b.key),
-        continuousBinType,
-        fieldName,
-        setId,
-        totalDocs,
-      })).sort((a, b) => b.chart_doc_count - a.chart_doc_count)
-        .map((bin, i) => {
-          return {
-            ...bin,
-            color: availableColors[i],
-          };
-        })
-      ).slice(0, isUsingCustomSurvival ? Infinity : 2);
+  //     const survivalBins = (isUsingCustomSurvival
+  //       ? filterSurvivalData(getContinuousBins({
+  //         binData: customBinMatches,
+  //         continuousBinType,
+  //         fieldName,
+  //         setId,
+  //         totalDocs,
+  //       }))
+  //     : filterSurvivalData(getContinuousBins({
+  //       binData: binsWithNames.sort((a, b) => a.key - b.key),
+  //       continuousBinType,
+  //       fieldName,
+  //       setId,
+  //       totalDocs,
+  //     })).sort((a, b) => b.chart_doc_count - a.chart_doc_count)
+  //       .map((bin, i) => {
+  //         return {
+  //           ...bin,
+  //           color: availableColors[i],
+  //         };
+  //       })
+  //     ).slice(0, isUsingCustomSurvival ? Infinity : 2);
 
-      const survivalPlotValues = survivalBins.map(bin => {
-        return {
-          ...bin,
-          filters: bin.filters,
-          key: bin.key,
-          keyName: bin.key,
-        };
-      });
+  //     const survivalPlotValues = survivalBins.map(bin => {
+  //       return {
+  //         ...bin,
+  //         filters: bin.filters,
+  //         key: bin.key,
+  //         keyName: bin.key,
+  //       };
+  //     });
 
-      const survivalTableValues = survivalBins
-        .map(bin => {
-          return {
-            ...bin,
-            keyName: bin.displayName,
-          };
-        });
+  //     const survivalTableValues = survivalBins
+  //       .map(bin => {
+  //         return {
+  //           ...bin,
+  //           keyName: bin.displayName,
+  //         };
+  //       });
 
-      const nextCustomSurvivalPlots = customBinMatches
-        .map(bin => {
-          return {
-            ...bin,
-            keyName: bin.displayName,
-          };
-        });
+  //     const nextCustomSurvivalPlots = customBinMatches
+  //       .map(bin => {
+  //         return {
+  //           ...bin,
+  //           keyName: bin.displayName,
+  //         };
+  //       });
 
-      dispatch(updateClinicalAnalysisVariable({
-        fieldName,
-        id,
-        variable: {
-          customSurvivalPlots: nextCustomSurvivalPlots,
-          isSurvivalCustom: isUsingCustomSurvival,
-          showOverallSurvival: false,
-        },
-      }));
+  //     dispatch(updateClinicalAnalysisVariable({
+  //       fieldName,
+  //       id,
+  //       variable: {
+  //         customSurvivalPlots: nextCustomSurvivalPlots,
+  //         isSurvivalCustom: isUsingCustomSurvival,
+  //         showOverallSurvival: false,
+  //       },
+  //     }));
 
-      return {
-        survivalPlotValues,
-        survivalTableValues,
-      };
-    }
-  ),
+  //     return {
+  //       survivalPlotValues,
+  //       survivalTableValues,
+  //     };
+  //   }
+  // ),
   withPropsOnChange(
     (props, nextProps) => !isEqual(props.binData, nextProps.binData),
     ({
@@ -551,4 +562,104 @@ export default compose(
       },
     })
   ),
+  lifecycle({
+    componentDidMount() {
+      if (this.props.variable.active_chart !== 'survival') return;
+      const {
+        dispatch,
+        fieldName,
+        id,
+        setId,
+        setSurvivalPlotValues,
+        setSurvivalTableValues,
+        totalDocs,
+        variable: {
+          active_chart,
+          bins = {},
+          continuousBinType,
+          customSurvivalPlots,
+          isSurvivalCustom,
+        }
+      } = this.props;
+
+      const binsWithNames = Object.keys(bins).map(bin => ({
+        ...bins[bin],
+        displayName: continuousBinType === 'default'
+          ? createContinuousGroupName(bins[bin].key)
+          : bins[bin].groupName,
+      }));
+  
+      const availableColors = SURVIVAL_PLOT_COLORS
+        .filter(color => !find(customSurvivalPlots, ['color', color]));
+
+      const customBinMatches = isSurvivalCustom
+        ? binsWithNames
+          .filter(bin => find(customSurvivalPlots, ['keyName', bin.displayName]))
+          .map((b, i) => {
+            const match = find(customSurvivalPlots, ['keyName', b.displayName]);
+            return {
+              ...b,
+              color: (match && match.color) || availableColors[i],
+            };
+          })
+        : [];
+  
+      const isUsingCustomSurvival = customBinMatches.length > 0;
+
+      const survivalBins = isUsingCustomSurvival
+        ? filterSurvivalData(getContinuousBins({
+            binData: customBinMatches,
+            continuousBinType,
+            fieldName,
+            setId,
+            totalDocs,
+          }))
+        : filterSurvivalData(getContinuousBins({
+            binData: binsWithNames.sort((a, b) => a.key - b.key),
+            continuousBinType,
+            fieldName,
+            setId,
+            totalDocs,
+          }))
+          .sort((a, b) => b.chart_doc_count - a.chart_doc_count)
+          .map((bin, i) => ({
+            ...bin,
+            color: availableColors[i],
+          }))
+          .slice(0, 2);
+
+      const survivalPlotValues = survivalBins.map(bin => ({
+        ...bin,
+        filters: bin.filters,
+        key: bin.key,
+        keyName: bin.key,
+      }));
+
+      const survivalTableValues = survivalBins
+        .map(bin => ({
+          ...bin,
+          keyName: bin.displayName,
+        }));
+
+      const nextCustomSurvivalPlots = customBinMatches
+        .map(bin => ({
+          ...bin,
+          keyName: bin.displayName,
+        }));
+  
+      dispatch(updateClinicalAnalysisVariable({
+        fieldName,
+        id,
+        variable: {
+          customSurvivalPlots: nextCustomSurvivalPlots,
+          isSurvivalCustom: isUsingCustomSurvival,
+          showOverallSurvival: false,
+        },
+      }));
+
+      setSurvivalPlotValues(survivalPlotValues);
+      setSurvivalTableValues(survivalTableValues);
+
+    }
+  }),
 )(EnhancedClinicalVariableCard);

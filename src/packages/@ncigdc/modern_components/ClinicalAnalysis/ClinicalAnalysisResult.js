@@ -301,6 +301,7 @@ const ClinicalAnalysisResult = ({
                 ...(controlPanelExpanded ? {} : { marginLeft: '1%' }),
               }}
               >
+                {/*
               <Column
                 className="print-w500"
                 style={{
@@ -341,6 +342,7 @@ const ClinicalAnalysisResult = ({
                     />
                 </div>
               </Column>
+                */}
 
               {setId && map(displayVariables, (varProperties, varFieldName) => {
                 const filters = {
